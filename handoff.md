@@ -14,10 +14,10 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 
 | Metric | Value |
 |--------|-------|
-| **Phase** | Phase 1: Foundation |
-| **Current Session** | Session 1.1: Project Init |
-| **Detailed Spec** | [`devmind-ai/docs/specs/01_foundation.md`](./devmind-ai/docs/specs/01_foundation.md) |
-| **Last Updated** | 2026-01-20 |
+| **Phase** | Phase 2: Core Registries - shadcn/ui |
+| **Current Session** | Session 2.1: Basic Components |
+| **Detailed Spec** | [`devmind-ai/docs/specs/02_registries_shadcn.md`](./devmind-ai/docs/specs/02_registries_shadcn.md) |
+| **Last Updated** | 2026-01-21 |
 
 ---
 
@@ -27,7 +27,7 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 |----------|---------|
 | [Master Plan](./devmind-ai/docs/plan/implementation_plan.md) | High-level roadmap & architecture |
 | [Task Tracker](./devmind-ai/docs/plan/task.md) | Granular session tracker |
-| [Current Spec](./devmind-ai/docs/specs/01_foundation.md) | **READ THIS FOR CURRENT TASK** |
+| [Current Spec](./devmind-ai/docs/specs/02_registries_shadcn.md) | **READ THIS FOR CURRENT TASK** |
 
 ---
 
@@ -42,6 +42,18 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 ---
 
 ## Progress Log
+
+### 2026-01-21 10:00 IST - Agent (Foundation)
+- **Action**: Completed Phase 1 (Foundation).
+- **Files Created**:
+  - `src/lib/gemini.ts`: AI Provider config.
+  - `src/lib/catalog.ts`: Core JSON Render catalog (18 components).
+  - `scripts/test-catalog.ts`: Verification script.
+- **Dependencies**: Installed Next.js 15, AI SDK, json-render, shadcn/ui, MUI, Chakra, AntD.
+- **Notes**:
+  - Downgraded `embla-carousel-react` to v8 for `ai-elements` compatibility.
+  - Fixed linting issues in `ai-elements` components.
+- **Next Steps**: Start Session 2.1 (shadcn/ui Registry).
 
 ### 2026-01-20 15:21 IST - Antigravity (Planning)
 - **Action**: Refined plan into 12 granular sessions (1-2 hours each).
