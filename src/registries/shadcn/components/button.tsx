@@ -1,29 +1,38 @@
 import React from 'react';
 import { Button as ShadcnButton } from '@/components/ui/button';
+import { ComponentRenderProps } from '@json-render/react';
 
-type ButtonProps = {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  children?: React.ReactNode;
-  onClick?: string;
-  style?: React.CSSProperties;
-};
+export const Button = ({ element, children, onAction }: ComponentRenderProps) => {
+  const { variant = 'primary', size = 'default', label, children: propsChildren, action, style } = element.props;
 
-export const Button = ({ variant, size, children, onClick, style }: ButtonProps) => {
+  const variantMap: Record<string, any> = {
+    primary: 'default',
+    secondary: 'secondary',
+    danger: 'destructive',
+    ghost: 'ghost',
+    outline: 'outline',
+    link: 'link',
+    default: 'default'
+  };
+
   const handleClick = () => {
-    if (onClick) {
-      console.log('Action triggered:', onClick);
+    if (action && onAction) {
+      onAction({ name: action as string });
+    } else if (element.props.onClick && onAction) {
+       onAction({ name: element.props.onClick as string });
     }
   };
 
+  const content = label || propsChildren || children;
+
   return (
     <ShadcnButton
-      variant={variant}
-      size={size}
+      variant={variantMap[variant as string] || 'default'}
+      size={size as any}
       onClick={handleClick}
-      style={style}
+      style={style as React.CSSProperties}
     >
-      {children}
+      {content as React.ReactNode}
     </ShadcnButton>
   );
 };
