@@ -1,19 +1,17 @@
 import React from 'react';
 import { Avatar as ShadcnAvatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { ComponentRenderProps } from '@json-render/react';
 
-type AvatarProps = {
-  src?: string;
-  fallback?: string;
-  alt?: string;
-  className?: string;
-  style?: React.CSSProperties;
-};
+export const Avatar = ({ element }: ComponentRenderProps) => {
+  const { src, alt, name, fallback, style } = element.props;
 
-export const Avatar = ({ src, fallback, alt, className, style }: AvatarProps) => {
+  const altText = (alt || name || 'Avatar') as string;
+  const fallbackText = (fallback as string) || altText.charAt(0).toUpperCase();
+
   return (
-    <ShadcnAvatar className={className} style={style}>
-      <AvatarImage src={src} alt={alt} />
-      <AvatarFallback>{fallback || alt?.slice(0, 2).toUpperCase() || 'UI'}</AvatarFallback>
+    <ShadcnAvatar style={style as React.CSSProperties}>
+      <AvatarImage src={src as string} alt={altText} />
+      <AvatarFallback>{fallbackText}</AvatarFallback>
     </ShadcnAvatar>
   );
 };

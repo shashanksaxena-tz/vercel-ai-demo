@@ -23,10 +23,10 @@
 - [x] **Session 2.1**: Basic Components
   - [x] Registry Setup `src/registries/shadcn/index.tsx`
   - [x] Implement Atoms: Button, Badge, Text, Avatar, Icon
-- [ ] **Session 2.2**: Complex Components
-  - [ ] Implement Molecules: Card, Alert
-  - [ ] Implement Forms: Input, Select, Checkbox
-  - [ ] Implement Data: Table, Recharts Integration
+- [x] **Session 2.2**: Complex Components
+  - [x] Implement Molecules: Card, Alert
+  - [x] Implement Forms: Input, Select, Checkbox
+  - [x] Implement Data: Table, Recharts Integration
 
 ---
 
