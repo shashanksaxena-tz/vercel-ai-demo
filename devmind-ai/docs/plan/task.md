@@ -1,107 +1,83 @@
-# AI UI Playground - Task Tracker
+# AI UI Playground - Detailed Task Tracker
 
-## Project Overview
-- **Total Estimated Effort**: 40-51 hours (5-7 working days)
-- **AI Backend**: Gemini via @ai-sdk/google
-- **UI Libraries**: shadcn/ui, MUI, Chakra UI, Ant Design, Magic UI, Aceternity UI
-- **Deployment**: Vercel
+> **Roadmap**: 12 Sessions (1-2 Hours each) across 7 Phases.
+> **Total Est**: 40-50 Hours.
 
 ---
 
-## Phase 1: Foundation (8-10 hrs)
+## Phase 1: Foundation (Specs: `01_foundation.md`)
 
-### Project Setup
-- [ ] Create Next.js 15 project with TypeScript, Tailwind, App Router
-- [ ] Install core dependencies (ai, @ai-sdk/google, zod)
-- [ ] Install json-render packages (@json-render/core, @json-render/react)
-- [ ] Install all 6 UI library packages
-- [ ] Initialize shadcn/ui with `npx shadcn@latest init`
-- [ ] Install AI Elements with `npx ai-elements@latest`
-- [ ] Configure environment variables (.env.local)
-
-### Core Integration
-- [ ] Create `src/lib/gemini.ts` - Gemini provider setup
-- [ ] Create `src/lib/catalog.ts` - Full component catalog (20 components)
-- [ ] Create `src/lib/sample-data.ts` - Demo data for dashboards
-- [ ] Test basic AI generation flow
+- [ ] **Session 1.1**: Project Init & Dependencies
+  - [ ] Initialize Next.js 15 (TS, Tailwind)
+  - [ ] Install core AI SDK & json-render
+  - [ ] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
+- [ ] **Session 1.2**: Catalog & Provider
+  - [ ] Config `src/lib/gemini.ts`
+  - [ ] Define `src/lib/catalog.ts` (20 components)
+  - [ ] Validate schema with script
 
 ---
 
-## Phase 2: Component Registries (12-15 hrs)
+## Phase 2: Core Registries - shadcn/ui (Specs: `02_registries_shadcn.md`)
 
-### Registry Implementation
-- [ ] Create `src/registries/shadcn/index.tsx` - 20 components
-- [ ] Create `src/registries/mui/index.tsx` - 20 components
-- [ ] Create `src/registries/chakra/index.tsx` - 20 components
-- [ ] Create `src/registries/antd/index.tsx` - 20 components
-- [ ] Create `src/registries/magicui/index.tsx` - 15 animated components
-- [ ] Create `src/registries/aceternity/index.tsx` - 15 premium components
-- [ ] Create `src/registries/index.ts` - Registry aggregator
-
-### Charts Integration
-- [ ] Install recharts for universal chart support
-- [ ] Create chart components for each registry
+- [ ] **Session 2.1**: Basic Components
+  - [ ] Registry Setup `src/registries/shadcn/index.tsx`
+  - [ ] Implement Atoms: Button, Badge, Text, Avatar, Icon
+- [ ] **Session 2.2**: Complex Components
+  - [ ] Implement Molecules: Card, Alert
+  - [ ] Implement Forms: Input, Select, Checkbox
+  - [ ] Implement Data: Table, Recharts Integration
 
 ---
 
-## Phase 3: AI Elements Chat (6-8 hrs)
+## Phase 3: External Libraries A (Specs: `03_registries_external_a.md`)
 
-### Chat Interface
-- [ ] Create `src/components/chat-panel.tsx` - Full AI Elements integration
-- [ ] Configure Conversation, Message, Reasoning, Suggestion components
-- [ ] Implement prompt suggestions
-- [ ] Add streaming indicators
-
-### API Routes
-- [ ] Create `src/app/api/generate/route.ts` - Main generation endpoint
-- [ ] Implement streamObject with Zod schema
-- [ ] Add error handling and rate limiting
+- [ ] **Session 3.1**: Material UI (MUI)
+  - [ ] Registry Setup `src/registries/mui/index.tsx`
+  - [ ] Map all 20 catalog items to MUI equivalents
+- [ ] **Session 3.2**: Chakra UI
+  - [ ] Registry Setup `src/registries/chakra/index.tsx`
+  - [ ] Map all 20 catalog items to Chakra equivalents
 
 ---
 
-## Phase 4: Dashboard Builder (8-10 hrs)
+## Phase 4: External Libraries B (Specs: `04_registries_external_b.md`)
 
-### Core Components
-- [ ] Create `src/components/ui-canvas.tsx` - Render canvas
-- [ ] Create `src/components/library-switcher.tsx` - Library selector
-- [ ] Create `src/components/device-preview.tsx` - Responsive preview
-- [ ] Create `src/components/json-viewer.tsx` - JSON tree viewer
-- [ ] Create `src/components/action-handler.tsx` - Action provider
-
-### Pages
-- [ ] Create `src/app/page.tsx` - Main landing/showcase
-- [ ] Create `src/app/playground/page.tsx` - Interactive playground
-- [ ] Create `src/app/dashboards/page.tsx` - Pre-built dashboard templates
-- [ ] Create `src/app/components/page.tsx` - Component gallery
+- [ ] **Session 4.1**: Ant Design
+  - [ ] Registry Setup `src/registries/antd/index.tsx`
+  - [ ] Map all 20 catalog items to AntD equivalents
+- [ ] **Session 4.2**: Premium UI (Magic & Aceternity)
+  - [ ] Registry Setup `src/registries/magicui/index.tsx`
+  - [ ] Registry Setup `src/registries/aceternity/index.tsx`
+  - [ ] Implement animated variants
 
 ---
 
-## Phase 5: Polish & Deploy (6-8 hrs)
+## Phase 5: Smart AI Backend (Specs: `05_ai_chat.md`)
 
-### UI Polish
-- [ ] Add animations and transitions
-- [ ] Implement dark mode toggle
-- [ ] Add loading states and skeletons
-- [ ] Create impressive landing page
-
-### Testing
-- [ ] Write component registry tests
-- [ ] Write API route tests
-- [ ] E2E tests with Playwright
-- [ ] Manual testing across all 6 libraries
-
-### Deployment
-- [ ] Configure vercel.json
-- [ ] Set up environment variables in Vercel
-- [ ] Deploy to Vercel
-- [ ] Create README documentation
+- [ ] **Session 5.1**: Streaming Engine
+  - [ ] Create `api/generate/route.ts`
+  - [ ] Implement `streamObject` with Zod
+  - [ ] Design system prompt for dynamic UI generation
 
 ---
 
-## Verification Checklist
-- [ ] All 6 UI libraries render from same JSON
-- [ ] AI generates valid JSON < 2 seconds
-- [ ] Streaming updates every 100ms
-- [ ] All 10 sample prompts work
-- [ ] Dashboard showcases data binding + actions
-- [ ] Vercel deployment < 3s cold start
+## Phase 6: Dashboard Builder (Specs: `06_dashboard_builder.md`)
+
+- [ ] **Session 6.1**: The Canvas
+  - [ ] Build Library Switcher component
+  - [ ] Build JSON Tree Viewer
+  - [ ] Build Device Preview (Mobile/Desktop)
+- [ ] **Session 6.2**: Interactivity
+  - [ ] Implement `ActionHandler` (onClick, onSubmit)
+  - [ ] Build sample Dashboards (Sales, CRM)
+
+---
+
+## Phase 7: Polish & Ship (Specs: `07_polish_deploy.md`)
+
+- [ ] **Session 7.1**: Verification
+  - [ ] E2E Testing flow
+  - [ ] Dark Mode toggle validation
+  - [ ] Deploy to Vercel
+  - [ ] Final Documentation
