@@ -20,9 +20,9 @@
 
 ## Phase 2: Core Registries - shadcn/ui (Specs: `02_registries_shadcn.md`)
 
-- [ ] **Session 2.1**: Basic Components
-  - [ ] Registry Setup `src/registries/shadcn/index.tsx`
-  - [ ] Implement Atoms: Button, Badge, Text, Avatar, Icon
+- [x] **Session 2.1**: Basic Components
+  - [x] Registry Setup `src/registries/shadcn/index.tsx`
+  - [x] Implement Atoms: Button, Badge, Text, Avatar, Icon
 - [ ] **Session 2.2**: Complex Components
   - [ ] Implement Molecules: Card, Alert
   - [ ] Implement Forms: Input, Select, Checkbox
