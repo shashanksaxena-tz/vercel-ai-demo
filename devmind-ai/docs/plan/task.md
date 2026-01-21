@@ -32,9 +32,9 @@
 
 ## Phase 3: External Libraries A (Specs: `03_registries_external_a.md`)
 
-- [ ] **Session 3.1**: Material UI (MUI)
-  - [ ] Registry Setup `src/registries/mui/index.tsx`
-  - [ ] Map all 20 catalog items to MUI equivalents
+- [x] **Session 3.1**: Material UI (MUI)
+  - [x] Registry Setup `src/registries/mui/index.tsx`
+  - [x] Map all 20 catalog items to MUI equivalents
 - [ ] **Session 3.2**: Chakra UI
   - [ ] Registry Setup `src/registries/chakra/index.tsx`
   - [ ] Map all 20 catalog items to Chakra equivalents
