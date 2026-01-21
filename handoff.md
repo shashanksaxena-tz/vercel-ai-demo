@@ -14,10 +14,10 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 
 | Metric | Value |
 |--------|-------|
-| **Phase** | Phase 1: Foundation |
-| **Current Session** | Session 1.1: Project Init |
-| **Detailed Spec** | [`devmind-ai/docs/specs/01_foundation.md`](./devmind-ai/docs/specs/01_foundation.md) |
-| **Last Updated** | 2026-01-20 |
+| **Phase** | Phase 2: Core Registries |
+| **Current Session** | Session 2.1: Basic Components |
+| **Detailed Spec** | [`devmind-ai/docs/specs/02_registries_shadcn.md`](./devmind-ai/docs/specs/02_registries_shadcn.md) |
+| **Last Updated** | 2026-01-21 |
 
 ---
 
@@ -27,7 +27,7 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 |----------|---------|
 | [Master Plan](./devmind-ai/docs/plan/implementation_plan.md) | High-level roadmap & architecture |
 | [Task Tracker](./devmind-ai/docs/plan/task.md) | Granular session tracker |
-| [Current Spec](./devmind-ai/docs/specs/01_foundation.md) | **READ THIS FOR CURRENT TASK** |
+| [Current Spec](./devmind-ai/docs/specs/02_registries_shadcn.md) | **READ THIS FOR CURRENT TASK** |
 
 ---
 
@@ -49,6 +49,15 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
   - `devmind-ai/docs/specs/01_foundation.md`: Detailed spec for Phase 1.
   - `devmind-ai/docs/plan/implementation_plan.md`: Updated master roadmap.
 - **Next Steps**: Start Session 1.1 (Project Setup).
+
+### 2026-01-21 - Jules (Phase 1 Complete)
+- **Action**: Completed Phase 1 (Foundation).
+  - Initialized Next.js 15 app with Tailwind & TypeScript.
+  - Installed all dependencies (AI SDK, json-render, 6 UI libraries).
+  - Implemented `src/lib/gemini.ts` and `src/lib/catalog.ts`.
+  - Verified catalog schema with test script.
+- **Files Created**: `src/lib/catalog.ts`, `src/lib/gemini.ts`, `scripts/test-catalog.ts`, `.env.local`.
+- **Next Steps**: Start Session 2.1 (shadcn/ui Registry).
 
 ---
 
