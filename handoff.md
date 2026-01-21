@@ -15,9 +15,9 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 | Metric | Value |
 |--------|-------|
 | **Phase** | Phase 1: Foundation |
-| **Current Session** | Session 1.1: Project Init |
+| **Current Session** | Session 1.2: Catalog & Provider |
 | **Detailed Spec** | [`devmind-ai/docs/specs/01_foundation.md`](./devmind-ai/docs/specs/01_foundation.md) |
-| **Last Updated** | 2026-01-20 |
+| **Last Updated** | 2026-01-21 |
 
 ---
 
@@ -42,6 +42,11 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 ---
 
 ## Progress Log
+
+### 2026-01-21 17:00 IST - Jules (Session 1.1)
+- **Action**: Initialized Next.js 15 project with Tailwind CSS v4 and TypeScript.
+- **Dependencies**: Installed AI SDK, json-render, shadcn/ui, MUI, Chakra, AntD, AI Elements.
+- **Next Steps**: Start Session 1.2 (Catalog & Provider).
 
 ### 2026-01-20 15:21 IST - Antigravity (Planning)
 - **Action**: Refined plan into 12 granular sessions (1-2 hours each).
