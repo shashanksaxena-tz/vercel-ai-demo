@@ -14,10 +14,10 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 
 | Metric | Value |
 |--------|-------|
-| **Phase** | Phase 1: Foundation |
-| **Current Session** | Session 1.1: Project Init |
-| **Detailed Spec** | [`devmind-ai/docs/specs/01_foundation.md`](./devmind-ai/docs/specs/01_foundation.md) |
-| **Last Updated** | 2026-01-20 |
+| **Phase** | Phase 2: Core Registries - shadcn/ui |
+| **Current Session** | Session 2.1: Basic Components |
+| **Detailed Spec** | [`devmind-ai/docs/specs/02_registries_shadcn.md`](./devmind-ai/docs/specs/02_registries_shadcn.md) |
+| **Last Updated** | 2026-01-21 |
 
 ---
 
@@ -49,6 +49,19 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
   - `devmind-ai/docs/specs/01_foundation.md`: Detailed spec for Phase 1.
   - `devmind-ai/docs/plan/implementation_plan.md`: Updated master roadmap.
 - **Next Steps**: Start Session 1.1 (Project Setup).
+
+### 2026-01-21 11:00 IST - Jules (Implementation)
+- **Action**: Completed Phase 1 (Session 1.1 & 1.2).
+- **Changes**:
+  - Initialized Next.js 15 project with Tailwind v4.
+  - Installed core AI SDK, json-render, and 6 UI libraries.
+  - Configured `src/lib/gemini.ts` and `src/lib/catalog.ts` (20 components).
+  - Verified catalog structure.
+- **Notes**:
+  - `ai-elements` required manual dependency installation.
+  - `globals.css` updated to use `@plugin "tailwindcss-animate"`.
+  - `zod` version conflict (v4 vs v3) noted but app functions.
+- **Next Steps**: Start Session 2.1 (shadcn/ui Registry).
 
 ---
 
