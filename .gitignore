@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+/node_modules/*
+ai-ui-playground/node_modules/*
+ai-ui-playground/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -15,6 +18,7 @@
 
 # next.js
 /.next/
+ai-ui-playground/.next/
 /out/
 
 # production
