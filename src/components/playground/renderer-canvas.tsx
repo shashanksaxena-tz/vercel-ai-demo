@@ -3,6 +3,7 @@
 import React from 'react';
 import { registries, RegistryKey } from '@/registries';
 import { useAction } from './action-provider';
+import { RegistryProvider } from './registry-provider';
 import type { UIElement } from '@/hooks/use-ui-generator';
 
 interface RendererCanvasProps {
@@ -68,8 +69,10 @@ export function RendererCanvas({ tree, currentRegistry, isLoading }: RendererCan
     }
 
     return (
-        <div className="p-6 min-h-[400px]">
-            {renderElement(tree)}
-        </div>
+        <RegistryProvider registry={currentRegistry}>
+            <div className="p-6 min-h-[400px]">
+                {renderElement(tree)}
+            </div>
+        </RegistryProvider>
     );
 }

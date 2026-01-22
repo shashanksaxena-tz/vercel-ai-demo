@@ -1,70 +1,120 @@
-import { generateObject } from 'ai';
+import { generateText } from 'ai';
 import { model } from '@/lib/gemini';
-import { z } from 'zod';
 
-// Define the UI Element schema for AI to generate
-const UIElementSchema: z.ZodType<any> = z.lazy(() => z.object({
-    type: z.enum([
-        'Button', 'Text', 'Badge', 'Avatar', 'Icon',
-        'Card', 'Alert', 'Metric',
-        'Input', 'Select', 'Checkbox', 'Switch',
-        'Stack', 'Grid', 'Container',
-        'Table', 'Chart', 'Tabs'
-    ]),
-    key: z.string(),
-    props: z.record(z.string(), z.any()),
-    children: z.array(z.lazy(() => UIElementSchema)).optional(),
-}));
+// Types for UI elements
+interface UIElement {
+    type: string;
+    key: string;
+    props: Record<string, any>;
+    children?: UIElement[];
+}
 
-const OutputSchema = z.object({
-    ui: UIElementSchema,
-    summary: z.string().describe('A brief description of what was generated'),
-});
+interface GeneratedUI {
+    ui: UIElement;
+    summary: string;
+}
+
+// Recursively fix malformed UI elements from Gemini
+function fixUIElement(element: any): UIElement | null {
+    if (!element || typeof element !== 'object') return null;
+
+    return {
+        type: element.type || 'Container',
+        key: element.key || `key_${Math.random().toString(36).slice(2, 9)}`,
+        props: element.props && typeof element.props === 'object' ? element.props : {},
+        children: Array.isArray(element.children)
+            ? element.children
+                .map((child: any) => typeof child === 'object' ? fixUIElement(child) : null)
+                .filter(Boolean)
+            : undefined
+    };
+}
+
+// Parse and fix the AI response
+function parseAIResponse(text: string): GeneratedUI | null {
+    try {
+        // Extract JSON from the response (handle markdown code blocks)
+        const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, text];
+        const jsonStr = jsonMatch[1] || text;
+
+        const parsed = JSON.parse(jsonStr.trim());
+        const fixedUI = fixUIElement(parsed.ui);
+
+        if (!fixedUI) return null;
+
+        return {
+            ui: fixedUI,
+            summary: parsed.summary || 'Generated UI'
+        };
+    } catch (e) {
+        console.error('Failed to parse AI response:', e);
+        return null;
+    }
+}
 
 export async function POST(req: Request) {
     try {
         const { prompt, currentRegistry } = await req.json();
 
-        const { object } = await generateObject({
+        const { text } = await generateText({
             model: model,
-            schema: OutputSchema,
-            system: `You are an expert UI designer and engineer specializing in creating dynamic user interfaces.
+            system: `You are an expert UI designer. Generate JSON UI trees.
 
-YOUR GOAL:
-Generate a valid JSON UI tree based on the user's prompt. The UI should be beautiful, functional, and follow modern design principles.
+OUTPUT FORMAT - Return ONLY valid JSON (no markdown, no explanation):
+{
+  "ui": {
+    "type": "Stack",
+    "key": "root",
+    "props": { "direction": "column", "gap": 4 },
+    "children": [
+      {
+        "type": "Text",
+        "key": "title",
+        "props": { "variant": "h1", "children": "Dashboard" }
+      },
+      {
+        "type": "Metric",
+        "key": "metric_1",
+        "props": { "label": "Revenue", "value": "$45,231", "trend": 12.5, "trendDirection": "up" }
+      }
+    ]
+  },
+  "summary": "A dashboard with metrics"
+}
 
-CONSTRAINTS:
-1. Use ONLY components defined in the schema: Button, Text, Badge, Avatar, Icon, Card, Alert, Metric, Input, Select, Checkbox, Switch, Stack, Grid, Container, Table, Chart, Tabs.
-2. Every element MUST have a unique 'key' property for React rendering.
-3. For layout, wrap components in 'Stack' (vertical/horizontal) or 'Grid' (columns).
-4. For 'Metric' components, include label, value, trend (number), and trendDirection ('up' | 'down' | 'neutral').
-5. For 'Table' components, ensure columns match the data structure (columns: [{header, accessorKey}], data: [{...}]).
-6. For 'Chart' components, specify type ('bar' | 'line' | 'pie' | 'area'), data, categories, and index.
+RULES:
+1. "type" must be: Button, Text, Badge, Avatar, Icon, Card, Alert, Metric, Input, Select, Checkbox, Switch, Stack, Grid, Container, Table, Chart, or Tabs
+2. "key" must be a unique string
+3. "props" must be an OBJECT with properties (NEVER null, NEVER an array)
+4. "children" must be an array of OBJECTS (each with type/key/props), NEVER strings
 
-CURRENT DESIGN SYSTEM: ${currentRegistry || 'shadcn'}
-${currentRegistry === 'antd' ? 'Ant Design prefers denser layouts with more data visibility.' : ''}
-${currentRegistry === 'chakra' ? 'Chakra UI prefers spacious layouts with good breathing room.' : ''}
-${currentRegistry === 'mui' ? 'Material UI follows Material Design principles with elevation and shadows.' : ''}
-${currentRegistry === 'magicui' ? 'Magic UI prefers animated, gradient-rich, premium effects.' : ''}
-${currentRegistry === 'aceternity' ? 'Aceternity UI prefers dark mode, 3D effects, and glowing elements.' : ''}
+COMPONENT PROPS:
+- Button: { variant?: "default"|"destructive"|"outline", children: "button text" }
+- Text: { variant?: "h1"|"h2"|"h3"|"p", children: "text content" }
+- Metric: { label: "Label", value: "$1,234", trend?: 5.2, trendDirection?: "up"|"down" }
+- Card: { title?: "Title", description?: "Description" }
+- Stack: { direction?: "row"|"column", gap?: 4 }
+- Grid: { columns?: 3, gap?: 4 }
+- Table: { columns: [{header: "Name", accessorKey: "name"}], data: [{name: "John"}] }
+- Chart: { type: "bar"|"line"|"pie", data: [...], categories: ["A","B"], index: "name" }
 
-AVAILABLE BUTTON ACTIONS:
-- 'export_report' - Export data as PDF
-- 'refresh_data' - Refresh dashboard data
-- 'navigate' - Navigate to another page
-- 'submit_form' - Submit a form
+Design system: ${currentRegistry || 'shadcn'}
 
-BEST PRACTICES:
-- Always start with a root 'Stack' or 'Container' element.
-- Use 'Card' to group related content.
-- Use 'Grid' with columns (2-4) for dashboard layouts.
-- Add 'Metric' components for KPIs and statistics.
-- Include 'Chart' for data visualization when appropriate.
-- Use proper spacing (gap) in Stack and Grid.`,
+Return ONLY the JSON object, nothing else.`,
             prompt: prompt,
         });
 
-        return new Response(JSON.stringify(object), {
+        const parsed = parseAIResponse(text);
+
+        if (!parsed) {
+            console.error('Failed to parse response:', text);
+            return new Response(
+                JSON.stringify({ error: 'Failed to parse generated UI' }),
+                { status: 500, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+
+        return new Response(JSON.stringify(parsed), {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {

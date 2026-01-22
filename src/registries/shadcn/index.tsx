@@ -9,8 +9,14 @@ import { Alert } from './components/alert';
 import { Input } from './components/input';
 import { Select } from './components/select';
 import { Checkbox } from './components/checkbox';
+import { Switch } from './components/switch';
 import { Table } from './components/table';
 import { Chart } from './components/chart';
+import { Stack } from './components/stack';
+import { Grid } from './components/grid';
+import { Container } from './components/container';
+import { Metric } from './components/metric';
+import { Tabs } from './components/tabs';
 
 export const shadcnRegistry: ComponentRegistry = {
   Button,
@@ -23,6 +29,12 @@ export const shadcnRegistry: ComponentRegistry = {
   Input,
   Select,
   Checkbox,
+  Switch,
   Table,
   Chart,
+  Stack,
+  Grid,
+  Container,
+  Metric,
+  Tabs,
 };

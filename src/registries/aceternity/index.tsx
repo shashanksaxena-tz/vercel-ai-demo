@@ -118,6 +118,9 @@ export const aceternityRegistry: ComponentRegistry = {
     Input: shadcnRegistry.Input,
     Select: shadcnRegistry.Select,
     Checkbox: shadcnRegistry.Checkbox,
+    Switch: shadcnRegistry.Switch,
     Table: shadcnRegistry.Table,
     Chart: shadcnRegistry.Chart,
+    Metric: shadcnRegistry.Metric,
+    Tabs: shadcnRegistry.Tabs,
 };
