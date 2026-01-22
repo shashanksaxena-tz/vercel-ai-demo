@@ -7,14 +7,14 @@
 
 ## Phase 1: Foundation (Specs: `01_foundation.md`)
 
-- [ ] **Session 1.1**: Project Init & Dependencies
-  - [ ] Initialize Next.js 15 (TS, Tailwind)
-  - [ ] Install core AI SDK & json-render
-  - [ ] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
-- [ ] **Session 1.2**: Catalog & Provider
-  - [ ] Config `src/lib/gemini.ts`
-  - [ ] Define `src/lib/catalog.ts` (20 components)
-  - [ ] Validate schema with script
+- [x] **Session 1.1**: Project Init & Dependencies
+  - [x] Initialize Next.js 15 (TS, Tailwind)
+  - [x] Install core AI SDK & json-render
+  - [x] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
+- [x] **Session 1.2**: Catalog & Provider
+  - [x] Config `src/lib/gemini.ts`
+  - [x] Define `src/lib/catalog.ts` (20 components)
+  - [x] Validate schema with script
 
 ---
 
