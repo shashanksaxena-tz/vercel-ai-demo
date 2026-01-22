@@ -7,37 +7,37 @@
 
 ## Phase 1: Foundation (Specs: `01_foundation.md`)
 
-- [ ] **Session 1.1**: Project Init & Dependencies
-  - [ ] Initialize Next.js 15 (TS, Tailwind)
-  - [ ] Install core AI SDK & json-render
-  - [ ] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
-- [ ] **Session 1.2**: Catalog & Provider
-  - [ ] Config `src/lib/gemini.ts`
-  - [ ] Define `src/lib/catalog.ts` (20 components)
-  - [ ] Validate schema with script
+- [x] **Session 1.1**: Project Init & Dependencies
+  - [x] Initialize Next.js 15 (TS, Tailwind)
+  - [x] Install core AI SDK & json-render
+  - [x] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
+- [x] **Session 1.2**: Catalog & Provider
+  - [x] Config `src/lib/gemini.ts`
+  - [x] Define `src/lib/catalog.ts` (20 components)
+  - [x] Validate schema with script
 
 ---
 
 ## Phase 2: Core Registries - shadcn/ui (Specs: `02_registries_shadcn.md`)
 
-- [ ] **Session 2.1**: Basic Components
-  - [ ] Registry Setup `src/registries/shadcn/index.tsx`
-  - [ ] Implement Atoms: Button, Badge, Text, Avatar, Icon
-- [ ] **Session 2.2**: Complex Components
-  - [ ] Implement Molecules: Card, Alert
-  - [ ] Implement Forms: Input, Select, Checkbox
-  - [ ] Implement Data: Table, Recharts Integration
+- [x] **Session 2.1**: Basic Components
+  - [x] Registry Setup `src/registries/shadcn/index.tsx`
+  - [x] Implement Atoms: Button, Badge, Text, Avatar, Icon
+- [x] **Session 2.2**: Complex Components
+  - [x] Implement Molecules: Card, Alert
+  - [x] Implement Forms: Input, Select, Checkbox
+  - [x] Implement Data: Table, Recharts Integration
 
 ---
 
 ## Phase 3: External Libraries A (Specs: `03_registries_external_a.md`)
 
-- [ ] **Session 3.1**: Material UI (MUI)
-  - [ ] Registry Setup `src/registries/mui/index.tsx`
-  - [ ] Map all 20 catalog items to MUI equivalents
-- [ ] **Session 3.2**: Chakra UI
-  - [ ] Registry Setup `src/registries/chakra/index.tsx`
-  - [ ] Map all 20 catalog items to Chakra equivalents
+- [x] **Session 3.1**: Material UI (MUI)
+  - [x] Registry Setup `src/registries/mui/index.tsx`
+  - [x] Map all 20 catalog items to MUI equivalents
+- [x] **Session 3.2**: Chakra UI
+  - [x] Registry Setup `src/registries/chakra/index.tsx`
+  - [x] Map all 20 catalog items to Chakra equivalents
 
 ---
 
