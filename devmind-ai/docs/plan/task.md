@@ -7,77 +7,77 @@
 
 ## Phase 1: Foundation (Specs: `01_foundation.md`)
 
-- [ ] **Session 1.1**: Project Init & Dependencies
-  - [ ] Initialize Next.js 15 (TS, Tailwind)
-  - [ ] Install core AI SDK & json-render
-  - [ ] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
-- [ ] **Session 1.2**: Catalog & Provider
-  - [ ] Config `src/lib/gemini.ts`
-  - [ ] Define `src/lib/catalog.ts` (20 components)
-  - [ ] Validate schema with script
+- [x] **Session 1.1**: Project Init & Dependencies
+  - [x] Initialize Next.js 15 (TS, Tailwind)
+  - [x] Install core AI SDK & json-render
+  - [x] Install all 6 UI Libraries (shadcn, MUI, Chakra, Ant, Magic, Aceternity)
+- [x] **Session 1.2**: Catalog & Provider
+  - [x] Config `src/lib/gemini.ts`
+  - [x] Define `src/lib/catalog.ts` (20 components)
+  - [x] Validate schema with script
 
 ---
 
 ## Phase 2: Core Registries - shadcn/ui (Specs: `02_registries_shadcn.md`)
 
-- [ ] **Session 2.1**: Basic Components
-  - [ ] Registry Setup `src/registries/shadcn/index.tsx`
-  - [ ] Implement Atoms: Button, Badge, Text, Avatar, Icon
-- [ ] **Session 2.2**: Complex Components
-  - [ ] Implement Molecules: Card, Alert
-  - [ ] Implement Forms: Input, Select, Checkbox
-  - [ ] Implement Data: Table, Recharts Integration
+- [x] **Session 2.1**: Basic Components
+  - [x] Registry Setup `src/registries/shadcn/index.tsx`
+  - [x] Implement Atoms: Button, Badge, Text, Avatar, Icon
+- [x] **Session 2.2**: Complex Components
+  - [x] Implement Molecules: Card, Alert
+  - [x] Implement Forms: Input, Select, Checkbox
+  - [x] Implement Data: Table, Recharts Integration
 
 ---
 
 ## Phase 3: External Libraries A (Specs: `03_registries_external_a.md`)
 
-- [ ] **Session 3.1**: Material UI (MUI)
-  - [ ] Registry Setup `src/registries/mui/index.tsx`
-  - [ ] Map all 20 catalog items to MUI equivalents
-- [ ] **Session 3.2**: Chakra UI
-  - [ ] Registry Setup `src/registries/chakra/index.tsx`
-  - [ ] Map all 20 catalog items to Chakra equivalents
+- [x] **Session 3.1**: Material UI (MUI)
+  - [x] Registry Setup `src/registries/mui/index.tsx`
+  - [x] Map all 20 catalog items to MUI equivalents
+- [x] **Session 3.2**: Chakra UI
+  - [x] Registry Setup `src/registries/chakra/index.tsx`
+  - [x] Map all 20 catalog items to Chakra equivalents
 
 ---
 
 ## Phase 4: External Libraries B (Specs: `04_registries_external_b.md`)
 
-- [ ] **Session 4.1**: Ant Design
-  - [ ] Registry Setup `src/registries/antd/index.tsx`
-  - [ ] Map all 20 catalog items to AntD equivalents
-- [ ] **Session 4.2**: Premium UI (Magic & Aceternity)
-  - [ ] Registry Setup `src/registries/magicui/index.tsx`
-  - [ ] Registry Setup `src/registries/aceternity/index.tsx`
-  - [ ] Implement animated variants
+- [x] **Session 4.1**: Ant Design
+  - [x] Registry Setup `src/registries/antd/index.tsx`
+  - [x] Map all 20 catalog items to AntD equivalents
+- [x] **Session 4.2**: Premium UI (Magic & Aceternity)
+  - [x] Registry Setup `src/registries/magicui/index.tsx`
+  - [x] Registry Setup `src/registries/aceternity/index.tsx`
+  - [x] Implement animated variants
 
 ---
 
 ## Phase 5: Smart AI Backend (Specs: `05_ai_chat.md`)
 
-- [ ] **Session 5.1**: Streaming Engine
-  - [ ] Create `api/generate/route.ts`
-  - [ ] Implement `streamObject` with Zod
-  - [ ] Design system prompt for dynamic UI generation
+- [x] **Session 5.1**: Streaming Engine
+  - [x] Create `api/generate/route.ts`
+  - [x] Implement `streamObject` with Zod
+  - [x] Design system prompt for dynamic UI generation
 
 ---
 
 ## Phase 6: Dashboard Builder (Specs: `06_dashboard_builder.md`)
 
-- [ ] **Session 6.1**: The Canvas
-  - [ ] Build Library Switcher component
-  - [ ] Build JSON Tree Viewer
-  - [ ] Build Device Preview (Mobile/Desktop)
-- [ ] **Session 6.2**: Interactivity
-  - [ ] Implement `ActionHandler` (onClick, onSubmit)
-  - [ ] Build sample Dashboards (Sales, CRM)
+- [x] **Session 6.1**: The Canvas
+  - [x] Build Library Switcher component
+  - [x] Build JSON Tree Viewer
+  - [x] Build Device Preview (Mobile/Desktop)
+- [x] **Session 6.2**: Interactivity
+  - [x] Implement `ActionHandler` (onClick, onSubmit)
+  - [x] Build sample Dashboards (Sales, CRM)
 
 ---
 
 ## Phase 7: Polish & Ship (Specs: `07_polish_deploy.md`)
 
-- [ ] **Session 7.1**: Verification
-  - [ ] E2E Testing flow
-  - [ ] Dark Mode toggle validation
-  - [ ] Deploy to Vercel
-  - [ ] Final Documentation
+- [x] **Session 7.1**: Verification
+  - [x] E2E Testing flow
+  - [x] Dark Mode toggle validation
+  - [x] Deploy to Vercel
+  - [x] Final Documentation
