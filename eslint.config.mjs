@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore third-party AI elements
+    "src/components/ai-elements/**",
   ]),
 ]);
 

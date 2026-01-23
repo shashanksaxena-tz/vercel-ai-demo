@@ -32,5 +32,10 @@ export const Icon = ({ element }: ComponentRenderProps) => {
 
   const IconComponent = getIcon(name as string);
 
-  return <IconComponent size={size as number} color={color as string} className={className as string} style={style as React.CSSProperties} />;
+  return React.createElement(IconComponent, {
+      size: size as number,
+      color: color as string,
+      className: className as string,
+      style: style as React.CSSProperties
+  });
 };

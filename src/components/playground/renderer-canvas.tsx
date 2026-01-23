@@ -72,7 +72,7 @@ export function RendererCanvas({ tree, currentRegistry, isLoading }: RendererCan
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Ready to Build</h3>
                 <p className="max-w-sm text-sm mb-6">
-                    Enter a prompt in the sidebar to generate a UI. Try "Create a sales dashboard" or "Design a settings page".
+                    Enter a prompt in the sidebar to generate a UI. Try &quot;Create a sales dashboard&quot; or &quot;Design a settings page&quot;.
                 </p>
                 <div className="flex gap-2 text-xs font-mono text-muted-foreground/60">
                     <span>shadcn</span>

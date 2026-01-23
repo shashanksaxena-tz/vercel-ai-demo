@@ -22,7 +22,7 @@ export const Alert = ({ element }: ComponentRenderProps) => {
       variant={variant as 'default' | 'destructive'}
       style={style as React.CSSProperties}
     >
-      {IconComponent && <IconComponent className="h-4 w-4" />}
+      {IconComponent && React.createElement(IconComponent, { className: "h-4 w-4" })}
       {!!title && <AlertTitle>{title as React.ReactNode}</AlertTitle>}
       {!!description && <AlertDescription>{description as React.ReactNode}</AlertDescription>}
     </ShadcnAlert>
