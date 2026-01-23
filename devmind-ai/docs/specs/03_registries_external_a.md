@@ -109,6 +109,6 @@ export const chakraRegistry: ComponentRegistry = {
 ---
 
 ## Definition of Done (Phase 3)
-- [ ] `src/registries/mui/index.tsx` complete with 20 components.
-- [ ] `src/registries/chakra/index.tsx` complete with 20 components.
-- [ ] Verify that swizzling between shadcn, mui, and chakra works in a test harness.
+- [x] `src/registries/mui/index.tsx` complete with 20 components.
+- [x] `src/registries/chakra/index.tsx` complete with 20 components.
+- [x] Verify that swizzling between shadcn, mui, and chakra works in a test harness.
