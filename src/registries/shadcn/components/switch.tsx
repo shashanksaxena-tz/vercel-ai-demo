@@ -9,11 +9,11 @@ export const Switch = ({ element }: ComponentRenderProps) => {
   return (
     <div className="flex items-center space-x-2" style={style as React.CSSProperties}>
       <ShadcnSwitch id={name as string} defaultChecked={checked as boolean} />
-      {label && (
+      {label ? (
         <Label htmlFor={name as string} className="text-sm font-medium">
-          {label as React.ReactNode}
+          {label as string}
         </Label>
-      )}
+      ) : null}
     </div>
   );
 };
