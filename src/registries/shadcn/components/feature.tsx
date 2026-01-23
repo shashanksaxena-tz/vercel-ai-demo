@@ -45,7 +45,7 @@ export const Feature = ({ element, children }: ComponentRenderProps) => {
           <IconComponent className="h-6 w-6" />
         </div>
       )}
-      {title && <h3 className="text-xl font-semibold">{title as string}</h3>}
+      {Boolean(title) && <h3 className="text-xl font-semibold">{title as string}</h3>}
       {description && (
         <p className="text-muted-foreground">{description as string}</p>
       )}

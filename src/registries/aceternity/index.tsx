@@ -101,6 +101,15 @@ const Container = ({ element, children }: any) => {
     );
 };
 
+// Animation components
+import { SpotlightCard } from './components/spotlight-card';
+import { AuroraBackground } from './components/aurora-background';
+import { TextGenerate } from './components/text-generate';
+import { HoverBorderGradient } from './components/hover-border-gradient';
+import { MovingBorder } from './components/moving-border';
+import { WavyBackground } from './components/wavy-background';
+import { GlowingStars } from './components/glowing-stars';
+
 export const aceternityRegistry: ComponentRegistry = {
     // Aceternity-styled components
     Button,
@@ -110,6 +119,15 @@ export const aceternityRegistry: ComponentRegistry = {
     Grid,
     Stack,
     Container,
+
+    // Animation components
+    SpotlightCard,
+    AuroraBackground,
+    TextGenerate,
+    HoverBorderGradient,
+    MovingBorder,
+    WavyBackground,
+    GlowingStars,
 
     // Fall back to shadcn for the rest
     Badge: shadcnRegistry.Badge,

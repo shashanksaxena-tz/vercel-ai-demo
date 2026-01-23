@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Tabs as MuiTabs, Tab, Box } from '@mui/material';
 import { ComponentRenderProps } from '@json-render/react';

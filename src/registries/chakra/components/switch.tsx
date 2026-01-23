@@ -16,7 +16,7 @@ export const Switch = ({ element }: ComponentRenderProps) => {
                 <ChakraSwitch.Control>
                     <ChakraSwitch.Thumb />
                 </ChakraSwitch.Control>
-                {labelText && <ChakraSwitch.Label>{labelText}</ChakraSwitch.Label>}
+                {Boolean(labelText) && <ChakraSwitch.Label>{labelText}</ChakraSwitch.Label>}
             </ChakraSwitch.Root>
         </Field.Root>
     );

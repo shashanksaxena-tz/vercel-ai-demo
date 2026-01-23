@@ -30,8 +30,8 @@ export const Alert = ({ element }: ComponentRenderProps) => {
         <ChakraAlert.Root status={status} style={style as React.CSSProperties}>
             <ChakraAlert.Indicator />
             <ChakraAlert.Content>
-                {titleText && <ChakraAlert.Title>{titleText}</ChakraAlert.Title>}
-                {descriptionText && <ChakraAlert.Description>{descriptionText}</ChakraAlert.Description>}
+                {Boolean(titleText) && <ChakraAlert.Title>{titleText}</ChakraAlert.Title>}
+                {Boolean(descriptionText) && <ChakraAlert.Description>{descriptionText}</ChakraAlert.Description>}
             </ChakraAlert.Content>
         </ChakraAlert.Root>
     );

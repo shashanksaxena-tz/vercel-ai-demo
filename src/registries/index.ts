@@ -33,3 +33,11 @@ export const registries = {
 };
 
 export type RegistryKey = keyof typeof registries;
+
+export function getRegistry(key: RegistryKey) {
+  return registries[key];
+}
+
+export function getComponentList(key: RegistryKey): string[] {
+  return Object.keys(registries[key].registry);
+}

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { ComponentRenderProps } from '@json-render/react';
 import { cn } from '@/lib/utils';

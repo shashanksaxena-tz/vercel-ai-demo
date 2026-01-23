@@ -47,8 +47,8 @@ const Card = ({ element, children }: any) => {
 
     return (
         <MagicCard>
-            {title && <h3 className="text-lg font-semibold mb-2">{title as string}</h3>}
-            {description && <p className="text-gray-500 mb-4">{description as string}</p>}
+            {Boolean(title) && <h3 className="text-lg font-semibold mb-2">{title as string}</h3>}
+            {Boolean(description) && <p className="text-gray-500 mb-4">{description as string}</p>}
             {children}
         </MagicCard>
     );
@@ -61,8 +61,8 @@ const Alert = ({ element }: any) => {
     return (
         <ShineBorder borderRadius={12}>
             <div className="p-4">
-                {title && <h4 className="font-semibold">{title as string}</h4>}
-                {description && <p className="text-sm text-gray-600">{description as string}</p>}
+                {Boolean(title) && <h4 className="font-semibold">{title as string}</h4>}
+                {Boolean(description) && <p className="text-sm text-gray-600">{description as string}</p>}
             </div>
         </ShineBorder>
     );
@@ -106,6 +106,16 @@ const Container = ({ element, children }: any) => {
     );
 };
 
+// Animation components
+import { AnimatedText } from './components/animated-text';
+import { BlurFade } from './components/blur-fade';
+import { TypingAnimation } from './components/typing-animation';
+import { PulseCard } from './components/pulse-card';
+import { BorderBeam } from './components/border-beam';
+import { Meteors } from './components/meteors';
+import { RetroGrid } from './components/retro-grid';
+import { Ripple } from './components/ripple';
+
 export const magicuiRegistry: ComponentRegistry = {
     // Magic-enhanced components
     Button,
@@ -115,6 +125,16 @@ export const magicuiRegistry: ComponentRegistry = {
     Stack,
     Grid,
     Container,
+
+    // Animation components
+    AnimatedText,
+    BlurFade,
+    TypingAnimation,
+    PulseCard,
+    BorderBeam,
+    Meteors,
+    RetroGrid,
+    Ripple,
 
     // Fall back to shadcn for the rest
     Badge: shadcnRegistry.Badge,

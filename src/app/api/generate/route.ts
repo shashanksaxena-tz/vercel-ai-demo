@@ -1,5 +1,7 @@
 import { generateText } from 'ai';
 import { model } from '@/lib/gemini';
+import { classifyIntent, getTopCategories } from '@/lib/intent-classifier';
+import { getSchemasByCategories, formatSchemasForPrompt, allSchemas } from '@/lib/component-schemas';
 
 // Types for UI elements
 interface UIElement {
@@ -55,10 +57,26 @@ function parseAIResponse(text: string): GeneratedUI | null {
 export async function POST(req: Request) {
     try {
         const { prompt, currentRegistry } = await req.json();
+        const registryKey = currentRegistry || 'shadcn';
 
-        const { text } = await generateText({
-            model: model,
-            system: `You are an expert UI designer. Generate JSON UI trees for building complete, production-ready interfaces.
+        // Step 1: Classify user intent to determine relevant categories
+        const categories = classifyIntent(prompt);
+        const topCategories = getTopCategories(prompt, 6);
+
+        console.log('Detected categories:', categories);
+        console.log('Top categories:', topCategories);
+
+        // Step 2: Get relevant component schemas (focused subset)
+        const relevantSchemas = getSchemasByCategories([...new Set([...categories, ...topCategories])]);
+        const schemaCount = Object.keys(relevantSchemas).length;
+
+        console.log(`Using ${schemaCount} components out of ${Object.keys(allSchemas).length} total`);
+
+        // Step 3: Format schemas for prompt
+        const formattedSchemas = formatSchemasForPrompt(relevantSchemas);
+
+        // Step 4: Build focused system prompt
+        const systemPrompt = `You are an expert UI designer. Generate JSON UI trees for building complete, production-ready interfaces.
 
 OUTPUT FORMAT - Return ONLY valid JSON (no markdown, no explanation):
 {
@@ -68,119 +86,78 @@ OUTPUT FORMAT - Return ONLY valid JSON (no markdown, no explanation):
     "props": { "direction": "column", "gap": 4 },
     "children": [...]
   },
-  "summary": "Brief description"
+  "summary": "Brief description of what was built"
 }
 
-RULES:
-1. "key" must be a unique string
+CRITICAL RULES:
+1. "key" must be a unique string for each element
 2. "props" must be an OBJECT (NEVER null, NEVER an array)
 3. "children" must be an array of OBJECTS (each with type/key/props), NEVER strings
+4. For text content, use { "type": "Text", "props": { "children": "your text here" } }
 
-AVAILABLE COMPONENTS (60+ components):
+AVAILABLE COMPONENTS (${schemaCount} components for ${registryKey}):
+${formattedSchemas}
 
-=== BASIC ===
-- Button: { variant?: "default"|"secondary"|"destructive"|"outline"|"ghost"|"link", size?: "sm"|"default"|"lg", label?: "text", children?: "text" }
-- Text: { variant?: "h1"|"h2"|"h3"|"p", children: "text content" }
-- Badge: { variant?: "default"|"secondary"|"destructive"|"outline", children: "text" }
-- Avatar: { src?: "url", fallback?: "AB", size?: "sm"|"default"|"lg" }
-- Icon: { name: "IconName", size?: number }
-- Link: { href: "url", label: "text", external?: boolean, variant?: "default"|"muted" }
-- Logo: { src?: "url", text?: "Brand", size?: "sm"|"default"|"lg" }
+COMPONENT USAGE GUIDELINES:
 
-=== LAYOUT ===
-- Stack: { direction?: "row"|"column", gap?: 4, align?: "start"|"center"|"end", justify?: "start"|"center"|"end"|"between", wrap?: boolean }
-- Grid: { columns?: 3, gap?: 4 }
-- Container: { maxWidth?: "sm"|"md"|"lg"|"xl"|"2xl" }
-- Section: { id?: "string", padding?: "sm"|"md"|"lg"|"xl", background?: "default"|"muted"|"gradient"|"dark" }
-- Hero: { title: "Main Title", subtitle?: "Subtitle", description?: "Description", align?: "left"|"center", size?: "sm"|"md"|"lg"|"full", backgroundImage?: "url", overlay?: boolean }
-- Header: { title: "Title", subtitle?: "Subtitle", description?: "Description", align?: "left"|"center", size?: "sm"|"default"|"lg" }
-- Divider: { orientation?: "horizontal"|"vertical", label?: "or", variant?: "default"|"muted"|"gradient" }
-- Spacer: { size?: "xs"|"sm"|"md"|"lg"|"xl"|number, axis?: "vertical"|"horizontal" }
-- AspectRatio: { ratio?: "square"|"video"|"portrait"|"16/9"|"4/3" }
-- ScrollArea: { height?: number|string, maxHeight?: number|string }
+LAYOUT STRUCTURE:
+- Use Stack with direction="column" for vertical layouts, direction="row" for horizontal
+- Use Grid with columns prop for grid layouts
+- Use Container for max-width constraints
+- Use Section to group related content with padding
 
-=== NAVIGATION ===
-- Navbar: { brand?: "Name", logo?: "url", sticky?: boolean, variant?: "default"|"glass"|"transparent" }
-- Sidebar: { width?: 256, position?: "left"|"right", collapsed?: boolean }
-- Breadcrumb: { items: [{label: "Home", href?: "/"}], showHome?: boolean }
-- Pagination: { currentPage: 1, totalPages: 10, showFirstLast?: boolean }
-- Menu: { items: [{label: "Item", action?: "click_action", submenu?: [...]}], orientation?: "horizontal"|"vertical" }
-- NavLink: { href: "/path", label: "Link", active?: boolean, variant?: "default"|"button"|"underline" }
+NAVIGATION:
+- Use Navbar for top navigation with brand and menu items
+- Use Sidebar for side navigation
+- Use Breadcrumb for page hierarchy
+- Use Tabs for tabbed content
 
-=== CARDS & CONTAINERS ===
-- Card: { title?: "Title", description?: "Description", footer?: "Footer text", variant?: "default"|"elevated"|"outline"|"ghost" }
-- Alert: { title?: "Title", description: "Message", variant?: "default"|"destructive"|"success"|"warning" }
-- Callout: { title?: "Title", content: "Message", variant?: "info"|"warning"|"error"|"success"|"tip" }
+FORMS:
+- Use Form to wrap form elements
+- Use FormField for labeled inputs with validation
+- Use Input, Select, Checkbox, Switch for form controls
+- Use Button with action prop for form submission
 
-=== FORMS ===
-- Form: { action?: "submit", layout?: "vertical"|"horizontal", spacing?: "compact"|"default"|"relaxed" }
-- FormField: { label: "Label", name: "field_name", required?: boolean, error?: "Error message", helperText?: "Help text" }
-- Input: { label?: "Label", placeholder?: "Enter...", type?: "text"|"email"|"password"|"number", required?: boolean, error?: "Error" }
-- Textarea: { label?: "Label", placeholder?: "Enter...", rows?: 4, maxLength?: 500, required?: boolean }
-- Select: { label?: "Label", placeholder?: "Select...", options: [{value: "1", label: "Option 1"}] }
-- Checkbox: { label: "Label", checked?: boolean }
-- Switch: { label: "Label", checked?: boolean }
-- RadioGroup: { label?: "Label", name: "radio", options: [{value: "1", label: "Option 1"}], orientation?: "vertical"|"horizontal" }
-- Slider: { label?: "Label", min?: 0, max?: 100, value?: 50, showValue?: boolean }
-- DatePicker: { label?: "Label", placeholder?: "Select date", value?: "2024-01-01" }
-- Label: { text: "Label", htmlFor?: "input_id", required?: boolean }
+DATA DISPLAY:
+- Use Table with columns and data arrays
+- Use Chart with type, data, and categories
+- Use Card for content containers
+- Use Stats/Metric for KPIs and metrics
+- Use List for item collections
 
-=== DATA DISPLAY ===
-- Table: { columns: [{header: "Name", accessorKey: "name"}], data: [{name: "John"}], caption?: "Table caption" }
-- Chart: { type: "bar"|"line"|"pie"|"area", data: [{name: "A", value: 100}], categories?: ["A","B"], index?: "name" }
-- Metric: { label: "Revenue", value: "$45,231", trend?: 12.5, trendDirection?: "up"|"down" }
-- Stats: { items: [{label: "Users", value: "1,234", trend?: 5.2, trendDirection?: "up"}], columns?: 4 }
-- List: { items?: [{text: "Item", description?: "Desc"}], icon?: "check"|"arrow"|"dot", ordered?: boolean }
-- ListItem: { text: "Item text", description?: "Description", avatar?: "url", trailing?: "meta" }
-- Accordion: { items: [{id: "1", title: "Question?", content: "Answer"}], type?: "single"|"multiple" }
-- Progress: { value: 75, max?: 100, label?: "Progress", showValue?: boolean, variant?: "default"|"success"|"warning" }
-- Timeline: { items: [{title: "Event", description?: "Desc", date?: "2024", status?: "completed"|"current"|"upcoming"}] }
-- Carousel: { items: [{image: "url", title?: "Slide", description?: "Desc"}], autoPlay?: boolean, showDots?: boolean, showArrows?: boolean }
-- Image: { src: "url", alt: "description", aspectRatio?: "square"|"video"|"portrait", rounded?: "default"|"lg"|"full", shadow?: "sm"|"md"|"lg" }
-- Video: { src?: "url", youtube?: "video_id_or_url", vimeo?: "video_id", poster?: "url", autoPlay?: boolean, controls?: boolean }
-- Code: { code: "const x = 1;", language?: "javascript", showLineNumbers?: boolean, showCopy?: boolean, filename?: "file.js" }
-- Blockquote: { content: "Quote text", author?: "Author", cite?: "Source", variant?: "default"|"filled"|"card" }
-- Kbd: { keys?: ["Ctrl", "C"], children?: "Ctrl+C" }
+FEEDBACK:
+- Use Alert for messages
+- Use Dialog/Modal for overlays
+- Use Skeleton for loading states
+- Use EmptyState for no-data scenarios
 
-=== FEEDBACK ===
-- Dialog: { open?: boolean, title: "Title", description?: "Description", size?: "sm"|"default"|"lg"|"xl" }
-- Drawer: { open?: boolean, title: "Title", position?: "left"|"right"|"top"|"bottom", size?: "sm"|"default"|"lg" }
-- Toast: { title?: "Title", description: "Message", variant?: "default"|"success"|"error"|"warning"|"info", position?: "top-right"|"bottom-right" }
-- Skeleton: { variant?: "text"|"title"|"avatar"|"thumbnail"|"card"|"button", count?: 3, animated?: true }
-- Spinner: { size?: "sm"|"default"|"lg", label?: "Loading..." }
-- Tooltip: { content: "Tooltip text", position?: "top"|"bottom"|"left"|"right" }
-- Popover: { trigger?: "Click me", content: "Popover content", position?: "top"|"bottom" }
-- Empty: { icon?: "Inbox", title: "No data", description?: "Get started by...", actionLabel?: "Create", action?: "create" }
+MARKETING:
+- Use Hero for page headers with title, subtitle, description
+- Use Features for feature grids
+- Use Pricing for pricing tables
+- Use Testimonials for customer quotes
+- Use CTA for call-to-action sections
+- Use FAQ for frequently asked questions
 
-=== MARKETING / LANDING PAGE ===
-- Hero: { title: "Build Amazing Products", subtitle?: "Product Name", description?: "Description text", align?: "center", size?: "lg", backgroundImage?: "url" }
-- CTA: { title: "Ready to get started?", description?: "Join thousands of users", primaryLabel?: "Get Started", primaryAction?: "signup", secondaryLabel?: "Learn More", variant?: "default"|"filled"|"gradient" }
-- Feature: { icon?: "Zap", title: "Feature Name", description: "Feature description", variant?: "default"|"card"|"filled", align?: "left"|"center" }
-- Features: { items: [{icon: "Zap", title: "Fast", description: "Lightning speed"}], columns?: 3, variant?: "default"|"card" }
-- Pricing: { plans: [{name: "Basic", price: 9, period: "month", features: ["Feature 1"], highlighted?: false, cta?: "Get Started"}], columns?: 3 }
-- PricingCard: { name: "Pro", price: 29, period: "month", features: [{text: "Feature", included: true}], highlighted?: boolean, badge?: "Popular", cta?: "Subscribe" }
-- Testimonial: { quote: "Amazing product!", author: "John Doe", role?: "CEO", company?: "Acme", avatar?: "url", rating?: 5 }
-- Testimonials: { items: [{quote: "Great!", author: "Jane", role: "CTO", avatar: "url", rating: 5}], columns?: 3 }
-- FAQ: { items: [{question: "How does it work?", answer: "It works by..."}], variant?: "default"|"card", allowMultiple?: boolean }
-- Footer: { brand?: "Company", logo?: "url", copyright?: "2024 Company", columns?: [{title: "Product", links: [{label: "Features", href: "/features"}]}] }
+E-COMMERCE:
+- Use ProductCard for product displays
+- Use Cart/CartItem for shopping cart
+- Use CheckoutForm for checkout flows
 
-=== MISC ===
-- Tabs: { items: [{label: "Tab 1", value: "tab1"}], defaultValue?: "tab1" }
-- Dropdown: { triggerLabel?: "Options", items: [{label: "Edit", action: "edit"}, {separator: true}, {label: "Delete", action: "delete", destructive: true}] }
+BUILD COMPLETE UIs:
+- Create full page layouts, not just fragments
+- Include header/navigation when appropriate
+- Add realistic sample data
+- Use varied components - don't repeat the same ones
 
-DESIGN TIPS:
-- Use Hero for landing page headers with title, subtitle, description and CTA buttons as children
-- Use Section to wrap content areas with consistent padding and backgrounds
-- Use Features/Testimonials/FAQ for marketing sections
-- Use Pricing with plans array for pricing tables
-- Use Stats for dashboards with metrics
-- Use Card with Grid for content layouts
-- Combine Navbar, Section, and Footer for complete pages
-- Use Stack with gap for spacing between elements
+Design system: ${registryKey}
 
-Design system: ${currentRegistry || 'shadcn'}
+Return ONLY the JSON object, nothing else.`;
 
-Return ONLY the JSON object, nothing else.`,
+        // Step 5: Generate UI
+        const { text } = await generateText({
+            model: model,
+            system: systemPrompt,
             prompt: prompt,
         });
 

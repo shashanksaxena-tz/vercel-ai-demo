@@ -14,7 +14,7 @@ export const Checkbox = ({ element }: ComponentRenderProps) => {
         >
             <ChakraCheckbox.HiddenInput />
             <ChakraCheckbox.Control />
-            {labelText && <ChakraCheckbox.Label>{labelText}</ChakraCheckbox.Label>}
+            {Boolean(labelText) && <ChakraCheckbox.Label>{labelText}</ChakraCheckbox.Label>}
         </ChakraCheckbox.Root>
     );
 };

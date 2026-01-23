@@ -13,7 +13,7 @@ export const Select = ({ element }: ComponentRenderProps) => {
 
     return (
         <Field.Root style={style as React.CSSProperties}>
-            {labelText && <Field.Label>{labelText}</Field.Label>}
+            {Boolean(labelText) && <Field.Label>{labelText}</Field.Label>}
             <NativeSelect.Root>
                 <NativeSelect.Field name={name as string} placeholder={placeholder as string}>
                     {(options as SelectOption[]).map((option) => (

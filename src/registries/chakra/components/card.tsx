@@ -14,8 +14,8 @@ export const Card = ({ element, children }: ComponentRenderProps) => {
         <ChakraCard.Root style={style as React.CSSProperties}>
             {(titleText || descriptionText) && (
                 <ChakraCard.Header>
-                    {titleText && <Heading size="md">{titleText}</Heading>}
-                    {descriptionText && <Text color="fg.muted">{descriptionText}</Text>}
+                    {Boolean(titleText) && <Heading size="md">{titleText}</Heading>}
+                    {Boolean(descriptionText) && <Text color="fg.muted">{descriptionText}</Text>}
                 </ChakraCard.Header>
             )}
             <ChakraCard.Body>

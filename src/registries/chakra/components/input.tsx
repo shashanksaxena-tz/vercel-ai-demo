@@ -8,7 +8,7 @@ export const Input = ({ element }: ComponentRenderProps) => {
 
     return (
         <Field.Root required={required as boolean} style={style as React.CSSProperties}>
-            {labelText && <Field.Label>{labelText}</Field.Label>}
+            {Boolean(labelText) && <Field.Label>{labelText}</Field.Label>}
             <ChakraInput
                 name={name as string}
                 type={type as string}

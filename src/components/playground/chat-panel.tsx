@@ -36,96 +36,72 @@ export function ChatPanel({ onSubmit, isLoading, summary }: ChatPanelProps) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-transparent">
+        <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="p-6 pb-2">
-                <h2 className="text-sm font-semibold flex items-center gap-2 uppercase tracking-widest text-muted-foreground">
-                    <Sparkles className="h-4 w-4 text-orange-500" />
-                    Generator
+            <div className="p-4 border-b">
+                <h2 className="font-semibold flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    AI UI Generator
                 </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                    Describe the UI you want to create
+                </p>
             </div>
 
-            {/* Scrollable Content */}
-            <ScrollArea className="flex-1 px-6">
-                <div className="space-y-6 py-4">
-                    {/* Summary (if exists) */}
-                    {summary ? (
-                        <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-900 dark:text-orange-100">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-                                <h3 className="text-xs font-semibold uppercase tracking-wider">Current Build</h3>
-                            </div>
-                            <p className="text-sm leading-relaxed opacity-90">{summary}</p>
-                        </div>
-                    ) : (
-                        <div className="p-4 rounded-xl bg-muted/50 border border-border/50 text-center">
-                            <p className="text-sm text-muted-foreground">No active generation.</p>
-                        </div>
-                    )}
-
-                    {/* Quick Prompts */}
+            {/* Quick Prompts */}
+            <ScrollArea className="flex-1 p-4">
+                <div className="space-y-4">
                     <div>
-                        <h3 className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-2">
-                            <span>SUGGESTED PROMPTS</span>
-                            <div className="h-px bg-border flex-1" />
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
+                        <h3 className="text-sm font-medium mb-2">Quick Prompts</h3>
+                        <div className="space-y-2">
                             {QUICK_PROMPTS.map((qp, i) => (
                                 <button
                                     key={i}
                                     onClick={() => handleQuickPrompt(qp)}
                                     disabled={isLoading}
-                                    className="text-left text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-orange-500 hover:text-white hover:border-orange-600 transition-all disabled:opacity-50 shadow-sm"
+                                    className="w-full text-left text-sm p-2 rounded-lg border hover:bg-muted/50 transition-colors disabled:opacity-50"
                                 >
                                     {qp}
                                 </button>
                             ))}
                         </div>
                     </div>
+
+                    {/* Summary */}
+                    {summary && (
+                        <div className="p-3 rounded-lg bg-muted/50">
+                            <h3 className="text-sm font-medium mb-1">Generated</h3>
+                            <p className="text-sm text-muted-foreground">{summary}</p>
+                        </div>
+                    )}
                 </div>
             </ScrollArea>
 
-            {/* Input Area */}
-            <div className="p-6 pt-2 border-t bg-background/50 backdrop-blur-sm">
-                <form onSubmit={handleSubmit} className="relative rounded-2xl border bg-background focus-within:ring-2 focus-within:ring-orange-500/20 focus-within:border-orange-500 transition-all shadow-sm">
+            {/* Input */}
+            <form onSubmit={handleSubmit} className="p-4 border-t">
+                <div className="flex flex-col gap-2">
                     <Textarea
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Describe your UI... e.g. 'A sleek CRM dashboard'"
-                        className="min-h-[100px] resize-none border-0 focus-visible:ring-0 bg-transparent p-4 text-sm"
+                        placeholder="Describe your UI... (e.g., 'Create a dashboard with sales metrics')"
+                        className="min-h-[80px] resize-none"
                         disabled={isLoading}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSubmit(e);
-                            }
-                        }}
                     />
-                    <div className="p-2 flex justify-end">
-                        <Button
-                            type="submit"
-                            size="sm"
-                            disabled={!prompt.trim() || isLoading}
-                            className="bg-orange-600 hover:bg-orange-500 text-white rounded-xl px-4 py-2 h-auto"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
-                                    Generating
-                                </>
-                            ) : (
-                                <>
-                                    Generate
-                                    <Send className="h-3.5 w-3.5 ml-2" />
-                                </>
-                            )}
-                        </Button>
-                    </div>
-                </form>
-                <p className="text-[10px] text-muted-foreground text-center mt-3">
-                    Press <kbd className="font-sans px-1 py-0.5 rounded bg-muted border text-muted-foreground">Enter</kbd> to generate
-                </p>
-            </div>
+                    <Button type="submit" disabled={!prompt.trim() || isLoading}>
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <Send className="h-4 w-4 mr-2" />
+                                Generate UI
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </form>
         </div>
     );
 }

@@ -9,7 +9,7 @@ const testRegistry = {
   div: ({ element, children }: ComponentRenderProps) => <div style={element.props.style as React.CSSProperties} className={element.props.className as string}>{children}</div>
 };
 
-const elements = [
+const elements: Array<{ key: string; type: string; props: Record<string, unknown>; parentKey: string | null }> = [
   // Root
   { key: 'root', type: 'Container', props: { maxWidth: 'lg', style: { padding: '32px' } }, parentKey: null },
 

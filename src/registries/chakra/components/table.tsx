@@ -16,7 +16,7 @@ export const Table = ({ element }: ComponentRenderProps) => {
 
     return (
         <ChakraTable.Root variant="line" style={style as React.CSSProperties}>
-            {captionText && <ChakraTable.Caption>{captionText}</ChakraTable.Caption>}
+            {Boolean(captionText) && <ChakraTable.Caption>{captionText}</ChakraTable.Caption>}
             <ChakraTable.Header>
                 <ChakraTable.Row>
                     {tableColumns.map((column) => (
