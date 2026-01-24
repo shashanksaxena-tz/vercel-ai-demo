@@ -55,29 +55,29 @@
 
 ## Phase 5: Smart AI Backend (Specs: `05_ai_chat.md`)
 
-- [x] **Session 5.1**: Streaming Engine
+- [ ] **Session 5.1**: Streaming Engine
   - [x] Create `api/generate/route.ts`
-  - [x] Implement `streamObject` with Zod
-  - [x] Design system prompt for dynamic UI generation
+  - [ ] Implement `streamObject` with Zod
+  - [ ] Design system prompt for dynamic UI generation
 
 ---
 
 ## Phase 6: Dashboard Builder (Specs: `06_dashboard_builder.md`)
 
-- [x] **Session 6.1**: The Canvas
-  - [x] Build Library Switcher component
-  - [x] Build JSON Tree Viewer
-  - [x] Build Device Preview (Mobile/Desktop)
-- [x] **Session 6.2**: Interactivity
-  - [x] Implement `ActionHandler` (onClick, onSubmit)
-  - [x] Build sample Dashboards (Sales, CRM)
+- [ ] **Session 6.1**: The Canvas
+  - [ ] Build Library Switcher component
+  - [ ] Build JSON Tree Viewer
+  - [ ] Build Device Preview (Mobile/Desktop)
+- [ ] **Session 6.2**: Interactivity
+  - [ ] Implement `ActionHandler` (onClick, onSubmit)
+  - [ ] Build sample Dashboards (Sales, CRM)
 
 ---
 
 ## Phase 7: Polish & Ship (Specs: `07_polish_deploy.md`)
 
-- [x] **Session 7.1**: Verification
-  - [x] E2E Testing flow
-  - [x] Dark Mode toggle validation
-  - [x] Deploy to Vercel
-  - [x] Final Documentation
+- [ ] **Session 7.1**: Verification
+  - [ ] E2E Testing flow
+  - [ ] Dark Mode toggle validation
+  - [ ] Deploy to Vercel
+  - [ ] Final Documentation
