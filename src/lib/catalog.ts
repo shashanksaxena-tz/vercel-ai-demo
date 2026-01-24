@@ -134,6 +134,35 @@ export const components = {
   }),
 };
 
+// Recursive schema for UI Tree
+export type UIElement = {
+  type: string;
+  key: string;
+  props: Record<string, any>;
+  children?: UIElement[];
+};
+
+const uiElementSchema: z.ZodType<UIElement> = z.lazy(() =>
+  z.object({
+    type: z.enum([
+      'Button', 'Text', 'Badge', 'Avatar', 'Icon',
+      'Card', 'Alert', 'Metric',
+      'Input', 'Select', 'Checkbox', 'Switch',
+      'Stack', 'Grid', 'Container',
+      'Table', 'Chart', 'Tabs'
+    ]),
+    key: z.string(),
+    props: z.record(z.string(), z.any()),
+    children: z.array(uiElementSchema).optional(),
+  })
+);
+
+export const outputSchema = z.object({
+  ui: uiElementSchema,
+  summary: z.string(),
+});
+
 export const catalog = {
   getSchema: () => components,
+  getOutputSchema: () => outputSchema,
 };
