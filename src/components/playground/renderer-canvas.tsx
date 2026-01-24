@@ -4,7 +4,7 @@ import React from 'react';
 import { registries, RegistryKey } from '@/registries';
 import { useAction } from './action-provider';
 import { RegistryProvider } from './registry-provider';
-import type { UIElement } from '@/hooks/use-ui-generator';
+import type { UIElement } from '@/lib/catalog';
 
 interface RendererCanvasProps {
     tree: UIElement | null;

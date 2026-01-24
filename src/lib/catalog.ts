@@ -134,6 +134,31 @@ export const components = {
   }),
 };
 
+// Define recursive schema for output
+const baseElementSchema = z.object({
+  type: z.enum([
+    'Button', 'Text', 'Badge', 'Avatar', 'Icon',
+    'Card', 'Alert', 'Metric',
+    'Input', 'Select', 'Checkbox', 'Switch',
+    'Stack', 'Grid', 'Container',
+    'Table', 'Chart', 'Tabs'
+  ]),
+  key: z.string(),
+  props: z.record(z.string(), z.any()),
+});
+
+export type UIElement = z.infer<typeof baseElementSchema> & {
+  children?: UIElement[];
+};
+
+const outputSchema: z.ZodType<UIElement> = baseElementSchema.extend({
+  children: z.lazy(() => z.array(outputSchema).optional()),
+});
+
 export const catalog = {
   getSchema: () => components,
+  getOutputSchema: () => z.object({
+    ui: outputSchema,
+    summary: z.string(),
+  }),
 };
