@@ -23,16 +23,20 @@ export const Stack = ({ element, children }: ComponentRenderProps) => {
     around: 'justify-around',
   };
 
+  const alignKey = align as keyof typeof alignItems | undefined;
+  const justifyKey = justify as keyof typeof justifyContent | undefined;
+  const isWrapped = wrap as boolean | undefined;
+
   return (
     <div
       className={cn(
         'flex',
         direction === 'row' ? 'flex-row' : 'flex-col',
-        align && alignItems[align as keyof typeof alignItems],
-        justify && justifyContent[justify as keyof typeof justifyContent],
-        wrap && 'flex-wrap'
+        alignKey ? alignItems[alignKey] : undefined,
+        justifyKey ? justifyContent[justifyKey] : undefined,
+        isWrapped ? 'flex-wrap' : undefined
       )}
-      style={{ gap: gapValue, ...style as React.CSSProperties }}
+      style={{ gap: gapValue as string | number, ...style as React.CSSProperties }}
     >
       {children}
     </div>
