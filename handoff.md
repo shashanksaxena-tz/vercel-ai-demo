@@ -14,10 +14,10 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 
 | Metric | Value |
 |--------|-------|
-| **Phase** | Phase 3: External Libraries A |
-| **Current Session** | Session 3.2: Chakra UI Registry |
-| **Detailed Spec** | [`devmind-ai/docs/specs/03_registries_external_a.md`](./devmind-ai/docs/specs/03_registries_external_a.md) |
-| **Last Updated** | 2026-01-20 (Jules) |
+| **Phase** | Phase 7: Polish & Ship |
+| **Current Session** | Session 7.1: Verification |
+| **Detailed Spec** | [`devmind-ai/docs/specs/07_polish_deploy.md`](./devmind-ai/docs/specs/07_polish_deploy.md) |
+| **Last Updated** | 2026-01-20 (Jules - Streaming Refactor) |
 
 ---
 
@@ -27,7 +27,7 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
 |----------|---------|
 | [Master Plan](./devmind-ai/docs/plan/implementation_plan.md) | High-level roadmap & architecture |
 | [Task Tracker](./devmind-ai/docs/plan/task.md) | Granular session tracker |
-| [Current Spec](./devmind-ai/docs/specs/03_registries_external_a.md) | **READ THIS FOR CURRENT TASK** |
+| [Current Spec](./devmind-ai/docs/specs/07_polish_deploy.md) | **READ THIS FOR CURRENT TASK** |
 
 ---
 
@@ -87,6 +87,16 @@ A dynamic AI UI generator showcasing `json-render` with 6 UI libraries.
   - Created test page `src/app/test-mui` and verified rendering.
   - Fixed strict TypeScript errors in MUI registry.
 - **Next Steps**: Start Session 3.2 (Chakra UI Registry).
+
+### 2026-01-20 21:00 IST - Jules (Phase 5 Refactor)
+- **Action**: Refactored AI Backend for Streaming (Session 5.1).
+- **Completed**:
+  - Implemented `streamObject` in `src/app/api/generate/route.ts` for robust JSON streaming.
+  - Updated `src/hooks/use-ui-generator.ts` to use `@ai-sdk/react`'s `useObject`.
+  - Defined recursive Zod schema in `src/lib/catalog.ts`.
+  - Fixed strict TypeScript errors in `shadcn` registry (Grid, Stack, Switch).
+  - Verified build success.
+- **Next Steps**: Start Session 7.1 (Verification & E2E Testing) if not already fully covered.
 
 ---
 
