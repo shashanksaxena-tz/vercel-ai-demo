@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
-import type { UIElement } from '@/hooks/use-ui-generator';
+import type { UIElement } from '@/lib/catalog';
 
 interface JsonViewerProps {
     tree: UIElement | null;
