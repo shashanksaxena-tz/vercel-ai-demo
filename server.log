@@ -1,0 +1,18 @@
+
+> ai-ui-playground@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1193ms
+○ Compiling /test-antd ...
+Warning: [antd: Alert] `message` is deprecated. Please use `title` instead.
+ GET /test-antd 200 in 24.8s (compile: 22.7s, render: 2.1s)
+○ Compiling /test-magicui ...
+✓ Finished writing to filesystem cache in 11.2s
+ GET /test-magicui 200 in 12.5s (compile: 11.8s, render: 710ms)
+○ Compiling /test-aceternity ...
+ GET /test-aceternity 200 in 3.9s (compile: 3.7s, render: 177ms)
