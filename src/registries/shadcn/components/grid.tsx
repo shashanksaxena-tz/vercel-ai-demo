@@ -9,7 +9,7 @@ export const Grid = ({ element, children }: ComponentRenderProps) => {
       className="grid"
       style={{
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-        gap: `${gap * 0.25}rem`,
+        gap: `${(gap as number) * 0.25}rem`,
         ...style as React.CSSProperties,
       }}
     >
