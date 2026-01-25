@@ -1,0 +1,25 @@
+
+> ai-ui-playground@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1082ms
+○ Compiling /playground ...
+ GET /playground 200 in 35.3s (compile: 32.5s, render: 2.8s)
+✓ Finished writing to filesystem cache in 10.2s
+ GET /playground 200 in 126ms (compile: 7ms, render: 119ms)
+○ Compiling /api/generate ...
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at POST (src/app/api/generate/route.ts:6:49)
+  4 |
+  5 | export async function POST(req: Request) {
+> 6 |   const { prompt, currentRegistry } = await req.json();
+    |                                                 ^
+  7 |
+  8 |   const result = streamObject({
+  9 |     model: model,
