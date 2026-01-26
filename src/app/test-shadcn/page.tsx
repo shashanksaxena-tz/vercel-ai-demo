@@ -48,7 +48,22 @@ const elements = [
     }, parentKey: 'card3' },
 
   // Alert
-  { key: 'alert1', type: 'Alert', props: { title: 'Success', description: 'All components rendered successfully.', variant: 'default', icon: 'check-circle' }, parentKey: 'root' }
+  { key: 'alert1', type: 'Alert', props: { title: 'Success', description: 'All components rendered successfully.', variant: 'default', icon: 'check-circle' }, parentKey: 'root' },
+
+  // Stack and Switch
+  { key: 'stack-section', type: 'div', props: { className: 'mt-8' }, parentKey: 'root' },
+  { key: 'stack-title', type: 'Text', props: { variant: 'h2', content: 'Stack & Switch' }, parentKey: 'stack-section' },
+  { key: 'stack1', type: 'Stack', props: { direction: 'row', gap: 4, align: 'center', style: { border: '1px solid #ccc', padding: '1rem', borderRadius: '0.5rem' } }, parentKey: 'stack-section' },
+  { key: 'switch1', type: 'Switch', props: { name: 'notifications', label: 'Enable Notifications' }, parentKey: 'stack1' },
+  { key: 'switch2', type: 'Switch', props: { name: 'dark_mode', label: 'Dark Mode', checked: true }, parentKey: 'stack1' },
+
+  // Grid
+  { key: 'grid-section', type: 'div', props: { className: 'mt-8' }, parentKey: 'root' },
+  { key: 'grid-title', type: 'Text', props: { variant: 'h2', content: 'Grid' }, parentKey: 'grid-section' },
+  { key: 'grid1', type: 'Grid', props: { columns: 3, gap: 4 }, parentKey: 'grid-section' },
+  { key: 'g-item-1', type: 'Card', props: { title: 'Grid Item 1' }, parentKey: 'grid1' },
+  { key: 'g-item-2', type: 'Card', props: { title: 'Grid Item 2' }, parentKey: 'grid1' },
+  { key: 'g-item-3', type: 'Card', props: { title: 'Grid Item 3' }, parentKey: 'grid1' }
 ];
 
 const testTree = flatToTree(elements);
