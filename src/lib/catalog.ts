@@ -90,17 +90,17 @@ export const components = {
   Stack: z.object({
     direction: z.enum(['row', 'column']).optional(),
     gap: z.number().optional(),
-    children: z.array(z.any()), // Recursive definition needed properly
+    children: z.array(z.any()).optional(), // Will be handled as sibling children
     style: stylesSchema,
   }),
   Grid: z.object({
     columns: z.number().optional(),
     gap: z.number().optional(),
-    children: z.array(z.any()),
+    children: z.array(z.any()).optional(), // Will be handled as sibling children
     style: stylesSchema,
   }),
   Container: z.object({
-    children: z.any(),
+    children: z.any().optional(), // Will be handled as sibling children
     maxWidth: z.string().optional(),
     style: stylesSchema,
   }),
@@ -127,7 +127,7 @@ export const components = {
     items: z.array(z.object({
       label: z.string(),
       value: z.string(),
-      content: z.any(),
+      content: z.any(), // Recursive content
     })),
     defaultValue: z.string().optional(),
     style: stylesSchema,
@@ -137,3 +137,77 @@ export const components = {
 export const catalog = {
   getSchema: () => components,
 };
+
+// Recursive schema definition for streamObject
+export function getOutputSchema() {
+  const uiElementSchema: z.ZodType<any> = z.lazy(() =>
+    z.discriminatedUnion('type', [
+      // Atoms
+      z.object({ type: z.literal('Button'), key: z.string(), props: components.Button, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Text'), key: z.string(), props: components.Text, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Badge'), key: z.string(), props: components.Badge, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Avatar'), key: z.string(), props: components.Avatar, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Icon'), key: z.string(), props: components.Icon, children: z.array(uiElementSchema).optional() }),
+
+      // Molecules
+      z.object({
+        type: z.literal('Card'),
+        key: z.string(),
+        props: components.Card.extend({
+          content: z.union([uiElementSchema, z.array(uiElementSchema)]).optional(),
+          footer: z.union([uiElementSchema, z.array(uiElementSchema)]).optional(),
+        }),
+        children: z.array(uiElementSchema).optional()
+      }),
+      z.object({ type: z.literal('Alert'), key: z.string(), props: components.Alert, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Metric'), key: z.string(), props: components.Metric, children: z.array(uiElementSchema).optional() }),
+
+      // Forms
+      z.object({ type: z.literal('Input'), key: z.string(), props: components.Input, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Select'), key: z.string(), props: components.Select, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Checkbox'), key: z.string(), props: components.Checkbox, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Switch'), key: z.string(), props: components.Switch, children: z.array(uiElementSchema).optional() }),
+
+      // Layouts
+      z.object({
+        type: z.literal('Stack'),
+        key: z.string(),
+        props: components.Stack.omit({ children: true }),
+        children: z.array(uiElementSchema).optional()
+      }),
+      z.object({
+        type: z.literal('Grid'),
+        key: z.string(),
+        props: components.Grid.omit({ children: true }),
+        children: z.array(uiElementSchema).optional()
+      }),
+      z.object({
+        type: z.literal('Container'),
+        key: z.string(),
+        props: components.Container.omit({ children: true }),
+        children: z.array(uiElementSchema).optional()
+      }),
+
+      // Complex
+      z.object({ type: z.literal('Table'), key: z.string(), props: components.Table, children: z.array(uiElementSchema).optional() }),
+      z.object({ type: z.literal('Chart'), key: z.string(), props: components.Chart, children: z.array(uiElementSchema).optional() }),
+      z.object({
+        type: z.literal('Tabs'),
+        key: z.string(),
+        props: components.Tabs.extend({
+          items: z.array(z.object({
+            label: z.string(),
+            value: z.string(),
+            content: z.union([uiElementSchema, z.array(uiElementSchema)]),
+          }))
+        }),
+        children: z.array(uiElementSchema).optional()
+      }),
+    ])
+  );
+
+  return z.object({
+    ui: uiElementSchema,
+    summary: z.string(),
+  });
+}
