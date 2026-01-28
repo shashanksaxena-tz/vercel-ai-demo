@@ -1,0 +1,25 @@
+
+> ai-ui-playground@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+✓ Ready in 1168ms
+○ Compiling /test-antd ...
+Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+Warning: Can not find FormContext. Please make sure you wrap Field under Form.
+Warning: [antd: Alert] `message` is deprecated. Please use `title` instead.
+ GET /test-antd 200 in 36.9s (compile: 33.9s, render: 3.0s)
+○ Compiling /test-magicui ...
+✓ Finished writing to filesystem cache in 12.1s
+ GET /test-magicui 200 in 10.6s (compile: 10.2s, render: 421ms)
+○ Compiling /test-aceternity ...
+ GET /test-aceternity 200 in 4.7s (compile: 4.6s, render: 151ms)
