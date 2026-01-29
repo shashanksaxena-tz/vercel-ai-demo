@@ -6,7 +6,7 @@ export const Stack = ({ element, children }: ComponentRenderProps) => {
   const { direction = 'column', gap = 4, align, justify, wrap, style } = element.props;
 
   // Convert gap number to rem for consistent spacing
-  const gapValue = typeof gap === 'number' ? `${gap * 0.25}rem` : gap;
+  const gapValue = typeof gap === 'number' ? `${gap * 0.25}rem` : (gap as string | number | undefined);
 
   const alignItems = {
     start: 'items-start',
@@ -28,9 +28,9 @@ export const Stack = ({ element, children }: ComponentRenderProps) => {
       className={cn(
         'flex',
         direction === 'row' ? 'flex-row' : 'flex-col',
-        align && alignItems[align as keyof typeof alignItems],
-        justify && justifyContent[justify as keyof typeof justifyContent],
-        wrap && 'flex-wrap'
+        align ? alignItems[align as keyof typeof alignItems] : undefined,
+        justify ? justifyContent[justify as keyof typeof justifyContent] : undefined,
+        wrap ? 'flex-wrap' : undefined
       )}
       style={{ gap: gapValue, ...style as React.CSSProperties }}
     >
