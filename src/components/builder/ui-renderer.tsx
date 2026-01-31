@@ -1,12 +1,13 @@
 'use client';
 
 /**
- * UI Renderer - Renders json-render trees using the active registry
+ * UI Renderer - Renders json-render trees using the active registry or a custom registry
  */
 
 import * as React from 'react';
 import { Renderer, DataProvider, ActionProvider } from '@json-render/react';
 import type { UITree } from '@json-render/core';
+import type { ComponentRegistry } from '@json-render/react';
 import { useRegistry } from '@/lib/registry';
 
 interface UIRendererProps {
@@ -14,10 +15,15 @@ interface UIRendererProps {
   data?: Record<string, unknown>;
   onAction?: (action: string, params?: Record<string, unknown>) => void;
   className?: string;
+  /** Optional custom registry to use instead of the active framework registry */
+  customRegistry?: ComponentRegistry;
 }
 
-export function UIRenderer({ tree, data = {}, onAction, className }: UIRendererProps) {
+export function UIRenderer({ tree, data = {}, onAction, className, customRegistry }: UIRendererProps) {
   const { activeRegistry } = useRegistry();
+
+  // Use custom registry if provided, otherwise use active framework registry
+  const registry = customRegistry || activeRegistry?.components;
 
   if (!tree) {
     return (
@@ -27,10 +33,10 @@ export function UIRenderer({ tree, data = {}, onAction, className }: UIRendererP
     );
   }
 
-  if (!activeRegistry) {
+  if (!registry) {
     return (
       <div className={`flex items-center justify-center h-64 text-muted-foreground ${className}`}>
-        <p>No registry selected. Please select a UI framework.</p>
+        <p>No registry available. Please select a UI framework or provide a custom registry.</p>
       </div>
     );
   }
@@ -52,7 +58,7 @@ export function UIRenderer({ tree, data = {}, onAction, className }: UIRendererP
         <div className={className}>
           <Renderer
             tree={tree}
-            registry={activeRegistry.components}
+            registry={registry}
           />
         </div>
       </ActionProvider>
