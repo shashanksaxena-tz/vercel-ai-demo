@@ -22,7 +22,17 @@ let initialized = false;
 async function ensureInitialized() {
   if (initialized) return;
 
-  const servers: MCPServerType[] = ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite'];
+  const servers: MCPServerType[] = [
+    'ui-layouts',
+    'shadcn-ui',
+    'tailwindcss',
+    'flowbite',
+    'chakra-ui',
+    'magic-ui',
+    'aceternity-ui',
+    'mui',
+    'context7',
+  ];
 
   await Promise.allSettled(
     servers
@@ -49,8 +59,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Search across specified sources or all
-    const serverSources = (sources || ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite']) as MCPServerType[];
+    // Search across specified sources or all enabled servers
+    const serverSources = (sources || [
+      'ui-layouts',
+      'shadcn-ui',
+      'tailwindcss',
+      'flowbite',
+      'chakra-ui',
+      'magic-ui',
+      'aceternity-ui',
+      'mui',
+    ]) as MCPServerType[];
 
     const components = await mcpClient.searchComponents(query, serverSources);
 

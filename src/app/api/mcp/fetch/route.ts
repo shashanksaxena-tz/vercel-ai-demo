@@ -24,7 +24,17 @@ let initialized = false;
 async function ensureInitialized() {
   if (initialized) return;
 
-  const servers: MCPServerType[] = ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite'];
+  const servers: MCPServerType[] = [
+    'ui-layouts',
+    'shadcn-ui',
+    'tailwindcss',
+    'flowbite',
+    'chakra-ui',
+    'magic-ui',
+    'aceternity-ui',
+    'mui',
+    'context7',
+  ];
 
   await Promise.allSettled(
     servers

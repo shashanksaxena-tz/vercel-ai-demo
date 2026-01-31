@@ -6,6 +6,11 @@
  * - shadcn-ui (@jpisnice/shadcn-ui-mcp-server)
  * - tailwindcss (tailwindcss-mcp-server)
  * - flowbite (flowbite-mcp)
+ * - chakra-ui (@chakra-ui/react-mcp)
+ * - magic-ui (@magicuidesign/mcp)
+ * - aceternity-ui (aceternityui-mcp)
+ * - mui (@mui/mcp)
+ * - context7 (@upstash/context7-mcp) - Documentation fetcher
  * - figma (Figma MCP server)
  */
 
@@ -13,7 +18,17 @@
 // Core MCP Types
 // ============================================================================
 
-export type MCPServerType = 'ui-layouts' | 'shadcn-ui' | 'tailwindcss' | 'flowbite' | 'figma';
+export type MCPServerType =
+  | 'ui-layouts'
+  | 'shadcn-ui'
+  | 'tailwindcss'
+  | 'flowbite'
+  | 'chakra-ui'
+  | 'magic-ui'
+  | 'aceternity-ui'
+  | 'mui'
+  | 'context7'
+  | 'figma';
 
 export interface MCPServerConfig {
   type: MCPServerType;
@@ -24,6 +39,7 @@ export interface MCPServerConfig {
   args: string[];
   env?: Record<string, string>;
   enabled: boolean;
+  tools?: string[]; // List of available tools
 }
 
 export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
@@ -35,15 +51,17 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     command: 'npx',
     args: ['-y', '@ui-layouts/mcp'],
     enabled: true,
+    tools: ['search_components', 'get_docs', 'get_component_meta', 'get_source_code'],
   },
   'shadcn-ui': {
     type: 'shadcn-ui',
     name: 'shadcn-ui',
     displayName: 'Shadcn/UI',
-    description: 'Search, install, and fetch Shadcn/UI components',
+    description: 'Search, install, and fetch Shadcn/UI components with demos',
     command: 'npx',
     args: ['-y', '@jpisnice/shadcn-ui-mcp-server'],
     enabled: true,
+    tools: ['list_components', 'get_component', 'get_component_source', 'get_blocks'],
   },
   'tailwindcss': {
     type: 'tailwindcss',
@@ -53,15 +71,67 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     command: 'npx',
     args: ['-y', 'tailwindcss-mcp-server'],
     enabled: true,
+    tools: ['get_tailwind_utilities', 'get_tailwind_colors', 'generate_component_template', 'search_tailwind_docs'],
   },
   'flowbite': {
     type: 'flowbite',
     name: 'flowbite',
     displayName: 'Flowbite',
-    description: 'Flowbite + Tailwind CSS components and themes',
+    description: 'Flowbite + Tailwind CSS components and themes (60+ components)',
     command: 'npx',
     args: ['-y', 'flowbite-mcp'],
     enabled: true,
+    tools: ['list_resources', 'get_resource', 'generate_theme'],
+  },
+  'chakra-ui': {
+    type: 'chakra-ui',
+    name: 'chakra-ui',
+    displayName: 'Chakra UI',
+    description: 'Chakra UI components with theming and design tokens',
+    command: 'npx',
+    args: ['-y', '@chakra-ui/react-mcp@latest'],
+    enabled: true,
+    tools: ['list_components', 'get_component_example', 'get_component_props', 'get_theme', 'customize_theme'],
+  },
+  'magic-ui': {
+    type: 'magic-ui',
+    name: 'magic-ui',
+    displayName: 'Magic UI',
+    description: 'Beautiful animated components for React (motion, text effects, widgets)',
+    command: 'npx',
+    args: ['-y', '@magicuidesign/mcp@latest'],
+    enabled: true,
+    tools: ['getUIComponents', 'getLayout', 'getMedia', 'getMotion', 'getTextReveal', 'getTextEffects', 'getButtons', 'getEffects', 'getWidgets', 'getDevices'],
+  },
+  'aceternity-ui': {
+    type: 'aceternity-ui',
+    name: 'aceternity-ui',
+    displayName: 'Aceternity UI',
+    description: 'Modern animated UI components with Framer Motion',
+    command: 'npx',
+    args: ['-y', 'aceternityui-mcp'],
+    enabled: true,
+    tools: ['search_components', 'get_component_info', 'get_installation_info', 'list_categories', 'get_all_components'],
+  },
+  'mui': {
+    type: 'mui',
+    name: 'mui',
+    displayName: 'Material UI',
+    description: 'Material UI React components (50+ components)',
+    command: 'npx',
+    args: ['-y', '@mui/mcp@latest'],
+    enabled: true,
+    tools: ['list_components', 'search_components', 'get_component_info', 'get_customization_guide', 'get_setup_guide'],
+  },
+  'context7': {
+    type: 'context7',
+    name: 'context7',
+    displayName: 'Context7',
+    description: 'Fetch up-to-date documentation for any library',
+    command: 'npx',
+    args: ['-y', '@upstash/context7-mcp'],
+    enabled: true,
+    tools: ['resolve-library-id', 'query-docs'],
   },
   'figma': {
     type: 'figma',
@@ -71,6 +141,7 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     command: 'http', // Uses HTTP transport, not stdio
     args: ['http://127.0.0.1:3845/mcp'],
     enabled: false, // Requires Figma Desktop
+    tools: ['get_design_context', 'get_variable_defs', 'get_code_connect_map', 'get_metadata'],
   },
 };
 

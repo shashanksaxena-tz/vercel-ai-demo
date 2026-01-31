@@ -207,6 +207,68 @@ const componentPatterns: ComponentPattern[] = [
     category: 'media',
     priority: 'nice-to-have',
   },
+
+  // Animated Components (Magic UI / Aceternity UI)
+  {
+    keywords: ['animated', 'animation', 'motion', 'framer'],
+    componentTypes: ['BlurFade', 'OrbitingCircles', 'AnimatedBeam', 'MorphingText'],
+    category: 'media',
+    priority: 'optional',
+  },
+  {
+    keywords: ['text animation', 'typing', 'reveal', 'text effect'],
+    componentTypes: ['TextAnimate', 'TypingAnimation', 'FlipText', 'WordPullUp'],
+    category: 'typography',
+    priority: 'optional',
+  },
+  {
+    keywords: ['shimmer', 'glow', 'shine', 'gradient'],
+    componentTypes: ['ShimmerButton', 'ShineBorder', 'GradientText', 'GlowingCard'],
+    category: 'feedback',
+    priority: 'nice-to-have',
+  },
+  {
+    keywords: ['bento', 'masonry', 'dock', 'floating'],
+    componentTypes: ['BentoGrid', 'Dock', 'FloatingCard', 'GridPattern'],
+    category: 'layout',
+    priority: 'optional',
+  },
+  {
+    keywords: ['terminal', 'code', 'cli', 'console'],
+    componentTypes: ['Terminal', 'CodeBlock', 'AnimatedCode'],
+    category: 'media',
+    priority: 'optional',
+  },
+  {
+    keywords: ['globe', '3d', 'three', 'sphere'],
+    componentTypes: ['Globe', 'AnimatedSphere', 'ThreeScene'],
+    category: 'media',
+    priority: 'nice-to-have',
+  },
+  {
+    keywords: ['confetti', 'celebration', 'particles', 'sparkles'],
+    componentTypes: ['Confetti', 'Particles', 'Sparkles'],
+    category: 'feedback',
+    priority: 'nice-to-have',
+  },
+  {
+    keywords: ['device', 'mockup', 'iphone', 'safari', 'browser'],
+    componentTypes: ['IPhone15Pro', 'Safari', 'BrowserMockup'],
+    category: 'media',
+    priority: 'optional',
+  },
+  {
+    keywords: ['marquee', 'scroll', 'infinite', 'ticker'],
+    componentTypes: ['Marquee', 'InfiniteScroll', 'Ticker'],
+    category: 'media',
+    priority: 'optional',
+  },
+  {
+    keywords: ['spotlight', 'focus', 'highlight', 'beam'],
+    componentTypes: ['Spotlight', 'AnimatedBeam', 'FocusCard'],
+    category: 'feedback',
+    priority: 'nice-to-have',
+  },
 ];
 
 // ============================================================================
@@ -360,6 +422,7 @@ export function getRecommendedSources(analysis: UIAnalysis): MCPServerType[] {
   );
   if (hasFormRequirements) {
     sources.add('shadcn-ui');
+    sources.add('chakra-ui'); // Also great for forms
   }
 
   // Include tailwind for utility-based styling
@@ -368,6 +431,28 @@ export function getRecommendedSources(analysis: UIAnalysis): MCPServerType[] {
   // Include flowbite for pre-built components
   if (analysis.requirements.some((r) => r.type === 'marketing' || r.type === 'e-commerce')) {
     sources.add('flowbite');
+  }
+
+  // Include Magic UI for animated components
+  const hasAnimatedRequirements = analysis.requirements.some(
+    (r) => r.type === 'media' || r.type === 'marketing'
+  );
+  if (hasAnimatedRequirements) {
+    sources.add('magic-ui');
+    sources.add('aceternity-ui');
+  }
+
+  // Include MUI for data-heavy components
+  const hasDataRequirements = analysis.requirements.some(
+    (r) => r.type === 'data-display' || r.type === 'dashboard' || r.type === 'charts'
+  );
+  if (hasDataRequirements) {
+    sources.add('mui');
+  }
+
+  // Include Chakra UI for accessibility-focused components
+  if (analysis.complexity === 'complex') {
+    sources.add('chakra-ui');
   }
 
   return Array.from(sources);

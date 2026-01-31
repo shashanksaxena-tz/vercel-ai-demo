@@ -352,13 +352,259 @@ export async function searchFlowbite(query: string): Promise<ComponentMetadata[]
 }
 
 /**
+ * Search for components on Chakra UI MCP
+ */
+export async function searchChakraUI(query: string): Promise<ComponentMetadata[]> {
+  const result = await callTool({
+    server: 'chakra-ui',
+    name: 'list_components',
+    arguments: {},
+  });
+
+  if (!result.success || !result.content) {
+    return [];
+  }
+
+  const components = result.content as Array<{
+    name: string;
+    description?: string;
+    category?: string;
+  }>;
+
+  const queryLower = query.toLowerCase();
+  return components
+    .filter((c) =>
+      c.name.toLowerCase().includes(queryLower) ||
+      c.description?.toLowerCase().includes(queryLower)
+    )
+    .map((c) => ({
+      id: `chakra:${c.name}`,
+      name: c.name,
+      displayName: c.name,
+      description: c.description || '',
+      category: mapGroupToCategory(c.category),
+      tags: ['chakra-ui', 'react'],
+      source: 'chakra-ui' as MCPServerType,
+      framework: 'react' as const,
+    }));
+}
+
+/**
+ * Search for components on Magic UI MCP
+ */
+export async function searchMagicUI(query: string): Promise<ComponentMetadata[]> {
+  const result = await callTool({
+    server: 'magic-ui',
+    name: 'getUIComponents',
+    arguments: {},
+  });
+
+  if (!result.success || !result.content) {
+    return [];
+  }
+
+  const components = result.content as Array<{
+    name: string;
+    description?: string;
+    category?: string;
+  }>;
+
+  const queryLower = query.toLowerCase();
+  return components
+    .filter((c) =>
+      c.name.toLowerCase().includes(queryLower) ||
+      c.description?.toLowerCase().includes(queryLower)
+    )
+    .map((c) => ({
+      id: `magic-ui:${c.name}`,
+      name: c.name,
+      displayName: c.name,
+      description: c.description || '',
+      category: mapGroupToCategory(c.category),
+      tags: ['magic-ui', 'animated', 'framer-motion'],
+      source: 'magic-ui' as MCPServerType,
+      framework: 'react' as const,
+    }));
+}
+
+/**
+ * Search for components on Aceternity UI MCP
+ */
+export async function searchAceternityUI(query: string): Promise<ComponentMetadata[]> {
+  const result = await callTool({
+    server: 'aceternity-ui',
+    name: 'search_components',
+    arguments: { query },
+  });
+
+  if (!result.success || !result.content) {
+    // Fallback: try get_all_components
+    const allResult = await callTool({
+      server: 'aceternity-ui',
+      name: 'get_all_components',
+      arguments: {},
+    });
+
+    if (!allResult.success || !allResult.content) {
+      return [];
+    }
+
+    const components = allResult.content as Array<{
+      name: string;
+      description?: string;
+      category?: string;
+    }>;
+
+    const queryLower = query.toLowerCase();
+    return components
+      .filter((c) =>
+        c.name.toLowerCase().includes(queryLower) ||
+        c.description?.toLowerCase().includes(queryLower)
+      )
+      .map((c) => ({
+        id: `aceternity:${c.name}`,
+        name: c.name,
+        displayName: c.name,
+        description: c.description || '',
+        category: mapGroupToCategory(c.category),
+        tags: ['aceternity-ui', 'animated', 'framer-motion'],
+        source: 'aceternity-ui' as MCPServerType,
+        framework: 'react' as const,
+      }));
+  }
+
+  const components = result.content as Array<{
+    name: string;
+    description?: string;
+    category?: string;
+  }>;
+
+  return components.map((c) => ({
+    id: `aceternity:${c.name}`,
+    name: c.name,
+    displayName: c.name,
+    description: c.description || '',
+    category: mapGroupToCategory(c.category),
+    tags: ['aceternity-ui', 'animated', 'framer-motion'],
+    source: 'aceternity-ui' as MCPServerType,
+    framework: 'react' as const,
+  }));
+}
+
+/**
+ * Search for components on Material UI MCP
+ */
+export async function searchMUI(query: string): Promise<ComponentMetadata[]> {
+  const result = await callTool({
+    server: 'mui',
+    name: 'search_components',
+    arguments: { query },
+  });
+
+  if (!result.success || !result.content) {
+    // Fallback: list all components
+    const listResult = await callTool({
+      server: 'mui',
+      name: 'list_components',
+      arguments: {},
+    });
+
+    if (!listResult.success || !listResult.content) {
+      return [];
+    }
+
+    const components = listResult.content as Array<{
+      name: string;
+      description?: string;
+      category?: string;
+    }>;
+
+    const queryLower = query.toLowerCase();
+    return components
+      .filter((c) =>
+        c.name.toLowerCase().includes(queryLower) ||
+        c.description?.toLowerCase().includes(queryLower)
+      )
+      .map((c) => ({
+        id: `mui:${c.name}`,
+        name: c.name,
+        displayName: c.name,
+        description: c.description || '',
+        category: mapGroupToCategory(c.category),
+        tags: ['material-ui', 'react', 'mui'],
+        source: 'mui' as MCPServerType,
+        framework: 'react' as const,
+      }));
+  }
+
+  const components = result.content as Array<{
+    name: string;
+    description?: string;
+    category?: string;
+  }>;
+
+  return components.map((c) => ({
+    id: `mui:${c.name}`,
+    name: c.name,
+    displayName: c.name,
+    description: c.description || '',
+    category: mapGroupToCategory(c.category),
+    tags: ['material-ui', 'react', 'mui'],
+    source: 'mui' as MCPServerType,
+    framework: 'react' as const,
+  }));
+}
+
+/**
+ * Fetch documentation from Context7
+ */
+export async function fetchContext7Docs(library: string, query: string): Promise<string | null> {
+  // First resolve the library ID
+  const resolveResult = await callTool({
+    server: 'context7',
+    name: 'resolve-library-id',
+    arguments: { library },
+  });
+
+  if (!resolveResult.success || !resolveResult.content) {
+    return null;
+  }
+
+  const libraryId = resolveResult.content as string;
+
+  // Then query the docs
+  const docsResult = await callTool({
+    server: 'context7',
+    name: 'query-docs',
+    arguments: { libraryId, query },
+  });
+
+  if (!docsResult.success || !docsResult.content) {
+    return null;
+  }
+
+  return docsResult.content as string;
+}
+
+/**
  * Search across all connected MCP servers
  */
 export async function searchAllServers(
   query: string,
   sources?: MCPServerType[]
 ): Promise<ComponentMetadata[]> {
-  const serverTypes = sources || ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite'] as MCPServerType[];
+  // Default to all enabled servers
+  const defaultServers: MCPServerType[] = [
+    'ui-layouts',
+    'shadcn-ui',
+    'tailwindcss',
+    'flowbite',
+    'chakra-ui',
+    'magic-ui',
+    'aceternity-ui',
+    'mui',
+  ];
+  const serverTypes = sources || defaultServers;
   const results: ComponentMetadata[] = [];
 
   // Run searches in parallel
@@ -373,6 +619,14 @@ export async function searchAllServers(
           return await searchTailwind(query);
         case 'flowbite':
           return await searchFlowbite(query);
+        case 'chakra-ui':
+          return await searchChakraUI(query);
+        case 'magic-ui':
+          return await searchMagicUI(query);
+        case 'aceternity-ui':
+          return await searchAceternityUI(query);
+        case 'mui':
+          return await searchMUI(query);
         default:
           return [];
       }
@@ -524,6 +778,149 @@ export async function fetchFlowbiteSource(componentName: string): Promise<Compon
 }
 
 /**
+ * Fetch component example from Chakra UI
+ */
+export async function fetchChakraUISource(componentName: string): Promise<ComponentSource | null> {
+  const result = await callTool({
+    server: 'chakra-ui',
+    name: 'get_component_example',
+    arguments: { component: componentName },
+  });
+
+  if (!result.success || !result.content) {
+    return null;
+  }
+
+  const example = result.content as { code?: string; example?: string };
+  const code = example.code || example.example;
+
+  if (!code) {
+    return null;
+  }
+
+  return {
+    componentId: `chakra:${componentName}`,
+    source: 'chakra-ui',
+    code: code as string,
+    language: 'typescript',
+    dependencies: [],
+  };
+}
+
+/**
+ * Fetch component from Magic UI
+ */
+export async function fetchMagicUISource(componentName: string): Promise<ComponentSource | null> {
+  // Magic UI has category-based tools, try to get component info
+  const result = await callTool({
+    server: 'magic-ui',
+    name: 'getUIComponents',
+    arguments: {},
+  });
+
+  if (!result.success || !result.content) {
+    return null;
+  }
+
+  const components = result.content as Array<{
+    name: string;
+    code?: string;
+    implementation?: string;
+  }>;
+
+  const component = components.find(
+    (c) => c.name.toLowerCase() === componentName.toLowerCase()
+  );
+
+  if (!component || (!component.code && !component.implementation)) {
+    return null;
+  }
+
+  return {
+    componentId: `magic-ui:${componentName}`,
+    source: 'magic-ui',
+    code: (component.code || component.implementation) as string,
+    language: 'typescript',
+    dependencies: [],
+  };
+}
+
+/**
+ * Fetch component from Aceternity UI
+ */
+export async function fetchAceternityUISource(componentName: string): Promise<ComponentSource | null> {
+  const result = await callTool({
+    server: 'aceternity-ui',
+    name: 'get_component_info',
+    arguments: { component: componentName },
+  });
+
+  if (!result.success || !result.content) {
+    return null;
+  }
+
+  const component = result.content as {
+    name: string;
+    code?: string;
+    installation?: string;
+  };
+
+  const code = component.code || component.installation;
+
+  if (!code) {
+    return null;
+  }
+
+  return {
+    componentId: `aceternity:${componentName}`,
+    source: 'aceternity-ui',
+    code: code as string,
+    language: 'typescript',
+    dependencies: [],
+  };
+}
+
+/**
+ * Fetch component from Material UI
+ */
+export async function fetchMUISource(componentName: string): Promise<ComponentSource | null> {
+  const result = await callTool({
+    server: 'mui',
+    name: 'get_component_info',
+    arguments: { component: componentName },
+  });
+
+  if (!result.success || !result.content) {
+    return null;
+  }
+
+  const component = result.content as {
+    name: string;
+    import?: string;
+    example?: string;
+    documentation?: string;
+  };
+
+  // Combine import and example for complete code
+  const code = [
+    component.import,
+    component.example,
+  ].filter(Boolean).join('\n\n');
+
+  if (!code) {
+    return null;
+  }
+
+  return {
+    componentId: `mui:${componentName}`,
+    source: 'mui',
+    code,
+    language: 'typescript',
+    dependencies: [{ name: '@mui/material', type: 'npm' as const }],
+  };
+}
+
+/**
  * Fetch component source from any MCP server
  */
 export async function fetchComponentSource(
@@ -542,6 +939,14 @@ export async function fetchComponentSource(
       return fetchTailwindTemplate(componentName);
     case 'flowbite':
       return fetchFlowbiteSource(componentName);
+    case 'chakra-ui':
+      return fetchChakraUISource(componentName);
+    case 'magic-ui':
+      return fetchMagicUISource(componentName);
+    case 'aceternity-ui':
+      return fetchAceternityUISource(componentName);
+    case 'mui':
+      return fetchMUISource(componentName);
     default:
       return null;
   }
@@ -594,7 +999,18 @@ function mapGroupToCategory(group?: string): ComponentCategory {
 // ============================================================================
 
 export function getConnectionStatus(): Record<MCPServerType, MCPConnection> {
-  const servers: MCPServerType[] = ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite', 'figma'];
+  const servers: MCPServerType[] = [
+    'ui-layouts',
+    'shadcn-ui',
+    'tailwindcss',
+    'flowbite',
+    'chakra-ui',
+    'magic-ui',
+    'aceternity-ui',
+    'mui',
+    'context7',
+    'figma',
+  ];
   const status: Partial<Record<MCPServerType, MCPConnection>> = {};
 
   for (const server of servers) {
@@ -621,7 +1037,18 @@ export class MCPClient {
     if (this.initialized) return;
 
     const { MCP_SERVERS } = await import('./types');
-    const serversToConnect = servers || ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite'] as MCPServerType[];
+    // Default to all enabled component servers
+    const serversToConnect = servers || [
+      'ui-layouts',
+      'shadcn-ui',
+      'tailwindcss',
+      'flowbite',
+      'chakra-ui',
+      'magic-ui',
+      'aceternity-ui',
+      'mui',
+      'context7',
+    ] as MCPServerType[];
 
     await Promise.all(
       serversToConnect
@@ -640,6 +1067,10 @@ export class MCPClient {
     return fetchComponentSource(componentId, source);
   }
 
+  async getDocumentation(library: string, query: string): Promise<string | null> {
+    return fetchContext7Docs(library, query);
+  }
+
   async callTool(call: MCPToolCall): Promise<MCPToolResult> {
     return callTool(call);
   }
@@ -649,7 +1080,18 @@ export class MCPClient {
   }
 
   async shutdown(): Promise<void> {
-    const servers: MCPServerType[] = ['ui-layouts', 'shadcn-ui', 'tailwindcss', 'flowbite', 'figma'];
+    const servers: MCPServerType[] = [
+      'ui-layouts',
+      'shadcn-ui',
+      'tailwindcss',
+      'flowbite',
+      'chakra-ui',
+      'magic-ui',
+      'aceternity-ui',
+      'mui',
+      'context7',
+      'figma',
+    ];
     await Promise.all(servers.map(disconnectFromServer));
     this.initialized = false;
   }
