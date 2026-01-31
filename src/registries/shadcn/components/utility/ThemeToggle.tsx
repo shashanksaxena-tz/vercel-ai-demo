@@ -27,7 +27,7 @@ export const ThemeToggle = ({ element, onAction }: ComponentRenderProps) => {
 
   return (
     <button
-      onClick={() => onAction?.({ name: 'toggle', payload: { theme: isDark ? 'light' : 'dark' } })}
+      onClick={() => onAction?.({ name: 'toggle', payload: { theme: isDark ? 'light' : 'dark' } } as never)}
       className={cn(
         'rounded-full border hover:bg-muted flex items-center justify-center transition-colors',
         sizes[size as keyof typeof sizes] || sizes.md

@@ -48,7 +48,7 @@ export const NotificationSettings = ({ element, children, onAction }: ComponentR
                     <input
                       type="checkbox"
                       checked={notif.email}
-                      onChange={() => onAction?.({ name: 'toggleNotification', payload: { id: notif.id, channel: 'email' } })}
+                      onChange={() => onAction?.({ name: 'toggleNotification', payload: { id: notif.id, channel: 'email' } } as never)}
                       className="w-4 h-4"
                     />
                   </td>
@@ -56,7 +56,7 @@ export const NotificationSettings = ({ element, children, onAction }: ComponentR
                     <input
                       type="checkbox"
                       checked={notif.push}
-                      onChange={() => onAction?.({ name: 'toggleNotification', payload: { id: notif.id, channel: 'push' } })}
+                      onChange={() => onAction?.({ name: 'toggleNotification', payload: { id: notif.id, channel: 'push' } } as never)}
                       className="w-4 h-4"
                     />
                   </td>
@@ -64,7 +64,7 @@ export const NotificationSettings = ({ element, children, onAction }: ComponentR
                     <input
                       type="checkbox"
                       checked={notif.sms}
-                      onChange={() => onAction?.({ name: 'toggleNotification', payload: { id: notif.id, channel: 'sms' } })}
+                      onChange={() => onAction?.({ name: 'toggleNotification', payload: { id: notif.id, channel: 'sms' } } as never)}
                       className="w-4 h-4"
                     />
                   </td>

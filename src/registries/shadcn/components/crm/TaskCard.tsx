@@ -29,7 +29,7 @@ export const TaskCard = ({ element, onAction }: ComponentRenderProps) => {
         'p-3 border rounded-lg bg-card border-l-4 hover:shadow-md transition-all cursor-pointer',
         priorityColors[priority as keyof typeof priorityColors] || 'border-l-transparent'
       )}
-      onClick={() => onAction?.({ name: 'viewTask', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewTask', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex items-start gap-2">

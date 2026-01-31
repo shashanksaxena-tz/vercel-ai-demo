@@ -29,7 +29,7 @@ export const PermissionToggle = ({ element, onAction }: ComponentRenderProps) =>
         )}
       </div>
       <button
-        onClick={() => !disabled && onAction?.({ name: 'togglePermission', payload: { id, enabled: !enabled } })}
+        onClick={() => !disabled && onAction?.({ name: 'togglePermission', payload: { id, enabled: !enabled } } as never)}
         disabled={disabled as boolean}
         className={cn(
           'relative w-11 h-6 rounded-full transition-colors',

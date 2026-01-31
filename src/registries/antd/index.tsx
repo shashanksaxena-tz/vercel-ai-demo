@@ -62,6 +62,12 @@ import { Collapse } from './components/data-display/collapse';
 import { Row } from './components/layout/row';
 import { Col } from './components/layout/col';
 import { Flex } from './components/layout/flex';
+import { Panel } from './components/layout/panel';
+import { Section } from './components/layout/section';
+import { Screen } from './components/layout/screen';
+// Additional Forms components
+import { Form } from './components/forms/form';
+import { FormField } from './components/forms/formfield';
 
 export const antdRegistry: ComponentRegistry = {
     // Core components
@@ -127,4 +133,10 @@ export const antdRegistry: ComponentRegistry = {
     Row,
     Col,
     Flex,
+    Panel,
+    Section,
+    Screen,
+    // Additional Forms components
+    Form,
+    FormField,
 };

@@ -29,7 +29,7 @@ export const NoteCard = ({ element, onAction }: ComponentRenderProps) => {
         'p-3 rounded-lg border cursor-pointer hover:shadow-md transition-all',
         colors[color as keyof typeof colors] || colors.default
       )}
-      onClick={() => onAction?.({ name: 'viewNote', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewNote', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       {isPinned && (

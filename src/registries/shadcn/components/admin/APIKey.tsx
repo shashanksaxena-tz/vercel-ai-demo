@@ -42,13 +42,13 @@ export const APIKey = ({ element, onAction }: ComponentRenderProps) => {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => onAction?.({ name: 'regenerate', payload: { name } })}
+            onClick={() => onAction?.({ name: 'regenerate', payload: { name } } as never)}
             className="px-2 py-1 text-xs border rounded hover:bg-muted"
           >
             Regenerate
           </button>
           <button
-            onClick={() => onAction?.({ name: 'revoke', payload: { name } })}
+            onClick={() => onAction?.({ name: 'revoke', payload: { name } } as never)}
             className="px-2 py-1 text-xs border border-destructive text-destructive rounded hover:bg-destructive hover:text-destructive-foreground"
           >
             Revoke

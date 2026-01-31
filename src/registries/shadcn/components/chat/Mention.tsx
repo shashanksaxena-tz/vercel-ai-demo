@@ -22,7 +22,7 @@ export const Mention = ({ element, onAction }: ComponentRenderProps) => {
 
   return (
     <button
-      onClick={() => onAction?.({ name: 'viewProfile', payload: { userId, username } })}
+      onClick={() => onAction?.({ name: 'viewProfile', payload: { userId, username } } as never)}
       className={cn(
         'inline-flex items-center gap-1 px-1 py-0.5 rounded text-sm font-medium cursor-pointer transition-colors',
         variants[variant as keyof typeof variants] || variants.default
@@ -32,7 +32,7 @@ export const Mention = ({ element, onAction }: ComponentRenderProps) => {
       {avatar && (
         <img src={avatar as string} alt="" className="w-4 h-4 rounded-full" />
       )}
-      <span>@{displayName || username}</span>
+      <span>@{(displayName || username) as string}</span>
     </button>
   );
 };

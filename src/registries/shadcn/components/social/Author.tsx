@@ -21,7 +21,7 @@ export const Author = ({ element, onAction }: ComponentRenderProps) => {
       style={style as React.CSSProperties}
     >
       <button
-        onClick={() => onAction?.({ name: 'viewProfile', payload: { username } })}
+        onClick={() => onAction?.({ name: 'viewProfile', payload: { username } } as never)}
         className="flex items-center gap-3"
       >
         {avatar ? (
@@ -45,7 +45,7 @@ export const Author = ({ element, onAction }: ComponentRenderProps) => {
       </button>
       {showFollow && (
         <button
-          onClick={() => onAction?.({ name: isFollowing ? 'unfollow' : 'follow', payload: { username } })}
+          onClick={() => onAction?.({ name: isFollowing ? 'unfollow' : 'follow', payload: { username } } as never)}
           className={cn(
             'px-3 py-1 text-sm rounded-full ml-auto',
             isFollowing

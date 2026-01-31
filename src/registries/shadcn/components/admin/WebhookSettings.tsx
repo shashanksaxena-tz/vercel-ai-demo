@@ -57,13 +57,13 @@ export const WebhookSettings = ({ element, children, onAction }: ComponentRender
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => onAction?.({ name: 'testWebhook', payload: { id: webhook.id } })}
+                    onClick={() => onAction?.({ name: 'testWebhook', payload: { id: webhook.id } } as never)}
                     className="px-2 py-1 text-xs border rounded hover:bg-muted"
                   >
                     Test
                   </button>
                   <button
-                    onClick={() => onAction?.({ name: 'editWebhook', payload: { id: webhook.id } })}
+                    onClick={() => onAction?.({ name: 'editWebhook', payload: { id: webhook.id } } as never)}
                     className="p-1 hover:bg-muted rounded"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@ export const WebhookSettings = ({ element, children, onAction }: ComponentRender
                     </svg>
                   </button>
                   <button
-                    onClick={() => onAction?.({ name: 'deleteWebhook', payload: { id: webhook.id } })}
+                    onClick={() => onAction?.({ name: 'deleteWebhook', payload: { id: webhook.id } } as never)}
                     className="p-1 hover:bg-muted rounded text-destructive"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

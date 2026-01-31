@@ -31,7 +31,7 @@ export const Note = ({ element, children, onAction }: ComponentRenderProps) => {
         </div>
         <div className="flex items-center gap-1">
           <button
-            onClick={() => onAction?.({ name: 'togglePin', payload: { id } })}
+            onClick={() => onAction?.({ name: 'togglePin', payload: { id } } as never)}
             className={cn('p-1 hover:bg-muted rounded', isPinned && 'text-yellow-600')}
           >
             <svg className="w-4 h-4" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@ export const Note = ({ element, children, onAction }: ComponentRenderProps) => {
             </svg>
           </button>
           <button
-            onClick={() => onAction?.({ name: 'editNote', payload: { id } })}
+            onClick={() => onAction?.({ name: 'editNote', payload: { id } } as never)}
             className="p-1 hover:bg-muted rounded"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

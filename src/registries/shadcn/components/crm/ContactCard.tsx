@@ -21,7 +21,7 @@ export const ContactCard = ({ element, onAction }: ComponentRenderProps) => {
       className={cn(
         'p-4 border rounded-lg bg-card hover:shadow-lg transition-all cursor-pointer'
       )}
-      onClick={() => onAction?.({ name: 'viewContact', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewContact', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex flex-col items-center text-center">

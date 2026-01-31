@@ -23,7 +23,7 @@ export const LocaleSelector = ({ element, onAction }: ComponentRenderProps) => {
         {localeList?.map((locale) => (
           <button
             key={locale.code}
-            onClick={() => onAction?.({ name: 'setLocale', payload: { locale: locale.code } })}
+            onClick={() => onAction?.({ name: 'setLocale', payload: { locale: locale.code } } as never)}
             className={cn(
               'p-3 border rounded-lg text-left hover:bg-muted transition-colors',
               current === locale.code && 'border-primary bg-primary/5'
@@ -40,7 +40,7 @@ export const LocaleSelector = ({ element, onAction }: ComponentRenderProps) => {
   return (
     <select
       value={current as string}
-      onChange={(e) => onAction?.({ name: 'setLocale', payload: { locale: e.target.value } })}
+      onChange={(e) => onAction?.({ name: 'setLocale', payload: { locale: e.target.value } } as never)}
       className={cn(
         'px-3 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary'
       )}

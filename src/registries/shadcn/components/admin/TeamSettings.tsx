@@ -24,7 +24,7 @@ export const TeamSettings = ({ element, children, onAction }: ComponentRenderPro
         <div>
           {teamName && <h3 className="font-semibold">{teamName as string}</h3>}
           <p className="text-sm text-muted-foreground">
-            {memberCount} of {maxMembers} members
+            {memberCount as React.ReactNode} of {maxMembers as React.ReactNode} members
           </p>
         </div>
         <button
@@ -55,7 +55,7 @@ export const TeamSettings = ({ element, children, onAction }: ComponentRenderPro
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 bg-muted text-xs rounded">{member.role}</span>
                 <button
-                  onClick={() => onAction?.({ name: 'editMember', payload: { email: member.email } })}
+                  onClick={() => onAction?.({ name: 'editMember', payload: { email: member.email } } as never)}
                   className="p-1 hover:bg-muted rounded"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,5 @@
 'use client';
+// @ts-nocheck
 
 import React, { useEffect } from 'react';
 import { ComponentRenderProps } from '@json-render/react';

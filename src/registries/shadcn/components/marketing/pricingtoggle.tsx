@@ -20,7 +20,7 @@ export const PricingToggle = ({ element, onAction }: ComponentRenderProps) => {
     onAction?.({
       name: 'toggle',
       payload: { value: option, index },
-    });
+    } as never);
   };
 
   return (

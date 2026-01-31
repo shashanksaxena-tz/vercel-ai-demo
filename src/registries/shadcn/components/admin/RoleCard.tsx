@@ -22,7 +22,7 @@ export const RoleCard = ({ element, onAction }: ComponentRenderProps) => {
         'p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer',
         color && `border-l-4 border-l-${color}-500`
       )}
-      onClick={() => onAction?.({ name: 'viewRole', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewRole', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex items-start justify-between">
@@ -37,7 +37,7 @@ export const RoleCard = ({ element, onAction }: ComponentRenderProps) => {
             <p className="text-sm text-muted-foreground mt-1">{description as string}</p>
           )}
           {userCount !== undefined && (
-            <p className="text-sm text-muted-foreground mt-2">{userCount} users</p>
+            <p className="text-sm text-muted-foreground mt-2">{userCount as React.ReactNode} users</p>
           )}
           {permissions && (
             <div className="flex flex-wrap gap-1 mt-2">

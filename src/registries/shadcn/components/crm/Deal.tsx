@@ -31,7 +31,7 @@ export const Deal = ({ element, children, onAction }: ComponentRenderProps) => {
       className={cn(
         'p-4 border rounded-lg bg-background hover:shadow-md transition-shadow cursor-pointer'
       )}
-      onClick={() => onAction?.({ name: 'viewDeal', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewDeal', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex items-start justify-between mb-2">
@@ -48,7 +48,7 @@ export const Deal = ({ element, children, onAction }: ComponentRenderProps) => {
           </span>
         )}
         {probability !== undefined && (
-          <span className="text-xs text-muted-foreground">{probability}% probability</span>
+          <span className="text-xs text-muted-foreground">{probability as number}% probability</span>
         )}
         {closeDate && (
           <span className="text-xs text-muted-foreground">Close: {closeDate as string}</span>

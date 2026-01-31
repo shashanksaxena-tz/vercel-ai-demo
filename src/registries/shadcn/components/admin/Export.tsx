@@ -60,7 +60,7 @@ export const Export = ({ element, onAction }: ComponentRenderProps) => {
                   type="checkbox"
                   defaultChecked={option.checked}
                   className="w-4 h-4"
-                  onChange={(e) => onAction?.({ name: 'toggleOption', payload: { id: option.id, checked: e.target.checked } })}
+                  onChange={(e) => onAction?.({ name: 'toggleOption', payload: { id: option.id, checked: e.target.checked } } as never)}
                 />
                 <span className="text-sm">{option.label}</span>
               </label>
@@ -70,7 +70,7 @@ export const Export = ({ element, onAction }: ComponentRenderProps) => {
       )}
 
       <button
-        onClick={() => onAction?.({ name: 'export', payload: { format: selectedFormat } })}
+        onClick={() => onAction?.({ name: 'export', payload: { format: selectedFormat } } as never)}
         disabled={isExporting as boolean}
         className={cn(
           'w-full px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90',

@@ -16,7 +16,7 @@ export const Command = ({ element, onAction }: ComponentRenderProps) => {
 
   return (
     <button
-      onClick={() => !disabled && onAction?.({ name: 'execute', payload: { label } })}
+      onClick={() => !disabled && onAction?.({ name: 'execute', payload: { label } } as never)}
       disabled={disabled as boolean}
       className={cn(
         'w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted text-left transition-colors',

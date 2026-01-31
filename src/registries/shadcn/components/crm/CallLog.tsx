@@ -21,8 +21,8 @@ export const CallLog = ({ element, children }: ComponentRenderProps) => {
         <h3 className="font-semibold">{title as string}</h3>
         {(totalCalls !== undefined || totalDuration) && (
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            {totalCalls !== undefined && <span>{totalCalls} calls</span>}
-            {totalDuration && <span>{totalDuration} total</span>}
+            {totalCalls !== undefined && <span>{totalCalls as number} calls</span>}
+            {totalDuration && <span>{totalDuration as string} total</span>}
           </div>
         )}
       </div>

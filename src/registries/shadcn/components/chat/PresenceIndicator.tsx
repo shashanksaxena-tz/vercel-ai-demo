@@ -46,7 +46,7 @@ export const PresenceIndicator = ({ element }: ComponentRenderProps) => {
       />
       {showLabel && (
         <span className="text-xs text-muted-foreground">
-          {customLabel || config.label}
+          {(customLabel || config.label) as string}
         </span>
       )}
     </span>

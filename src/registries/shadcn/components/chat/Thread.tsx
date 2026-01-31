@@ -28,10 +28,10 @@ export const Thread = ({ element, children, onAction }: ComponentRenderProps) =>
       )}
       {collapsed ? (
         <button
-          onClick={() => onAction?.({ name: 'expandThread', payload: { id } })}
+          onClick={() => onAction?.({ name: 'expandThread', payload: { id } } as never)}
           className="text-sm text-primary hover:underline"
         >
-          Show {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+          Show {replyCount as number} {(replyCount as number) === 1 ? 'reply' : 'replies'}
         </button>
       ) : (
         <div className="space-y-2">{children}</div>

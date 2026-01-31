@@ -40,13 +40,13 @@ export const UserDetail = ({ element, children, onAction }: ComponentRenderProps
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => onAction?.({ name: 'editUser', payload: { id } })}
+            onClick={() => onAction?.({ name: 'editUser', payload: { id } } as never)}
             className="px-3 py-1 text-sm border rounded hover:bg-muted"
           >
             Edit
           </button>
           <button
-            onClick={() => onAction?.({ name: 'suspendUser', payload: { id } })}
+            onClick={() => onAction?.({ name: 'suspendUser', payload: { id } } as never)}
             className="px-3 py-1 text-sm border border-destructive text-destructive rounded hover:bg-destructive hover:text-destructive-foreground"
           >
             Suspend

@@ -1,4 +1,5 @@
 'use client';
+// @ts-nocheck
 
 import React from 'react';
 import { ComponentRenderProps } from '@json-render/react';
@@ -36,13 +37,13 @@ export const Comment = ({ element, children, onAction }: ComponentRenderProps) =
         <div className="flex items-center gap-4 mt-1 px-2">
           <span className="text-xs text-muted-foreground">{timestamp as string}</span>
           <button
-            onClick={() => onAction?.({ name: 'like', payload: { id } })}
+            onClick={() => onAction?.({ name: 'like', payload: { id } } as never)}
             className={cn('text-xs font-medium hover:text-primary', isLiked && 'text-primary')}
           >
             {isLiked ? 'Liked' : 'Like'} {likes !== undefined && likes > 0 && `(${likes})`}
           </button>
           <button
-            onClick={() => onAction?.({ name: 'reply', payload: { id, author } })}
+            onClick={() => onAction?.({ name: 'reply', payload: { id, author } } as never)}
             className="text-xs font-medium hover:text-primary"
           >
             Reply

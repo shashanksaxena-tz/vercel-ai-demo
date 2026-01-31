@@ -42,7 +42,7 @@ export const Attachment = ({ element, onAction }: ComponentRenderProps) => {
       className={cn(
         'flex items-center gap-3 p-3 bg-muted/50 border rounded-lg cursor-pointer hover:bg-muted transition-colors'
       )}
-      onClick={() => onAction?.({ name: 'openAttachment', payload: { url, name } })}
+      onClick={() => onAction?.({ name: 'openAttachment', payload: { url, name } } as never)}
       style={style as React.CSSProperties}
     >
       {thumbnail ? (

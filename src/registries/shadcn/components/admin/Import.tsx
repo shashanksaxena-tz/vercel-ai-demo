@@ -43,7 +43,7 @@ export const Import = ({ element, onAction }: ComponentRenderProps) => {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">{progress}%</p>
+                <p className="text-xs text-muted-foreground mt-1">{progress as React.ReactNode}%</p>
               </div>
             )}
           </div>

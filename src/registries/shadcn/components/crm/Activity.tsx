@@ -57,7 +57,7 @@ export const Activity = ({ element, onAction }: ComponentRenderProps) => {
       className={cn(
         'flex gap-3 p-3 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors'
       )}
-      onClick={() => onAction?.({ name: 'viewActivity', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewActivity', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className={cn(

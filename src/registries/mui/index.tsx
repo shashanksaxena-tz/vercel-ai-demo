@@ -70,6 +70,15 @@ import { Center } from './components/layout/center';
 import { AspectRatio } from './components/layout/aspectratio';
 import { ScrollArea } from './components/layout/scrollarea';
 import { Paper } from './components/layout/paper';
+import { Panel } from './components/layout/panel';
+import { Section } from './components/layout/section';
+import { Screen } from './components/layout/screen';
+// Additional Forms components
+import { Form } from './components/forms/form';
+import { FormField } from './components/forms/formfield';
+// Marketing components
+import { Hero } from './components/marketing/hero';
+import { Features } from './components/marketing/features';
 
 export const muiRegistry: ComponentRegistry = {
   // Core components
@@ -143,4 +152,13 @@ export const muiRegistry: ComponentRegistry = {
   AspectRatio,
   ScrollArea,
   Paper,
+  Panel,
+  Section,
+  Screen,
+  // Additional Forms components
+  Form,
+  FormField,
+  // Marketing components
+  Hero,
+  Features,
 };

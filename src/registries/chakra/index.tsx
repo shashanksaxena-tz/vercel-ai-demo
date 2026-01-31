@@ -41,6 +41,12 @@ import { Box } from './components/layout/box';
 import { Flex } from './components/layout/flex';
 import { Center } from './components/layout/center';
 import { FlexWrap } from './components/layout/wrap';
+import { Panel } from './components/layout/panel';
+import { Section } from './components/layout/section';
+import { Screen } from './components/layout/screen';
+// Additional Forms components
+import { Form } from './components/forms/form';
+import { FormField } from './components/forms/formfield';
 // Data display components
 import { Accordion } from './components/data-display/accordion';
 import { List } from './components/data-display/list';
@@ -90,6 +96,12 @@ export const chakraRegistry: ComponentRegistry = {
     Flex,
     Center,
     Wrap: FlexWrap,
+    Panel,
+    Section,
+    Screen,
+    // Additional Forms components
+    Form,
+    FormField,
     // Data display components
     Accordion,
     List,

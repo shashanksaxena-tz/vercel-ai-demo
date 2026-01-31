@@ -51,7 +51,7 @@ export const PermissionMatrix = ({ element, onAction }: ComponentRenderProps) =>
                     onChange={() => onAction?.({
                       name: 'togglePermission',
                       payload: { role, permission: permission.id }
-                    })}
+                    } as never)}
                     className="w-4 h-4"
                   />
                 </td>

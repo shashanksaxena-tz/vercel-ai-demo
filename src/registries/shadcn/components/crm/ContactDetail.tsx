@@ -41,13 +41,13 @@ export const ContactDetail = ({ element, children, onAction }: ComponentRenderPr
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => onAction?.({ name: 'edit', payload: { id } })}
+            onClick={() => onAction?.({ name: 'edit', payload: { id } } as never)}
             className="px-3 py-1 text-sm border rounded hover:bg-muted"
           >
             Edit
           </button>
           <button
-            onClick={() => onAction?.({ name: 'delete', payload: { id } })}
+            onClick={() => onAction?.({ name: 'delete', payload: { id } } as never)}
             className="px-3 py-1 text-sm border border-destructive text-destructive rounded hover:bg-destructive hover:text-destructive-foreground"
           >
             Delete

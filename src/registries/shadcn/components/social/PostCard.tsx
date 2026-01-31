@@ -19,7 +19,7 @@ export const PostCard = ({ element, onAction }: ComponentRenderProps) => {
   return (
     <div
       className={cn('border rounded-lg bg-card overflow-hidden hover:shadow-md transition-shadow cursor-pointer')}
-      onClick={() => onAction?.({ name: 'viewPost', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewPost', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       {image && (

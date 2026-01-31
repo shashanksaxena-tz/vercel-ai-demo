@@ -30,7 +30,7 @@ export const DealCard = ({ element, onAction }: ComponentRenderProps) => {
         'p-3 bg-card border rounded-lg shadow-sm hover:shadow-md transition-all cursor-grab border-l-4',
         priorityColors[priority as keyof typeof priorityColors] || 'border-l-transparent'
       )}
-      onClick={() => onAction?.({ name: 'viewDeal', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewDeal', payload: { id } } as never)}
       style={style as React.CSSProperties}
       draggable
     >
@@ -49,7 +49,7 @@ export const DealCard = ({ element, onAction }: ComponentRenderProps) => {
         </div>
       </div>
       {daysInStage !== undefined && (
-        <p className="text-xs text-muted-foreground mt-2">{daysInStage} days in stage</p>
+        <p className="text-xs text-muted-foreground mt-2">{daysInStage as number} days in stage</p>
       )}
     </div>
   );

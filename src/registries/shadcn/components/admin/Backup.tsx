@@ -83,7 +83,7 @@ export const Backup = ({ element, onAction }: ComponentRenderProps) => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => onAction?.({ name: 'downloadBackup', payload: { id: backup.id } })}
+                  onClick={() => onAction?.({ name: 'downloadBackup', payload: { id: backup.id } } as never)}
                   className="p-2 hover:bg-muted rounded"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@ export const Backup = ({ element, onAction }: ComponentRenderProps) => {
                   </svg>
                 </button>
                 <button
-                  onClick={() => onAction?.({ name: 'restoreBackup', payload: { id: backup.id } })}
+                  onClick={() => onAction?.({ name: 'restoreBackup', payload: { id: backup.id } } as never)}
                   className="p-2 hover:bg-muted rounded"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,7 +99,7 @@ export const Backup = ({ element, onAction }: ComponentRenderProps) => {
                   </svg>
                 </button>
                 <button
-                  onClick={() => onAction?.({ name: 'deleteBackup', payload: { id: backup.id } })}
+                  onClick={() => onAction?.({ name: 'deleteBackup', payload: { id: backup.id } } as never)}
                   className="p-2 hover:bg-muted rounded text-destructive"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

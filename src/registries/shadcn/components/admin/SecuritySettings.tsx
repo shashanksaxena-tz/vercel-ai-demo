@@ -55,7 +55,7 @@ export const SecuritySettings = ({ element, children, onAction }: ComponentRende
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <div>
           <h4 className="font-medium">Active Sessions</h4>
-          <p className="text-sm text-muted-foreground">{activeSessions} active session(s)</p>
+          <p className="text-sm text-muted-foreground">{activeSessions as React.ReactNode} active session(s)</p>
         </div>
         <button
           onClick={() => onAction?.({ name: 'manageSessions' })}

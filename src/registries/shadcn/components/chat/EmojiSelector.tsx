@@ -44,7 +44,7 @@ export const EmojiSelector = ({ element, onAction }: ComponentRenderProps) => {
         {categoryList[activeCategory]?.emojis.map((emoji, i) => (
           <button
             key={i}
-            onClick={() => onAction?.({ name: 'selectEmoji', payload: { emoji } })}
+            onClick={() => onAction?.({ name: 'selectEmoji', payload: { emoji } } as never)}
             className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded transition-transform hover:scale-125"
           >
             {emoji}

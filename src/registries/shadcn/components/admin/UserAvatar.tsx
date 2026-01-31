@@ -63,7 +63,7 @@ export const UserAvatar = ({ element }: ComponentRenderProps) => {
       )}
       {showBadge && badgeCount !== undefined && (badgeCount as number) > 0 && (
         <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
-          {(badgeCount as number) > 9 ? '9+' : badgeCount}
+          {(badgeCount as number) > 9 ? '9+' : badgeCount as React.ReactNode}
         </span>
       )}
     </div>

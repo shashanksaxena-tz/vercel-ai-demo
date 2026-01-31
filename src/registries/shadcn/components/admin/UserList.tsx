@@ -22,7 +22,7 @@ export const UserList = ({ element, children, onAction }: ComponentRenderProps) 
         <div>
           <h3 className="font-semibold">{title as string}</h3>
           {totalUsers !== undefined && (
-            <p className="text-sm text-muted-foreground">{totalUsers} total users</p>
+            <p className="text-sm text-muted-foreground">{totalUsers as React.ReactNode} total users</p>
           )}
         </div>
         <button
@@ -44,7 +44,7 @@ export const UserList = ({ element, children, onAction }: ComponentRenderProps) 
                 type="text"
                 placeholder="Search users..."
                 className="w-full pl-10 pr-4 py-2 border rounded-lg bg-background"
-                onChange={(e) => onAction?.({ name: 'search', payload: { query: e.target.value } })}
+                onChange={(e) => onAction?.({ name: 'search', payload: { query: e.target.value } } as never)}
               />
             </div>
           )}

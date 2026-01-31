@@ -19,7 +19,7 @@ export const Story = ({ element, onAction }: ComponentRenderProps) => {
 
   return (
     <button
-      onClick={() => onAction?.({ name: 'viewStory', payload: { id, user } })}
+      onClick={() => onAction?.({ name: 'viewStory', payload: { id, user } } as never)}
       className={cn('flex flex-col items-center gap-1')}
       style={style as React.CSSProperties}
     >

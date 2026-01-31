@@ -29,8 +29,8 @@ export const ChatWindow = ({ element, children }: ComponentRenderProps) => {
         positions[position as keyof typeof positions] || positions['bottom-right']
       )}
       style={{
-        width: position === 'inline' ? '100%' : width,
-        height: position === 'inline' ? '100%' : height,
+        width: position === 'inline' ? '100%' : (width as string | number),
+        height: position === 'inline' ? '100%' : (height as string | number),
         ...style as React.CSSProperties
       }}
     >

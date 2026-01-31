@@ -36,7 +36,7 @@ export const FileMessage = ({ element, onAction }: ComponentRenderProps) => {
         <p className="text-xs text-muted-foreground">{fileSize as string}</p>
       </div>
       <button
-        onClick={() => onAction?.({ name: 'downloadFile', payload: { url: downloadUrl, name: fileName } })}
+        onClick={() => onAction?.({ name: 'downloadFile', payload: { url: downloadUrl, name: fileName } } as never)}
         className="p-2 hover:bg-background rounded-full transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

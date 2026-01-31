@@ -23,7 +23,7 @@ export const BillingSettings = ({ element, children, onAction }: ComponentRender
           <div>
             <h4 className="font-medium">Current Plan</h4>
             <p className="text-lg font-bold text-primary">{plan as string}</p>
-            {billingCycle && <p className="text-sm text-muted-foreground">Billed {billingCycle}</p>}
+            {billingCycle && <p className="text-sm text-muted-foreground">Billed {billingCycle as React.ReactNode}</p>}
           </div>
           <button
             onClick={() => onAction?.({ name: 'changePlan' })}

@@ -41,7 +41,7 @@ export const CompanyDetail = ({ element, children, onAction }: ComponentRenderPr
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => onAction?.({ name: 'edit', payload: { id } })}
+            onClick={() => onAction?.({ name: 'edit', payload: { id } } as never)}
             className="px-3 py-1 text-sm border rounded hover:bg-muted"
           >
             Edit

@@ -12,7 +12,7 @@ export const Callout = ({ element, children }: ComponentRenderProps) => {
     style
   } = element.props;
 
-  const variants = {
+  const variants: Record<string, { styles: string; icon: React.JSX.Element | null }> = {
     info: {
       styles: 'bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-100',
       icon: <Info className="h-5 w-5 text-blue-500" />,

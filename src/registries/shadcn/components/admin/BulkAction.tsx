@@ -23,7 +23,7 @@ export const BulkAction = ({ element, children, onAction }: ComponentRenderProps
       )}
       style={style as React.CSSProperties}
     >
-      <span className="text-sm font-medium">{selectedCount} selected</span>
+      <span className="text-sm font-medium">{selectedCount as React.ReactNode} selected</span>
 
       <div className="h-6 w-px bg-border" />
 

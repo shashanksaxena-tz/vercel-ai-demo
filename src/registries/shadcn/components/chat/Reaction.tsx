@@ -15,7 +15,7 @@ export const Reaction = ({ element, onAction }: ComponentRenderProps) => {
 
   return (
     <button
-      onClick={() => onAction?.({ name: 'toggleReaction', payload: { emoji } })}
+      onClick={() => onAction?.({ name: 'toggleReaction', payload: { emoji } } as never)}
       className={cn(
         'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border transition-colors',
         reacted
@@ -26,7 +26,7 @@ export const Reaction = ({ element, onAction }: ComponentRenderProps) => {
       style={style as React.CSSProperties}
     >
       <span>{emoji as string}</span>
-      {count > 0 && <span>{count as number}</span>}
+      {(count as number) > 0 && <span>{count as number}</span>}
     </button>
   );
 };

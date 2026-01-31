@@ -53,7 +53,7 @@ export const IntegrationSettings = ({ element, children, onAction }: ComponentRe
                   onClick={() => onAction?.({
                     name: integration.connected ? 'disconnectIntegration' : 'connectIntegration',
                     payload: { id: integration.id }
-                  })}
+                  } as never)}
                   className={cn(
                     'px-3 py-1 text-sm rounded',
                     integration.connected

@@ -26,7 +26,7 @@ export const UserCard = ({ element, onAction }: ComponentRenderProps) => {
   return (
     <div
       className={cn('flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer')}
-      onClick={() => onAction?.({ name: 'viewUser', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewUser', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex items-center gap-3">

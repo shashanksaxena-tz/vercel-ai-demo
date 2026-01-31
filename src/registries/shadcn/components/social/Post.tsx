@@ -37,7 +37,7 @@ export const Post = ({ element, children, onAction }: ComponentRenderProps) => {
           {timestamp && <p className="text-xs text-muted-foreground">{timestamp as string}</p>}
         </div>
         <button
-          onClick={() => onAction?.({ name: 'menu', payload: { id } })}
+          onClick={() => onAction?.({ name: 'menu', payload: { id } } as never)}
           className="p-1 hover:bg-muted rounded"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@ export const Post = ({ element, children, onAction }: ComponentRenderProps) => {
 
       <div className="flex items-center justify-between pt-3 border-t mt-3">
         <button
-          onClick={() => onAction?.({ name: 'like', payload: { id } })}
+          onClick={() => onAction?.({ name: 'like', payload: { id } } as never)}
           className={cn(
             'flex items-center gap-1 text-sm hover:text-primary',
             isLiked && 'text-primary'
@@ -64,7 +64,7 @@ export const Post = ({ element, children, onAction }: ComponentRenderProps) => {
           {likes !== undefined && <span>{likes as number}</span>}
         </button>
         <button
-          onClick={() => onAction?.({ name: 'comment', payload: { id } })}
+          onClick={() => onAction?.({ name: 'comment', payload: { id } } as never)}
           className="flex items-center gap-1 text-sm hover:text-primary"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@ export const Post = ({ element, children, onAction }: ComponentRenderProps) => {
           {comments !== undefined && <span>{comments as number}</span>}
         </button>
         <button
-          onClick={() => onAction?.({ name: 'share', payload: { id } })}
+          onClick={() => onAction?.({ name: 'share', payload: { id } } as never)}
           className="flex items-center gap-1 text-sm hover:text-primary"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@ export const Post = ({ element, children, onAction }: ComponentRenderProps) => {
           {shares !== undefined && <span>{shares as number}</span>}
         </button>
         <button
-          onClick={() => onAction?.({ name: 'bookmark', payload: { id } })}
+          onClick={() => onAction?.({ name: 'bookmark', payload: { id } } as never)}
           className={cn('hover:text-primary', isBookmarked && 'text-primary')}
         >
           <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">

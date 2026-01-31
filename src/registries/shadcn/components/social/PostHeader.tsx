@@ -49,7 +49,7 @@ export const PostHeader = ({ element, onAction }: ComponentRenderProps) => {
       </div>
       {showFollow && (
         <button
-          onClick={() => onAction?.({ name: isFollowing ? 'unfollow' : 'follow', payload: { author } })}
+          onClick={() => onAction?.({ name: isFollowing ? 'unfollow' : 'follow', payload: { author } } as never)}
           className={cn(
             'px-3 py-1 text-sm rounded-full',
             isFollowing

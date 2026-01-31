@@ -48,7 +48,7 @@ export const HealthCheck = ({ element, onAction }: ComponentRenderProps) => {
           <p className="text-xs opacity-80">{lastChecked as string}</p>
         )}
         <button
-          onClick={() => onAction?.({ name: 'refresh', payload: { check: name } })}
+          onClick={() => onAction?.({ name: 'refresh', payload: { check: name } } as never)}
           className="p-1 hover:bg-white/50 rounded"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

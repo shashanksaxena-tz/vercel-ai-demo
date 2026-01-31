@@ -22,7 +22,7 @@ export const Company = ({ element, children, onAction }: ComponentRenderProps) =
       className={cn(
         'p-4 border rounded-lg bg-background hover:shadow-md transition-shadow cursor-pointer'
       )}
-      onClick={() => onAction?.({ name: 'viewCompany', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewCompany', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex items-start gap-4">

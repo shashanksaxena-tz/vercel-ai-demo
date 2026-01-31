@@ -20,7 +20,7 @@ export const ReactionPicker = ({ element, onAction }: ComponentRenderProps) => {
       {(emojis as string[]).map((emoji, i) => (
         <button
           key={i}
-          onClick={() => onAction?.({ name: 'selectReaction', payload: { emoji } })}
+          onClick={() => onAction?.({ name: 'selectReaction', payload: { emoji } } as never)}
           className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-full transition-transform hover:scale-125"
         >
           {emoji}

@@ -52,7 +52,7 @@ export const ThemeSwitcher = ({ element, onAction }: ComponentRenderProps) => {
       {themeList.map((t) => (
         <button
           key={t.id}
-          onClick={() => onAction?.({ name: 'setTheme', payload: { theme: t.id } })}
+          onClick={() => onAction?.({ name: 'setTheme', payload: { theme: t.id } } as never)}
           className={cn(
             'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors',
             theme === t.id

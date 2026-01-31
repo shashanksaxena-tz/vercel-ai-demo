@@ -22,7 +22,7 @@ export const CompanyCard = ({ element, onAction }: ComponentRenderProps) => {
       className={cn(
         'p-4 border rounded-lg bg-card hover:shadow-lg transition-all cursor-pointer'
       )}
-      onClick={() => onAction?.({ name: 'viewCompany', payload: { id } })}
+      onClick={() => onAction?.({ name: 'viewCompany', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       <div className="flex items-center gap-3 mb-4">

@@ -40,7 +40,7 @@ export const Task = ({ element, children, onAction }: ComponentRenderProps) => {
     >
       <div className="flex items-start gap-3">
         <button
-          onClick={() => onAction?.({ name: 'toggleTask', payload: { id } })}
+          onClick={() => onAction?.({ name: 'toggleTask', payload: { id } } as never)}
           className={cn(
             'w-5 h-5 rounded border-2 flex-shrink-0 mt-0.5',
             status === 'completed' ? 'bg-primary border-primary' : 'border-muted-foreground'

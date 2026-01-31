@@ -33,7 +33,7 @@ export const AttachmentPreview = ({ element, onAction }: ComponentRenderProps) =
           {size && <span>{size as string}</span>}
           {type && <span>{type as string}</span>}
         </div>
-        {progress !== undefined && progress < 100 && (
+        {progress !== undefined && (progress as number) < 100 && (
           <div className="mt-1 h-1 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all"
@@ -44,7 +44,7 @@ export const AttachmentPreview = ({ element, onAction }: ComponentRenderProps) =
         {error && <p className="text-xs text-destructive mt-1">{error as string}</p>}
       </div>
       <button
-        onClick={() => onAction?.({ name: 'removeAttachment', payload: { name } })}
+        onClick={() => onAction?.({ name: 'removeAttachment', payload: { name } } as never)}
         className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

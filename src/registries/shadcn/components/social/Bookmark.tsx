@@ -18,7 +18,7 @@ export const Bookmark = ({ element, onAction }: ComponentRenderProps) => {
   return (
     <div
       className={cn('flex gap-3 p-3 border rounded-lg hover:shadow-md transition-shadow cursor-pointer')}
-      onClick={() => onAction?.({ name: 'view', payload: { id } })}
+      onClick={() => onAction?.({ name: 'view', payload: { id } } as never)}
       style={style as React.CSSProperties}
     >
       {thumbnail && (

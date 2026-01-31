@@ -25,7 +25,7 @@ export const Accessibility = ({ element, onAction }: ComponentRenderProps) => {
           {['small', 'default', 'large', 'extra-large'].map((size) => (
             <button
               key={size}
-              onClick={() => onAction?.({ name: 'setFontSize', payload: { fontSize: size } })}
+              onClick={() => onAction?.({ name: 'setFontSize', payload: { fontSize: size } } as never)}
               className={cn(
                 'px-3 py-1 text-sm rounded border',
                 fontSize === size ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
@@ -43,7 +43,7 @@ export const Accessibility = ({ element, onAction }: ComponentRenderProps) => {
           {['default', 'high', 'inverted'].map((c) => (
             <button
               key={c}
-              onClick={() => onAction?.({ name: 'setContrast', payload: { contrast: c } })}
+              onClick={() => onAction?.({ name: 'setContrast', payload: { contrast: c } } as never)}
               className={cn(
                 'px-3 py-1 text-sm rounded border capitalize',
                 contrast === c ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
@@ -61,7 +61,7 @@ export const Accessibility = ({ element, onAction }: ComponentRenderProps) => {
           <p className="text-xs text-muted-foreground">Minimize animations</p>
         </div>
         <button
-          onClick={() => onAction?.({ name: 'toggleReducedMotion', payload: { reducedMotion: !reducedMotion } })}
+          onClick={() => onAction?.({ name: 'toggleReducedMotion', payload: { reducedMotion: !reducedMotion } } as never)}
           className={cn(
             'relative w-11 h-6 rounded-full transition-colors',
             reducedMotion ? 'bg-primary' : 'bg-muted'

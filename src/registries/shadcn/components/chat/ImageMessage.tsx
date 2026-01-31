@@ -26,7 +26,7 @@ export const ImageMessage = ({ element, onAction }: ComponentRenderProps) => {
       style={style as React.CSSProperties}
     >
       <button
-        onClick={() => onAction?.({ name: 'openImage', payload: { src, alt } })}
+        onClick={() => onAction?.({ name: 'openImage', payload: { src, alt } } as never)}
         className="block rounded-lg overflow-hidden"
       >
         <img

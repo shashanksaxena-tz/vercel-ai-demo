@@ -43,7 +43,7 @@ export const APISettings = ({ element, children, onAction }: ComponentRenderProp
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => onAction?.({ name: 'copyKey', payload: { key: key.key } })}
+                  onClick={() => onAction?.({ name: 'copyKey', payload: { key: key.key } } as never)}
                   className="p-2 hover:bg-muted rounded"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@ export const APISettings = ({ element, children, onAction }: ComponentRenderProp
                   </svg>
                 </button>
                 <button
-                  onClick={() => onAction?.({ name: 'revokeKey', payload: { name: key.name } })}
+                  onClick={() => onAction?.({ name: 'revokeKey', payload: { name: key.name } } as never)}
                   className="p-2 hover:bg-muted rounded text-destructive"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
