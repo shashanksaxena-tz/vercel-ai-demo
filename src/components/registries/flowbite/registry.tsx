@@ -83,10 +83,11 @@ const flowbiteComponents: ComponentRegistry = {
 
   Grid: ({ element, children }) => {
     const { columns = 3, gap = 'md' } = element.props as { columns?: number; gap?: string };
+    const responsiveColumns = columns >= 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+      columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1';
     return (
       <div
-        className={`grid ${gap === 'xs' ? 'gap-1' : gap === 'sm' ? 'gap-2' : gap === 'lg' ? 'gap-6' : 'gap-4'}`}
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        className={`grid ${responsiveColumns} ${gap === 'xs' ? 'gap-1 md:gap-1.5' : gap === 'sm' ? 'gap-2 md:gap-3' : gap === 'lg' ? 'gap-4 md:gap-6' : 'gap-3 md:gap-4'}`}
       >
         {children}
       </div>
@@ -94,10 +95,11 @@ const flowbiteComponents: ComponentRegistry = {
   },
 
   Stack: ({ element, children }) => {
-    const { direction = 'vertical', spacing = 'md' } = element.props as { direction?: string; spacing?: string };
+    const { direction = 'vertical', spacing = 'md', responsive = true } = element.props as { direction?: string; spacing?: string; responsive?: boolean };
+    const flexDirection = responsive && direction === 'horizontal' ? 'flex-col md:flex-row' : direction === 'horizontal' ? 'flex-row' : 'flex-col';
     return (
-      <div className={`flex ${direction === 'horizontal' ? '' : 'flex-col'} ${
-        spacing === 'xs' ? 'gap-1' : spacing === 'sm' ? 'gap-2' : spacing === 'lg' ? 'gap-6' : 'gap-4'
+      <div className={`flex ${flexDirection} ${
+        spacing === 'xs' ? 'gap-1 md:gap-1.5' : spacing === 'sm' ? 'gap-2 md:gap-3' : spacing === 'lg' ? 'gap-4 md:gap-6' : 'gap-3 md:gap-4'
       }`}>
         {children}
       </div>
@@ -172,7 +174,14 @@ const flowbiteComponents: ComponentRegistry = {
   Heading: ({ element }) => {
     const { level = '2', text, color = 'default', align = 'left' } = element.props as { level?: string; text: string; color?: string; align?: string };
     const Tag = `h${level}` as keyof React.JSX.IntrinsicElements;
-    const sizes: Record<string, string> = { '1': 'text-4xl', '2': 'text-3xl', '3': 'text-2xl', '4': 'text-xl', '5': 'text-lg', '6': 'text-base' };
+    const sizes: Record<string, string> = {
+      '1': 'text-3xl md:text-4xl lg:text-5xl',
+      '2': 'text-2xl md:text-3xl lg:text-4xl',
+      '3': 'text-xl md:text-2xl lg:text-3xl',
+      '4': 'text-lg md:text-xl lg:text-2xl',
+      '5': 'text-base md:text-lg',
+      '6': 'text-sm md:text-base'
+    };
     return (
       <Tag className={`${sizes[level]} font-bold ${
         color === 'primary' ? 'text-blue-700' : color === 'muted' ? 'text-gray-500' : 'text-gray-900'
@@ -789,6 +798,55 @@ const flowbiteComponents: ComponentRegistry = {
   },
 
   // Specialized
+  Hero: ({ element }) => {
+    const { title, subtitle, description, primaryAction, secondaryAction, image, align = 'center' } = element.props as {
+      title?: string;
+      subtitle?: string;
+      description?: string;
+      primaryAction?: { label: string; href?: string };
+      secondaryAction?: { label: string; href?: string };
+      image?: string;
+      align?: 'left' | 'center' | 'right';
+    };
+    const alignClass = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
+    const justifyClass = align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center';
+    return (
+      <div className={`py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 ${alignClass}`}>
+        <div className="max-w-3xl mx-auto space-y-6">
+          {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">{subtitle}</p>}
+          {title && <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white">{title}</h1>}
+          {description && <p className="text-lg text-gray-600 dark:text-gray-400">{description}</p>}
+          <div className={`flex flex-wrap gap-4 ${justifyClass}`}>
+            {primaryAction && (
+              <a
+                href={primaryAction.href}
+                className="px-6 py-3 text-base font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700"
+              >
+                {primaryAction.label}
+              </a>
+            )}
+            {secondaryAction && (
+              <a
+                href={secondaryAction.href}
+                className="px-6 py-3 text-base font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+              >
+                {secondaryAction.label}
+              </a>
+            )}
+          </div>
+          {image && (
+            <div className="mt-8">
+              <img
+                src={image}
+                alt={title || 'Hero image'}
+                className="w-full max-w-2xl mx-auto rounded-lg shadow-2xl"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  },
   Chart: ({ element }) => {
     const { type, height = 200 } = element.props as { type: string; height?: number };
     return (

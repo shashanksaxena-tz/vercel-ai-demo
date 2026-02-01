@@ -12,6 +12,11 @@
  * - mui (@mui/mcp)
  * - context7 (@upstash/context7-mcp) - Documentation fetcher
  * - figma (Figma MCP server)
+ * - lucide-icons (lucide-icons-mcp) - Icon library
+ * - heroicons (heroicons-mcp) - Heroicons library
+ * - iconify (Iconify public API) - Universal icon library
+ * - unsplash (@drumnation/unsplash-smart-mcp-server) - Stock photos
+ * - pexels (Pexels API) - Stock photos
  */
 
 // ============================================================================
@@ -28,7 +33,12 @@ export type MCPServerType =
   | 'aceternity-ui'
   | 'mui'
   | 'context7'
-  | 'figma';
+  | 'figma'
+  | 'lucide-icons'
+  | 'heroicons'
+  | 'iconify'
+  | 'unsplash'
+  | 'pexels';
 
 export interface MCPServerConfig {
   type: MCPServerType;
@@ -129,7 +139,12 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     displayName: 'Context7',
     description: 'Fetch up-to-date documentation for any library',
     command: 'npx',
-    args: ['-y', '@upstash/context7-mcp'],
+    args: process.env.CONTEXT7_API_KEY
+      ? ['-y', '@upstash/context7-mcp', '--api-key', process.env.CONTEXT7_API_KEY]
+      : ['-y', '@upstash/context7-mcp'],
+    env: {
+      CONTEXT7_API_KEY: process.env.CONTEXT7_API_KEY || '',
+    },
     enabled: true,
     tools: ['resolve-library-id', 'query-docs'],
   },
@@ -142,6 +157,62 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     args: ['http://127.0.0.1:3845/mcp'],
     enabled: false, // Requires Figma Desktop
     tools: ['get_design_context', 'get_variable_defs', 'get_code_connect_map', 'get_metadata'],
+  },
+  'lucide-icons': {
+    type: 'lucide-icons',
+    name: 'lucide-icons',
+    displayName: 'Lucide Icons',
+    description: 'Lucide Icons - 1,500+ beautiful icons with React examples',
+    command: 'npx',
+    args: ['-y', 'lucide-icons-mcp@latest', '--stdio'],
+    enabled: true,
+    tools: ['search_icons', 'get_icon', 'list_categories'],
+  },
+  'heroicons': {
+    type: 'heroicons',
+    name: 'heroicons',
+    displayName: 'Heroicons',
+    description: 'Heroicons - Beautiful hand-crafted SVG icons by the Tailwind CSS team',
+    command: 'npx',
+    args: ['-y', 'heroicons-mcp@latest', '--stdio'],
+    enabled: true,
+    tools: ['list_icons', 'search_icons', 'get_icon_example'],
+  },
+  'iconify': {
+    type: 'iconify',
+    name: 'iconify',
+    displayName: 'Iconify',
+    description: 'Iconify - Universal icon library with 200,000+ icons from 150+ icon sets',
+    command: 'npx',
+    args: ['-y', 'iconify-mcp-server@latest'],
+    enabled: true,
+    tools: ['get_all_icon_sets', 'get_icon_set', 'search_icons', 'get_icon'],
+  },
+  'unsplash': {
+    type: 'unsplash',
+    name: 'unsplash',
+    displayName: 'Unsplash Images',
+    description: 'Unsplash - High-quality stock photos with AI-powered search',
+    command: 'npx',
+    args: ['-y', '@jeffkit/unsplash-mcp-server', '--response-format', 'text'],
+    env: {
+      UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY || '',
+    },
+    enabled: true, // Will check for API key at runtime
+    tools: ['search_photos'],
+  },
+  'pexels': {
+    type: 'pexels',
+    name: 'pexels',
+    displayName: 'Pexels Images',
+    description: 'Pexels - Free stock photos and videos with high quality',
+    command: 'http', // Uses HTTP API
+    args: ['https://api.pexels.com/v1'],
+    env: {
+      PEXELS_API_KEY: process.env.PEXELS_API_KEY || '',
+    },
+    enabled: true,
+    tools: ['search', 'curated', 'photo'],
   },
 };
 
@@ -407,6 +478,47 @@ export interface FigmaTypographyToken {
   fontWeight: string;
   lineHeight: string;
   letterSpacing?: string;
+}
+
+// ============================================================================
+// Lucide Icons MCP Types
+// ============================================================================
+
+export interface IconMetadata {
+  name: string;
+  svg: string;
+  source: MCPServerType;
+  tags?: string[];
+  category?: string;
+}
+
+export interface LucideIcon {
+  name: string;
+  svg: string;
+  tags?: string[];
+  category?: string;
+}
+
+// ============================================================================
+// Unsplash MCP Types
+// ============================================================================
+
+export interface ImageAttribution {
+  name: string;
+  platform: string;
+  url: string;
+}
+
+export interface ImageMetadata {
+  id: string;
+  url: string;
+  thumbnailUrl: string;
+  alt: string;
+  photographer: string;
+  width: number;
+  height: number;
+  source: string;
+  attribution?: ImageAttribution;
 }
 
 // ============================================================================

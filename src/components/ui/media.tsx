@@ -56,6 +56,9 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
       onError?.(e);
     };
 
+    // Filter out non-DOM props that React complains about
+    const { aspectRatio, maxWidth, maxHeight, ...domProps } = props as any;
+
     return (
       <img
         ref={ref}
@@ -63,7 +66,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
         alt={alt}
         className={cn(imageVariants({ fit, rounded, className }))}
         onError={handleError}
-        {...props}
+        {...domProps}
       />
     );
   }
@@ -99,6 +102,21 @@ interface IconProps extends React.SVGAttributes<SVGElement> {
 
 const Icon = React.forwardRef<SVGSVGElement, IconProps>(
   ({ className, name, size = 'md', color = 'default', ...props }, ref) => {
+    // Handle undefined or null name
+    if (!name) {
+      return (
+        <span
+          className={cn(
+            'inline-flex items-center justify-center rounded bg-muted text-muted-foreground',
+            iconSizes[size],
+            className
+          )}
+        >
+          ?
+        </span>
+      );
+    }
+
     // Convert kebab-case or snake_case to PascalCase
     const iconName = name
       .split(/[-_]/)
@@ -145,6 +163,9 @@ const Code = React.forwardRef<HTMLPreElement, CodeProps>(
   ({ className, code, language = 'text', showLineNumbers, highlightLines = [], ...props }, ref) => {
     const lines = code.split('\n');
 
+    // Filter out non-DOM props
+    const { wrap, maxWidth, maxHeight, ...domProps } = props as any;
+
     return (
       <pre
         ref={ref}
@@ -152,7 +173,7 @@ const Code = React.forwardRef<HTMLPreElement, CodeProps>(
           'overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-50',
           className
         )}
-        {...props}
+        {...domProps}
       >
         <code className={`language-${language}`}>
           {showLineNumbers ? (
@@ -189,18 +210,23 @@ interface KbdProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 const Kbd = React.forwardRef<HTMLElement, KbdProps>(
-  ({ className, keys, ...props }, ref) => (
-    <span ref={ref} className={cn('inline-flex items-center gap-1', className)} {...props}>
-      {keys.map((key, index) => (
-        <React.Fragment key={index}>
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-            {key}
-          </kbd>
-          {index < keys.length - 1 && <span className="text-muted-foreground">+</span>}
-        </React.Fragment>
-      ))}
-    </span>
-  )
+  ({ className, keys, ...props }, ref) => {
+    // Filter out non-DOM props
+    const { wrap, maxWidth, maxHeight, ...domProps } = props as any;
+
+    return (
+      <span ref={ref} className={cn('inline-flex items-center gap-1', className)} {...domProps}>
+        {keys.map((key, index) => (
+          <React.Fragment key={index}>
+            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+              {key}
+            </kbd>
+            {index < keys.length - 1 && <span className="text-muted-foreground">+</span>}
+          </React.Fragment>
+        ))}
+      </span>
+    );
+  }
 );
 Kbd.displayName = 'Kbd';
 
@@ -212,24 +238,29 @@ interface QuoteProps extends React.HTMLAttributes<HTMLQuoteElement> {
 }
 
 const Quote = React.forwardRef<HTMLQuoteElement, QuoteProps>(
-  ({ className, text, author, source, ...props }, ref) => (
-    <figure className={cn('', className)}>
-      <blockquote
-        ref={ref}
-        className="border-l-4 border-primary pl-4 italic text-muted-foreground"
-        {...props}
-      >
-        <p>{text}</p>
-      </blockquote>
-      {(author || source) && (
-        <figcaption className="mt-2 text-sm">
-          {author && <span className="font-medium">{author}</span>}
-          {author && source && <span className="mx-1">—</span>}
-          {source && <cite className="text-muted-foreground">{source}</cite>}
-        </figcaption>
-      )}
-    </figure>
-  )
+  ({ className, text, author, source, ...props }, ref) => {
+    // Filter out non-DOM props
+    const { wrap, maxWidth, maxHeight, ...domProps } = props as any;
+
+    return (
+      <figure className={cn('', className)}>
+        <blockquote
+          ref={ref}
+          className="border-l-4 border-primary pl-4 italic text-muted-foreground"
+          {...domProps}
+        >
+          <p>{text}</p>
+        </blockquote>
+        {(author || source) && (
+          <figcaption className="mt-2 text-sm">
+            {author && <span className="font-medium">{author}</span>}
+            {author && source && <span className="mx-1">—</span>}
+            {source && <cite className="text-muted-foreground">{source}</cite>}
+          </figcaption>
+        )}
+      </figure>
+    );
+  }
 );
 Quote.displayName = 'Quote';
 
@@ -255,11 +286,14 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
     const [hoverValue, setHoverValue] = React.useState<number | null>(null);
     const displayValue = hoverValue ?? value;
 
+    // Filter out non-DOM props
+    const { maxWidth, maxHeight, aspectRatio, ...domProps } = props as any;
+
     return (
       <div
         ref={ref}
         className={cn('inline-flex items-center gap-0.5', className)}
-        {...props}
+        {...domProps}
       >
         {Array.from({ length: max }).map((_, index) => {
           const starValue = index + 1;

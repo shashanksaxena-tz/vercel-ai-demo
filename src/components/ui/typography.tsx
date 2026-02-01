@@ -57,12 +57,16 @@ interface HeadingProps
 const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
   ({ className, level = '2', color, align, weight, text, children, ...props }, ref) => {
     const Tag = `h${level}` as const;
+
+    // Filter out non-DOM props
+    const { wrap, maxWidth, maxHeight, ...domProps } = props as any;
+
     return React.createElement(
       Tag,
       {
         ref,
         className: cn(headingVariants({ level, color, align, weight, className })),
-        ...props,
+        ...domProps,
       },
       text || children
     );
@@ -158,12 +162,15 @@ const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
       overflow: 'hidden',
     } : {};
 
+    // Filter out non-DOM props that AI might generate
+    const { wrap, maxWidth, maxHeight, ...domProps } = props as any;
+
     return (
       <Component
         ref={ref as React.Ref<HTMLParagraphElement>}
         className={cn(textVariants({ variant, size, color, weight, align, truncate, className }))}
         style={{ ...lineClampStyle, ...style }}
-        {...props}
+        {...domProps}
       >
         {content || children}
       </Component>
@@ -209,22 +216,27 @@ interface LinkProps
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, variant, color, text, external, children, ...props }, ref) => (
-    <a
-      ref={ref}
-      className={cn(linkVariants({ variant, color, className }))}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
-      {...props}
-    >
-      {text || children}
-      {external && (
-        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-      )}
-    </a>
-  )
+  ({ className, variant, color, text, external, children, ...props }, ref) => {
+    // Filter out non-DOM props that AI might generate
+    const { wrap, maxWidth, maxHeight, ...domProps } = props as any;
+
+    return (
+      <a
+        ref={ref}
+        className={cn(linkVariants({ variant, color, className }))}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener noreferrer' : undefined}
+        {...domProps}
+      >
+        {text || children}
+        {external && (
+          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        )}
+      </a>
+    );
+  }
 );
 Link.displayName = 'Link';
 

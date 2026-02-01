@@ -52,12 +52,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if Context7 API key is configured
+    if (!process.env.CONTEXT7_API_KEY) {
+      console.warn('Context7 API key not configured - using free tier with limited rate limits');
+    }
+
     const docs = await fetchContext7Docs(library, query);
 
     if (!docs) {
       return NextResponse.json(
         {
-          error: 'Documentation not found',
+          error: 'Documentation not found or rate limit exceeded',
+          suggestion: process.env.CONTEXT7_API_KEY
+            ? 'Check if the library name is correct'
+            : 'Consider adding CONTEXT7_API_KEY for higher rate limits',
           timing: Date.now() - startTime,
         },
         { status: 404 }

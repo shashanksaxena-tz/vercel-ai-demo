@@ -5,7 +5,7 @@
  */
 
 import * as React from 'react';
-import { Renderer, DataProvider, ActionProvider } from '@json-render/react';
+import { Renderer, DataProvider, ActionProvider, VisibilityProvider } from '@json-render/react';
 import type { UITree } from '@json-render/core';
 import type { ComponentRegistry } from '@json-render/react';
 import { useRegistry } from '@/lib/registry';
@@ -25,6 +25,18 @@ export function UIRenderer({ tree, data = {}, onAction, className, customRegistr
   // Use custom registry if provided, otherwise use active framework registry
   const registry = customRegistry || activeRegistry?.components;
 
+  // Create action handlers object for the ActionProvider
+  // IMPORTANT: This hook must be called before any conditional returns to maintain hook order
+  const actionHandlers = React.useMemo(() => {
+    return {
+      default: async (params: Record<string, unknown>) => {
+        const action = (params.action as string) || 'default';
+        console.log('Action triggered:', action, params);
+        onAction?.(action, params);
+      },
+    };
+  }, [onAction]);
+
   if (!tree) {
     return (
       <div className={`flex items-center justify-center h-64 text-muted-foreground ${className}`}>
@@ -41,27 +53,18 @@ export function UIRenderer({ tree, data = {}, onAction, className, customRegistr
     );
   }
 
-  // Create action handlers object for the ActionProvider
-  const actionHandlers = React.useMemo(() => {
-    return {
-      default: async (params: Record<string, unknown>) => {
-        const action = (params.action as string) || 'default';
-        console.log('Action triggered:', action, params);
-        onAction?.(action, params);
-      },
-    };
-  }, [onAction]);
-
   return (
     <DataProvider initialData={data}>
-      <ActionProvider handlers={actionHandlers}>
-        <div className={className}>
-          <Renderer
-            tree={tree}
-            registry={registry}
-          />
-        </div>
-      </ActionProvider>
+      <VisibilityProvider>
+        <ActionProvider handlers={actionHandlers}>
+          <div className={className}>
+            <Renderer
+              tree={tree}
+              registry={registry}
+            />
+          </div>
+        </ActionProvider>
+      </VisibilityProvider>
     </DataProvider>
   );
 }

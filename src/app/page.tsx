@@ -3,24 +3,38 @@
 /**
  * Main Page - Generative UI Builder
  *
- * Demonstrates two modes:
- * 1. Test Cases - Pre-built examples with static registries
- * 2. Generate - Dynamic MCP-driven component discovery and rendering
+ * Demonstrates multiple modes:
+ * 1. Chat - Iterative UI building through conversation
+ * 2. Test Cases - Pre-built examples with static registries
+ * 3. Generate - Dynamic MCP-driven component discovery and rendering
+ * 4. MCP Status - View connected MCP servers
  */
 
 import * as React from 'react';
 import type { UITree, UIElement } from '@json-render/core';
 import { RegistryProvider } from '@/lib/registry';
-import { UIRenderer, FrameworkSwitcher, TestCasePicker, JSONEditor } from '@/components/builder';
+import { DesignProvider, useDesign } from '@/lib/design';
+import {
+  UIRenderer,
+  FrameworkSwitcher,
+  TestCasePicker,
+  JSONEditor,
+  ChatInterface,
+  DesignLanguageButtons,
+  ColorSchemeButtons,
+  ExportPanel,
+} from '@/components/builder';
+import { PreviewWrapper } from '@/components/builder/preview-wrapper';
 import { shadcnRegistry } from '@/components/registries/shadcn';
 import { tailwindRegistry } from '@/components/registries/tailwind';
 import { flowbiteRegistry } from '@/components/registries/flowbite';
 import type { TestCase } from '@/lib/tests';
 import type { ComponentMetadata, UIAnalysis, MCPServerType } from '@/lib/mcp/types';
 import { cn } from '@/lib/utils';
+import { Palette, Shapes } from 'lucide-react';
 
 type ViewMode = 'preview' | 'json' | 'split';
-type TabMode = 'test-cases' | 'generate' | 'mcp-status';
+type TabMode = 'chat' | 'test-cases' | 'generate' | 'export' | 'mcp-status';
 
 interface MCPStatus {
   servers: Array<{
@@ -46,15 +60,34 @@ interface AnalysisResult {
   timing: number;
 }
 
+// Helper component to pass design CSS variables to ExportPanel
+function ExportPanelWithDesign({ tree }: { tree: UITree | null }) {
+  const { cssVariables } = useDesign();
+  return <ExportPanel tree={tree} designCssVariables={cssVariables} className="h-full" />;
+}
+
 export default function Home() {
   // Tab and view state
-  const [tabMode, setTabMode] = React.useState<TabMode>('test-cases');
+  const [tabMode, setTabMode] = React.useState<TabMode>('chat');
   const [viewMode, setViewMode] = React.useState<ViewMode>('split');
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
 
   // Test case mode state
   const [selectedTestCase, setSelectedTestCase] = React.useState<TestCase | null>(null);
   const [currentTree, setCurrentTree] = React.useState<UITree | null>(null);
+
+  // Chat mode state
+  const [chatTree, setChatTree] = React.useState<UITree | null>(null);
+
+  // Wrapped handler for chat tree updates with logging
+  const handleChatTreeUpdate = React.useCallback((newTree: UITree) => {
+    console.log('[Page] ===== CHAT TREE UPDATE =====');
+    console.log('[Page] Old chatTree:', chatTree);
+    console.log('[Page] New chatTree:', newTree);
+    console.log('[Page] Calling setChatTree...');
+    setChatTree(newTree);
+    console.log('[Page] setChatTree called');
+  }, [chatTree]);
 
   // Generate mode state
   const [userRequest, setUserRequest] = React.useState('');
@@ -186,10 +219,28 @@ export default function Home() {
     };
   }
 
-  const activeTree = tabMode === 'generate' ? generatedTree : currentTree;
+  // Determine which tree to use based on tab mode
+  // For export/mcp-status tabs, use the first available tree
+  const activeTree =
+    tabMode === 'chat' ? chatTree :
+    tabMode === 'generate' ? generatedTree :
+    tabMode === 'test-cases' ? currentTree :
+    // For export/mcp-status, use whichever tree is available
+    chatTree || generatedTree || currentTree;
+
+  // Debug logging for tree changes
+  React.useEffect(() => {
+    console.log('[Page] chatTree changed:', chatTree ? `${Object.keys(chatTree.elements).length} elements` : 'null');
+  }, [chatTree]);
+
+  React.useEffect(() => {
+    console.log('[Page] activeTree changed:', activeTree ? `${Object.keys(activeTree.elements).length} elements` : 'null');
+    console.log('[Page] Current tabMode:', tabMode);
+  }, [activeTree, tabMode]);
 
   return (
-    <RegistryProvider
+    <DesignProvider>
+      <RegistryProvider
       defaultFramework="shadcn"
       registries={[shadcnRegistry, tailwindRegistry, flowbiteRegistry]}
     >
@@ -218,6 +269,17 @@ export default function Home() {
             {/* Tab Switcher */}
             <div className="inline-flex rounded-lg border p-1 bg-muted/50">
               <button
+                onClick={() => setTabMode('chat')}
+                className={cn(
+                  'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                  tabMode === 'chat'
+                    ? 'bg-background shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Chat
+              </button>
+              <button
                 onClick={() => setTabMode('test-cases')}
                 className={cn(
                   'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
@@ -240,6 +302,17 @@ export default function Home() {
                 Generate (MCP)
               </button>
               <button
+                onClick={() => setTabMode('export')}
+                className={cn(
+                  'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                  tabMode === 'export'
+                    ? 'bg-background shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Export
+              </button>
+              <button
                 onClick={() => setTabMode('mcp-status')}
                 className={cn(
                   'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
@@ -252,11 +325,20 @@ export default function Home() {
               </button>
             </div>
 
+            {/* Design Controls */}
+            <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-lg">
+              <Shapes className="h-4 w-4 text-muted-foreground" />
+              <DesignLanguageButtons />
+              <div className="w-px h-4 bg-border" />
+              <Palette className="h-4 w-4 text-muted-foreground" />
+              <ColorSchemeButtons />
+            </div>
+
             {/* Framework Switcher */}
             <FrameworkSwitcher />
 
             {/* View Mode Switcher */}
-            {tabMode !== 'mcp-status' && (
+            {tabMode !== 'mcp-status' && tabMode !== 'export' && (
               <div className="inline-flex rounded-lg border p-1">
                 <button
                   onClick={() => setViewMode('preview')}
@@ -298,7 +380,19 @@ export default function Home() {
 
         {/* Main Content */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Sidebar */}
+          {/* Chat Mode Sidebar */}
+          {sidebarOpen && tabMode === 'chat' && (
+            <aside className="w-96 border-r bg-card flex flex-col">
+              <ChatInterface
+                currentTree={chatTree}
+                onTreeUpdate={handleChatTreeUpdate}
+                showTreeIndicator={true}
+                className="flex-1"
+              />
+            </aside>
+          )}
+
+          {/* Test Cases Sidebar */}
           {sidebarOpen && tabMode === 'test-cases' && (
             <aside className="w-80 border-r bg-card flex flex-col">
               <div className="p-3 border-b">
@@ -430,6 +524,13 @@ export default function Home() {
             </aside>
           )}
 
+          {/* Export View */}
+          {tabMode === 'export' && (
+            <main className="flex-1 overflow-hidden">
+              <ExportPanelWithDesign tree={activeTree} />
+            </main>
+          )}
+
           {/* MCP Status View */}
           {tabMode === 'mcp-status' && (
             <main className="flex-1 overflow-auto p-6">
@@ -517,8 +618,25 @@ export default function Home() {
           )}
 
           {/* Main Panel (for test-cases and generate modes) */}
-          {tabMode !== 'mcp-status' && (
+          {tabMode !== 'mcp-status' && tabMode !== 'export' && (
             <main className="flex-1 flex flex-col overflow-hidden">
+              {/* Chat Mode Info */}
+              {tabMode === 'chat' && chatTree && (
+                <div className="p-3 border-b bg-muted/50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold">AI Generated UI</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {Object.keys(chatTree.elements).length} elements - iteratively built through conversation
+                      </p>
+                    </div>
+                    <span className="px-2 py-0.5 text-xs bg-primary/10 text-primary rounded-full">
+                      Chat Mode
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Selected Test Case Info */}
               {tabMode === 'test-cases' && selectedTestCase && (
                 <div className="p-3 border-b bg-muted/50">
@@ -570,14 +688,14 @@ export default function Home() {
                       viewMode === 'split' && 'border-r'
                     )}
                   >
-                    <div className="max-w-4xl mx-auto">
+                    <PreviewWrapper className="max-w-4xl mx-auto">
                       <UIRenderer
                         tree={activeTree}
                         onAction={(action, params) => {
                           console.log('Action:', action, params);
                         }}
                       />
-                    </div>
+                    </PreviewWrapper>
                   </div>
                 )}
 
@@ -586,7 +704,13 @@ export default function Home() {
                   <div className={cn('flex-1 overflow-hidden', viewMode === 'split' && 'max-w-md')}>
                     <JSONEditor
                       value={activeTree}
-                      onChange={tabMode === 'test-cases' ? handleTreeChange : undefined}
+                      onChange={
+                        tabMode === 'test-cases'
+                          ? handleTreeChange
+                          : tabMode === 'chat'
+                          ? setChatTree
+                          : undefined
+                      }
                       className="h-full"
                     />
                   </div>
@@ -618,6 +742,7 @@ export default function Home() {
           </div>
         </footer>
       </div>
-    </RegistryProvider>
+      </RegistryProvider>
+    </DesignProvider>
   );
 }

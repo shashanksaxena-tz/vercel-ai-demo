@@ -265,6 +265,49 @@ const shadcnComponents: ComponentRegistry = {
   Collapsible: ({ element, children }) => <UI.Collapsible {...element.props}>{children}</UI.Collapsible>,
 
   // Specialized Components
+  Hero: ({ element }) => {
+    const { title, subtitle, description, primaryAction, secondaryAction, image, align = 'center' } = element.props as {
+      title?: string;
+      subtitle?: string;
+      description?: string;
+      primaryAction?: { label: string; href?: string };
+      secondaryAction?: { label: string; href?: string };
+      image?: string;
+      align?: 'left' | 'center' | 'right';
+    };
+    const alignClass = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
+    const justifyClass = align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center';
+    return (
+      <div className={`py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 ${alignClass}`}>
+        <div className="max-w-3xl mx-auto space-y-6">
+          {subtitle && <p className="text-sm text-muted-foreground uppercase tracking-wide">{subtitle}</p>}
+          {title && <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">{title}</h1>}
+          {description && <p className="text-lg text-muted-foreground">{description}</p>}
+          <div className={`flex flex-wrap gap-4 ${justifyClass}`}>
+            {primaryAction && (
+              <UI.Button asChild size="lg">
+                <a href={primaryAction.href}>{primaryAction.label}</a>
+              </UI.Button>
+            )}
+            {secondaryAction && (
+              <UI.Button asChild variant="outline" size="lg">
+                <a href={secondaryAction.href}>{secondaryAction.label}</a>
+              </UI.Button>
+            )}
+          </div>
+          {image && (
+            <div className="mt-8">
+              <img
+                src={image}
+                alt={title || 'Hero image'}
+                className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  },
   Chart: ({ element }) => {
     const { type, height = 200 } = element.props as { type: string; height?: number };
     return (

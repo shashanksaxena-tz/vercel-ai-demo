@@ -2,6 +2,8 @@
 
 A powerful, AI-ready UI rendering system that combines **json-render** with dynamic component discovery via **MCP (Model Context Protocol)** servers. Generate UIs from natural language by discovering components across 9+ component libraries.
 
+**New to MCP?** Start here: [Quick Start Guide](./docs/QUICK_START.md)
+
 ## Overview
 
 This project demonstrates a complete "Generative UI" pattern where:
@@ -23,10 +25,13 @@ User Request → Analyze → MCP Discovery → Build Registry → json-render �
 
 ### Dynamic MCP Component Discovery
 
-- **9 MCP Servers**: Integrated with major component library MCP servers
+- **15 MCP Servers**: Integrated with major component library MCP servers
 - **Real-time discovery**: Search components across all servers in parallel
 - **Lazy loading**: Fetch component source code on-demand
+- **Icon & Image Integration**: 4 icon/image providers (Lucide, Heroicons, Iconify, Unsplash, Pexels)
 - **Context7 integration**: Fetch up-to-date documentation for any library
+
+**Quick Start**: See [MCP Setup Guide](./docs/MCP_SETUP.md) for installation and configuration.
 
 ### Switchable UI Frameworks
 
@@ -42,18 +47,37 @@ User Request → Analyze → MCP Discovery → Build Registry → json-render �
 
 ## MCP Servers
 
-| Server | Package | Components | Description |
-|--------|---------|------------|-------------|
-| **UI Layouts** | `@ui-layouts/mcp` | 50+ | Searchable UI components from ui-layouts.com |
-| **Shadcn/UI** | `@jpisnice/shadcn-ui-mcp-server` | 40+ | Shadcn components with blocks & demos |
-| **Tailwind CSS** | `tailwindcss-mcp-server` | Templates | Utilities, docs, and component templates |
-| **Flowbite** | `flowbite-mcp` | 60+ | Tailwind CSS component library |
-| **Chakra UI** | `@chakra-ui/react-mcp` | 50+ | Accessible components with theming |
-| **Magic UI** | `@magicuidesign/mcp` | 50+ | Animated components (motion, effects) |
-| **Aceternity UI** | `aceternityui-mcp` | 40+ | Modern animated components |
-| **Material UI** | `@mui/mcp` | 50+ | Google Material Design components |
-| **Context7** | `@upstash/context7-mcp` | Docs | Up-to-date documentation for any library |
-| **Figma** | Figma Desktop | Design | Extract designs and tokens (optional) |
+### Component Libraries (9 servers)
+
+| Server | Package | Components | Status |
+|--------|---------|------------|--------|
+| **UI Layouts** | `@ui-layouts/mcp` | 50+ | ✅ Working |
+| **Shadcn/UI** | `@jpisnice/shadcn-ui-mcp-server` | 40+ | ✅ Working |
+| **Tailwind CSS** | `tailwindcss-mcp-server` | Templates | ✅ Working |
+| **Flowbite** | `flowbite-mcp` | 60+ | ✅ Working |
+| **Chakra UI** | `@chakra-ui/react-mcp` | 50+ | ✅ Working |
+| **Magic UI** | `@magicuidesign/mcp` | 50+ | ✅ Working |
+| **Aceternity UI** | `aceternityui-mcp` | 40+ | ✅ Working |
+| **Material UI** | `@mui/mcp` | 50+ | ✅ Working |
+| **Context7** | `@upstash/context7-mcp` | Docs | ⚠️ Requires API Key |
+
+### Icons & Images (5 servers)
+
+| Server | Package | Assets | Status |
+|--------|---------|--------|--------|
+| **Lucide Icons** | `lucide-icons-mcp` | 1,500+ icons | ✅ Working |
+| **Heroicons** | `heroicons-mcp` | 200+ icons | ✅ Working |
+| **Iconify** | HTTP API | 200,000+ icons | ✅ Working |
+| **Unsplash** | `@drumnation/unsplash-smart-mcp-server` | Stock photos | ⚠️ Requires API Key |
+| **Pexels** | HTTP API | Stock photos | ⚠️ Requires API Key |
+
+### Design Tools (1 server)
+
+| Server | Package | Features | Status |
+|--------|---------|----------|--------|
+| **Figma** | Figma Desktop | Design tokens | ⚙️ Optional |
+
+**Documentation**: See [MCP Setup Guide](./docs/MCP_SETUP.md) for detailed installation and configuration instructions.
 
 ### Available MCP Tools
 
@@ -183,18 +207,51 @@ src/
 └── types/
 ```
 
+## Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](./docs/QUICK_START.md) | Get started in 5 minutes |
+| [MCP Setup](./docs/MCP_SETUP.md) | Detailed MCP server configuration |
+| [Troubleshooting](./docs/MCP_TROUBLESHOOTING.md) | Common issues and solutions |
+| [Test Report](./docs/TEST-REPORT.md) | Comprehensive testing results |
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 18+ (20+ recommended)
 - npm or pnpm
+- API Keys (optional, for image search):
+  - [Unsplash Access Key](https://unsplash.com/developers)
+  - [Pexels API Key](https://www.pexels.com/api/)
 
 ### Installation
 
 ```bash
+# Install dependencies
 npm install
+
+# Configure environment variables
+cp .env.example .env.local
+
+# Edit .env.local and add your API keys (optional)
+# GOOGLE_GENERATIVE_AI_API_KEY=your_key_here
+# UNSPLASH_ACCESS_KEY=your_key_here (optional)
+# PEXELS_API_KEY=your_key_here (optional)
 ```
+
+### Verify MCP Setup
+
+```bash
+# Test all MCP servers
+./scripts/verify-mcp.sh
+
+# Test specific server
+./scripts/verify-mcp.sh shadcn-ui
+```
+
+See [MCP Setup Guide](./docs/MCP_SETUP.md) for detailed configuration.
 
 ### Development
 
@@ -364,18 +421,72 @@ function createDynamicComponent(metadata, fetchSource) {
 }
 ```
 
+## Troubleshooting
+
+### MCP Server Issues
+
+If you encounter issues with MCP servers:
+
+1. **Run the verification script**:
+   ```bash
+   ./scripts/verify-mcp.sh
+   ```
+
+2. **Check server status**:
+   - Visit http://localhost:3000
+   - Navigate to "MCP Status" section
+   - Verify servers are "Connected"
+
+3. **Common issues**:
+   - Server shows "0 tools" → Clear npx cache: `rm -rf ~/.npm/_npx`
+   - Connection timeout → Pre-cache packages (see verification script)
+   - API errors → Verify environment variables in `.env.local`
+
+4. **Detailed troubleshooting**:
+   - See [MCP Troubleshooting Guide](./docs/MCP_TROUBLESHOOTING.md)
+
+### Development Server
+
+```bash
+# Clear cache and restart
+rm -rf .next
+npm run dev
+
+# Check for errors in console
+# Visit http://localhost:3000 and open browser DevTools
+```
+
+## Documentation
+
+- [MCP Setup Guide](./docs/MCP_SETUP.md) - Installation and configuration
+- [MCP Troubleshooting](./docs/MCP_TROUBLESHOOTING.md) - Common issues and solutions
+- [Test Report](./docs/TEST-REPORT.md) - Comprehensive testing results
+- [Issues Report](./docs/ISSUES-REPORT.md) - Known issues and workarounds
+
 ## License
 
 MIT
 
 ## Links
 
+### Project
 - [json-render](https://github.com/vercel-labs/json-render)
 - [MCP Protocol](https://modelcontextprotocol.io/)
+- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
+
+### Component Libraries
 - [UI Layouts MCP](https://github.com/ui-layouts/mcp)
 - [Shadcn UI MCP](https://github.com/Jpisnice/shadcn-ui-mcp-server)
 - [Magic UI MCP](https://github.com/magicuidesign/mcp)
 - [Chakra UI MCP](https://chakra-ui.com/docs/get-started/ai/mcp-server)
 - [Material UI MCP](https://mui.com/material-ui/getting-started/mcp/)
 - [Flowbite MCP](https://github.com/themesberg/flowbite-mcp)
+- [Aceternity UI](https://ui.aceternity.com/)
+
+### Documentation & Assets
 - [Context7](https://github.com/upstash/context7)
+- [Lucide Icons](https://lucide.dev/)
+- [Heroicons](https://heroicons.com/)
+- [Iconify](https://iconify.design/)
+- [Unsplash](https://unsplash.com/developers)
+- [Pexels](https://www.pexels.com/api/)

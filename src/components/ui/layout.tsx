@@ -66,11 +66,11 @@ const rowVariants = cva(
       },
       gap: {
         none: 'gap-0',
-        xs: 'gap-1',
-        sm: 'gap-2',
-        md: 'gap-4',
-        lg: 'gap-6',
-        xl: 'gap-8',
+        xs: 'gap-1 md:gap-1.5',
+        sm: 'gap-2 md:gap-3',
+        md: 'gap-3 md:gap-4',
+        lg: 'gap-4 md:gap-6',
+        xl: 'gap-6 md:gap-8',
       },
       wrap: {
         true: 'flex-wrap',
@@ -127,11 +127,11 @@ const columnVariants = cva(
       },
       gap: {
         none: 'gap-0',
-        xs: 'gap-1',
-        sm: 'gap-2',
-        md: 'gap-4',
-        lg: 'gap-6',
-        xl: 'gap-8',
+        xs: 'gap-1 md:gap-1.5',
+        sm: 'gap-2 md:gap-3',
+        md: 'gap-3 md:gap-4',
+        lg: 'gap-4 md:gap-6',
+        xl: 'gap-6 md:gap-8',
       },
     },
     defaultVariants: {
@@ -170,30 +170,32 @@ interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const gapMap = {
   none: 'gap-0',
-  xs: 'gap-1',
-  sm: 'gap-2',
-  md: 'gap-4',
-  lg: 'gap-6',
-  xl: 'gap-8',
+  xs: 'gap-1 md:gap-1.5',
+  sm: 'gap-2 md:gap-3',
+  md: 'gap-3 md:gap-4',
+  lg: 'gap-4 md:gap-6',
+  xl: 'gap-6 md:gap-8',
 };
 
 const Grid = React.forwardRef<HTMLDivElement, GridProps>(
   ({ className, columns = 3, gap = 'md', responsive, ...props }, ref) => {
+    // Default responsive behavior
+    const defaultResponsive = columns >= 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+      columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1';
+
     const responsiveClasses = responsive
-      ? `sm:grid-cols-${responsive.sm || columns} md:grid-cols-${responsive.md || columns} lg:grid-cols-${responsive.lg || columns}`
-      : '';
+      ? `grid-cols-${responsive.sm || 1} md:grid-cols-${responsive.md || columns} lg:grid-cols-${responsive.lg || columns}`
+      : defaultResponsive;
 
     return (
       <div
         ref={ref}
         className={cn(
           'grid',
-          `grid-cols-${columns}`,
-          gapMap[gap],
           responsiveClasses,
+          gapMap[gap],
           className
         )}
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         {...props}
       />
     );
@@ -212,11 +214,11 @@ const stackVariants = cva(
       },
       spacing: {
         none: 'gap-0',
-        xs: 'gap-1',
-        sm: 'gap-2',
-        md: 'gap-4',
-        lg: 'gap-6',
-        xl: 'gap-8',
+        xs: 'gap-1 md:gap-1.5',
+        sm: 'gap-2 md:gap-3',
+        md: 'gap-3 md:gap-4',
+        lg: 'gap-4 md:gap-6',
+        xl: 'gap-6 md:gap-8',
       },
       align: {
         start: 'items-start',
@@ -237,17 +239,21 @@ interface StackProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof stackVariants> {
   divider?: boolean;
+  responsive?: boolean;
 }
 
 const Stack = React.forwardRef<HTMLDivElement, StackProps>(
-  ({ className, direction, spacing, align, divider, children, ...props }, ref) => {
+  ({ className, direction, spacing, align, divider, responsive = true, children, ...props }, ref) => {
     const childArray = React.Children.toArray(children);
     const isVertical = direction === 'vertical';
+
+    // Add responsive classes for horizontal stacks
+    const responsiveClass = responsive && direction === 'horizontal' ? 'flex-col md:flex-row' : '';
 
     return (
       <div
         ref={ref}
-        className={cn(stackVariants({ direction, spacing, align, className }))}
+        className={cn(stackVariants({ direction, spacing, align }), responsiveClass, className)}
         {...props}
       >
         {divider
@@ -258,7 +264,7 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
                   <div
                     className={cn(
                       'bg-border',
-                      isVertical ? 'h-px w-full' : 'h-full w-px'
+                      isVertical ? 'h-px w-full' : 'h-full w-px hidden md:block'
                     )}
                   />
                 )}

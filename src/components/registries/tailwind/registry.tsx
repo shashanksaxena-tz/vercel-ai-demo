@@ -84,12 +84,13 @@ const tailwindComponents: ComponentRegistry = {
 
   Grid: ({ element, children }) => {
     const { columns = 3, gap = 'md' } = element.props as { columns?: number; gap?: string };
+    const responsiveColumns = columns >= 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+      columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1';
     return (
       <div
-        className={`grid ${
-          gap === 'xs' ? 'gap-1' : gap === 'sm' ? 'gap-2' : gap === 'lg' ? 'gap-6' : gap === 'xl' ? 'gap-8' : 'gap-4'
+        className={`grid ${responsiveColumns} ${
+          gap === 'xs' ? 'gap-1 md:gap-1.5' : gap === 'sm' ? 'gap-2 md:gap-3' : gap === 'lg' ? 'gap-4 md:gap-6' : gap === 'xl' ? 'gap-6 md:gap-8' : 'gap-3 md:gap-4'
         }`}
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
       >
         {children}
       </div>
@@ -97,17 +98,18 @@ const tailwindComponents: ComponentRegistry = {
   },
 
   Stack: ({ element, children }) => {
-    const { direction = 'vertical', spacing = 'md', divider } = element.props as { direction?: string; spacing?: string; divider?: boolean };
+    const { direction = 'vertical', spacing = 'md', divider, responsive = true } = element.props as { direction?: string; spacing?: string; divider?: boolean; responsive?: boolean };
     const items = React.Children.toArray(children);
+    const flexDirection = responsive && direction === 'horizontal' ? 'flex-col md:flex-row' : direction === 'horizontal' ? 'flex-row' : 'flex-col';
     return (
-      <div className={`flex ${direction === 'horizontal' ? '' : 'flex-col'} ${
-        spacing === 'xs' ? 'gap-1' : spacing === 'sm' ? 'gap-2' : spacing === 'lg' ? 'gap-6' : 'gap-4'
+      <div className={`flex ${flexDirection} ${
+        spacing === 'xs' ? 'gap-1 md:gap-1.5' : spacing === 'sm' ? 'gap-2 md:gap-3' : spacing === 'lg' ? 'gap-4 md:gap-6' : 'gap-3 md:gap-4'
       }`}>
         {divider ? items.map((child, i) => (
           <React.Fragment key={i}>
             {child}
             {i < items.length - 1 && (
-              <div className={direction === 'horizontal' ? 'w-px bg-gray-200 self-stretch' : 'h-px bg-gray-200'} />
+              <div className={direction === 'horizontal' ? 'w-px bg-gray-200 self-stretch hidden md:block' : 'h-px bg-gray-200'} />
             )}
           </React.Fragment>
         )) : children}
@@ -149,7 +151,7 @@ const tailwindComponents: ComponentRegistry = {
         variant === 'outlined' ? 'bg-white border border-gray-200' :
         variant === 'filled' ? 'bg-gray-100' : 'bg-transparent'
       } ${
-        padding === 'none' ? '' : padding === 'sm' ? 'p-3' : padding === 'lg' ? 'p-6' : 'p-4'
+        padding === 'none' ? '' : padding === 'sm' ? 'p-2 md:p-3' : padding === 'lg' ? 'p-4 md:p-6' : 'p-3 md:p-4'
       } ${
         rounded === 'none' ? '' : rounded === 'sm' ? 'rounded-sm' : rounded === 'xl' ? 'rounded-xl' : 'rounded-lg'
       } ${hoverable ? 'hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer' : ''} ${clickable ? 'cursor-pointer active:scale-[0.98]' : ''}`}>
@@ -196,7 +198,14 @@ const tailwindComponents: ComponentRegistry = {
   Heading: ({ element }) => {
     const { level = '2', text, color = 'default', align = 'left' } = element.props as { level?: string; text: string; color?: string; align?: string };
     const Tag = `h${level}` as keyof React.JSX.IntrinsicElements;
-    const sizes: Record<string, string> = { '1': 'text-4xl', '2': 'text-3xl', '3': 'text-2xl', '4': 'text-xl', '5': 'text-lg', '6': 'text-base' };
+    const sizes: Record<string, string> = {
+      '1': 'text-3xl md:text-4xl lg:text-5xl',
+      '2': 'text-2xl md:text-3xl lg:text-4xl',
+      '3': 'text-xl md:text-2xl lg:text-3xl',
+      '4': 'text-lg md:text-xl lg:text-2xl',
+      '5': 'text-base md:text-lg',
+      '6': 'text-sm md:text-base'
+    };
     return (
       <Tag className={`${sizes[level]} font-bold ${
         color === 'primary' ? 'text-blue-600' : color === 'muted' ? 'text-gray-500' : 'text-gray-900'
@@ -964,6 +973,55 @@ const tailwindComponents: ComponentRegistry = {
   },
 
   // Specialized
+  Hero: ({ element }) => {
+    const { title, subtitle, description, primaryAction, secondaryAction, image, align = 'center' } = element.props as {
+      title?: string;
+      subtitle?: string;
+      description?: string;
+      primaryAction?: { label: string; href?: string };
+      secondaryAction?: { label: string; href?: string };
+      image?: string;
+      align?: 'left' | 'center' | 'right';
+    };
+    const alignClass = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
+    const justifyClass = align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center';
+    return (
+      <div className={`py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 ${alignClass}`}>
+        <div className="max-w-3xl mx-auto space-y-6">
+          {subtitle && <p className="text-sm text-gray-600 uppercase tracking-wide">{subtitle}</p>}
+          {title && <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900">{title}</h1>}
+          {description && <p className="text-lg text-gray-600">{description}</p>}
+          <div className={`flex flex-wrap gap-4 ${justifyClass}`}>
+            {primaryAction && (
+              <a
+                href={primaryAction.href}
+                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+              >
+                {primaryAction.label}
+              </a>
+            )}
+            {secondaryAction && (
+              <a
+                href={secondaryAction.href}
+                className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 transition"
+              >
+                {secondaryAction.label}
+              </a>
+            )}
+          </div>
+          {image && (
+            <div className="mt-8">
+              <img
+                src={image}
+                alt={title || 'Hero image'}
+                className="w-full max-w-2xl mx-auto rounded-lg shadow-xl"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  },
   Chart: ({ element }) => {
     const { type, height = 200 } = element.props as { type: string; height?: number };
     return (

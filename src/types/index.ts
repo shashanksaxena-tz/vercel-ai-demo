@@ -5,7 +5,15 @@
 import type { UITree, UIElement } from '@json-render/core';
 
 // Supported UI Frameworks/Libraries
-export type UIFramework = 'shadcn' | 'tailwind' | 'flowbite' | 'mui' | 'antd';
+export type UIFramework =
+  | 'shadcn'
+  | 'tailwind'
+  | 'flowbite'
+  | 'mui'
+  | 'antd'
+  | 'chakra'
+  | 'magic-ui'
+  | 'aceternity';
 
 // MCP Server Types
 export type MCPServerType =

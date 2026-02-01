@@ -16,6 +16,20 @@ export {
   searchAllServers,
   fetchComponentSource,
   getConnectionStatus,
+  // Lucide Icons functions
+  searchLucideIcons,
+  getLucideIcon,
+  listLucideCategories,
+  // Heroicons functions
+  searchHeroicons,
+  getHeroicon,
+  // Unsplash Images functions
+  searchUnsplashImages,
+  getRandomUnsplashImage,
+  getUnsplashImage,
+  // Pexels Images functions
+  searchPexelsImages,
+  getPexelsImage,
 } from './mcp-client';
 
 // Dynamic Registry

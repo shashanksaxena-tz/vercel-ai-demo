@@ -16,11 +16,11 @@ const cardVariants = cva(
       },
       padding: {
         none: 'p-0',
-        xs: 'p-2',
-        sm: 'p-3',
-        md: 'p-4',
-        lg: 'p-6',
-        xl: 'p-8',
+        xs: 'p-2 md:p-2',
+        sm: 'p-2 md:p-3',
+        md: 'p-3 md:p-4',
+        lg: 'p-4 md:p-6',
+        xl: 'p-6 md:p-8',
       },
       rounded: {
         none: 'rounded-none',
@@ -75,17 +75,17 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, title, subtitle, avatar, action, children, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex items-start gap-4 p-4 pb-0', className)}
+      className={cn('flex items-start gap-3 md:gap-4 p-3 md:p-4 pb-0', className)}
       {...props}
     >
       {avatar && (
         <div className="flex-shrink-0">
-          <img src={avatar} alt="" className="h-10 w-10 rounded-full" />
+          <img src={avatar} alt="" className="h-8 w-8 md:h-10 md:w-10 rounded-full" />
         </div>
       )}
       <div className="flex-1 space-y-1">
-        {title && <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>}
-        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+        {title && <h3 className="text-base md:text-lg font-semibold leading-none tracking-tight">{title}</h3>}
+        {subtitle && <p className="text-xs md:text-sm text-muted-foreground">{subtitle}</p>}
         {children}
       </div>
       {action && <div className="flex-shrink-0">{action}</div>}
@@ -100,11 +100,11 @@ interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const paddingMap = {
   none: 'p-0',
-  xs: 'p-2',
-  sm: 'p-3',
-  md: 'p-4',
-  lg: 'p-6',
-  xl: 'p-8',
+  xs: 'p-2 md:p-2',
+  sm: 'p-2 md:p-3',
+  md: 'p-3 md:p-4',
+  lg: 'p-4 md:p-6',
+  xl: 'p-6 md:p-8',
 };
 
 const CardBody = React.forwardRef<HTMLDivElement, CardBodyProps>(
@@ -129,7 +129,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, align = 'end', ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex items-center gap-2 p-4 pt-0', alignMap[align], className)}
+      className={cn('flex items-center gap-2 md:gap-3 p-3 md:p-4 pt-0', alignMap[align], className)}
       {...props}
     />
   )
