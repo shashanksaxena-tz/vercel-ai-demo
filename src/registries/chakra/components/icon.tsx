@@ -7,6 +7,7 @@ export const Icon = ({ element }: ComponentRenderProps) => {
     const { name, size = 24, color, style } = element.props;
 
     // Get the icon from Lucide
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const IconComponent = (LucideIcons as unknown as Record<string, React.ComponentType<any>>)[name as string];
 
     if (!IconComponent) {
@@ -19,7 +20,7 @@ export const Icon = ({ element }: ComponentRenderProps) => {
             asChild
             style={{ ...style as React.CSSProperties, color: color as string }}
         >
-            <IconComponent size={size as number} />
+            {React.createElement(IconComponent, { size: size as number })}
         </ChakraIcon>
     );
 };
