@@ -28,11 +28,11 @@ export const Stack = ({ element, children }: ComponentRenderProps) => {
       className={cn(
         'flex',
         direction === 'row' ? 'flex-row' : 'flex-col',
-        align && alignItems[align as keyof typeof alignItems],
-        justify && justifyContent[justify as keyof typeof justifyContent],
-        wrap && 'flex-wrap'
+        align ? alignItems[align as keyof typeof alignItems] : undefined,
+        justify ? justifyContent[justify as keyof typeof justifyContent] : undefined,
+        wrap ? 'flex-wrap' : undefined
       )}
-      style={{ gap: gapValue, ...style as React.CSSProperties }}
+      style={{ gap: gapValue as string | number, ...style as React.CSSProperties }}
     >
       {children}
     </div>

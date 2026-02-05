@@ -2,6 +2,29 @@ import { z } from 'zod';
 
 const stylesSchema = z.record(z.string(), z.any()).optional();
 
+// Recursive UI Element Schema
+export type UIElement = {
+  type: string;
+  key: string;
+  props: Record<string, any>;
+  children?: UIElement[];
+};
+
+export const uiElementSchema: z.ZodType<UIElement> = z.lazy(() =>
+  z.object({
+    type: z.enum([
+      'Button', 'Text', 'Badge', 'Avatar', 'Icon',
+      'Card', 'Alert', 'Metric',
+      'Input', 'Select', 'Checkbox', 'Switch',
+      'Stack', 'Grid', 'Container',
+      'Table', 'Chart', 'Tabs'
+    ]),
+    key: z.string(),
+    props: z.record(z.string(), z.any()),
+    children: z.array(uiElementSchema).optional(),
+  })
+);
+
 export const components = {
   // Atoms
   Button: z.object({
@@ -90,17 +113,17 @@ export const components = {
   Stack: z.object({
     direction: z.enum(['row', 'column']).optional(),
     gap: z.number().optional(),
-    children: z.array(z.any()), // Recursive definition needed properly
+    children: z.array(z.lazy(() => uiElementSchema)).optional(),
     style: stylesSchema,
   }),
   Grid: z.object({
     columns: z.number().optional(),
     gap: z.number().optional(),
-    children: z.array(z.any()),
+    children: z.array(z.lazy(() => uiElementSchema)).optional(),
     style: stylesSchema,
   }),
   Container: z.object({
-    children: z.any(),
+    children: z.lazy(() => uiElementSchema).optional(),
     maxWidth: z.string().optional(),
     style: stylesSchema,
   }),
@@ -127,7 +150,7 @@ export const components = {
     items: z.array(z.object({
       label: z.string(),
       value: z.string(),
-      content: z.any(),
+      content: z.lazy(() => uiElementSchema),
     })),
     defaultValue: z.string().optional(),
     style: stylesSchema,
@@ -136,4 +159,8 @@ export const components = {
 
 export const catalog = {
   getSchema: () => components,
+  getOutputSchema: () => z.object({
+    ui: uiElementSchema,
+    summary: z.string(),
+  }),
 };
