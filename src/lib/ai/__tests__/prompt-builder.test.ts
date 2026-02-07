@@ -12,6 +12,7 @@ const mockCoreBlock = (name: string, category: string, props: any[] = []): Block
   props,
   category: category as any,
   tags: [],
+  defaultProps: {},
   description: `${name} component`,
 });
 
@@ -24,6 +25,7 @@ const mockExtendedBlock = (name: string, source: string): BlockDefinition => ({
   props: [{ name: 'className', type: 'string', required: false }],
   category: 'other',
   tags: ['animated'],
+  defaultProps: {},
   description: `${name} animated component`,
 });
 

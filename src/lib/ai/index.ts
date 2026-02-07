@@ -31,6 +31,7 @@ export {
   GenerateRequestSchema,
   GenerateResponseSchema,
   VALID_COMPONENT_TYPES,
+  getValidComponentTypesFromBlocks,
   SizeVariantSchema,
   ColorVariantSchema,
   AlignmentSchema,
@@ -54,7 +55,14 @@ export {
   buildFreshGenerationPrompt,
   buildRefinementPrompt,
   buildMessages,
+  buildSystemPromptFromBlocks,
 } from './prompts';
+
+// Dynamic prompt builder from block definitions
+export {
+  buildComponentReferenceFromBlocks,
+  buildValidComponentTypes,
+} from './prompt-builder';
 
 // Dynamic prompt building with MCP component discovery
 export {

@@ -6,6 +6,10 @@
  */
 
 import { COMPONENT_REFERENCE, UITREE_STRUCTURE_DOC, GENERATION_RULES } from './prompts';
+import { buildComponentReferenceFromBlocks } from './prompt-builder';
+import { CORE_BLOCK_DEFINITIONS } from '../registry/core-blocks';
+import { MAGIC_UI_BLOCK_DEFINITIONS, ACETERNITY_BLOCK_DEFINITIONS } from '../registry/extended-blocks';
+import type { BlockDefinition } from '../registry/block-registry';
 import type { DiscoveryIntent } from '../mcp/smart-discovery';
 import { estimateComponentTokens, withinTokenBudget, adjustForBudget } from '../mcp/smart-discovery';
 import type { ComponentPriority } from '../mcp/smart-discovery';
@@ -71,6 +75,18 @@ export interface MCPComponentMetadata {
     type: 'framer-motion' | 'css' | 'spring' | 'gsap';
     complexity: 'simple' | 'medium' | 'complex';
   };
+}
+
+/**
+ * Get all registered block definitions (core + extended).
+ * This is the baseline block set that the prompt builder uses.
+ */
+function getAllRegisteredBlocks(): BlockDefinition[] {
+  return [
+    ...CORE_BLOCK_DEFINITIONS,
+    ...MAGIC_UI_BLOCK_DEFINITIONS,
+    ...ACETERNITY_BLOCK_DEFINITIONS,
+  ];
 }
 
 /**
@@ -194,12 +210,16 @@ When generating UITree structures, use the full namespace prefix in the \`type\`
 \`\`\`
 ` : '';
 
+  // Build component reference from block definitions (core + extended)
+  const registeredBlocks = getAllRegisteredBlocks();
+  const blockBasedReference = buildComponentReferenceFromBlocks(registeredBlocks);
+
   // Assemble enhanced prompt
   return `Expert UI designer generating UITree for json-render.
 
 🎯 CRITICAL: Production-ready UIs with realistic content. NO empty/placeholder.
 
-${COMPONENT_REFERENCE}
+${blockBasedReference}
 
 ${mcpSection}
 
@@ -228,14 +248,17 @@ Professional, polished UIs.`;
 
 /**
  * Build original system prompt (no MCP components)
- * Used when dynamic discovery is disabled
+ * Uses block-based component reference for core + extended blocks.
  */
 function buildOriginalSystemPrompt(): string {
+  const registeredBlocks = getAllRegisteredBlocks();
+  const blockBasedReference = buildComponentReferenceFromBlocks(registeredBlocks);
+
   return `Expert UI designer generating UITree for json-render.
 
 🎯 CRITICAL: Production-ready UIs with realistic content. NO empty/placeholder.
 
-${COMPONENT_REFERENCE}
+${blockBasedReference}
 
 ${UITREE_STRUCTURE_DOC}
 

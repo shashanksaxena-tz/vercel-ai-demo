@@ -22,6 +22,8 @@ import { muiRegistry } from '@/components/registries/mui/registry';
 import { chakraRegistry } from '@/components/registries/chakra/registry';
 import { tailwindRegistry } from '@/components/registries/tailwind/registry';
 import { flowbiteRegistry } from '@/components/registries/flowbite/registry';
+import { magicUIRegistry } from '@/components/registries/magic-ui/registry';
+import { aceternityRegistry } from '@/components/registries/aceternity/registry';
 
 // MCP component metadata type
 export interface MCPComponentMetadata {
@@ -128,7 +130,7 @@ export const frameworkInfoRegistry: Record<UIFramework, FrameworkInfo> = {
     icon: 'sparkles',
     color: '#6366f1',
     website: 'https://magicui.design',
-    isAvailable: false, // Will be implemented in Task 3.4
+    isAvailable: true,
     isDarkMode: true,
   },
   aceternity: {
@@ -139,7 +141,7 @@ export const frameworkInfoRegistry: Record<UIFramework, FrameworkInfo> = {
     icon: 'moon',
     color: '#8b5cf6',
     website: 'https://ui.aceternity.com',
-    isAvailable: false, // Will be implemented in Task 3.4
+    isAvailable: true,
     isDarkMode: true,
   },
 };
@@ -218,10 +220,14 @@ export function getFrameworkRegistry(framework: UIFramework): RegistryDefinition
     case 'flowbite':
       registry = flowbiteRegistry;
       break;
-    case 'antd':
     case 'magic-ui':
+      registry = magicUIRegistry;
+      break;
     case 'aceternity':
-      // These will be implemented in future tasks
+      registry = aceternityRegistry;
+      break;
+    case 'antd':
+      // Will be implemented in a future task
       // For now, return a placeholder registry
       registry = createPlaceholderRegistryDefinition(framework);
       break;
@@ -234,12 +240,6 @@ export function getFrameworkRegistry(framework: UIFramework): RegistryDefinition
   // Apply core:: namespace to all components
   // This ensures components work with both "Column" and "core::Column" references
   const namespacedComponents = namespaceRegistry(registry.components, 'core');
-
-  // Debug: Log sample component keys to verify namespacing
-  const sampleKeys = Object.keys(namespacedComponents)
-    .filter(k => k.includes('Column') || k.includes('Container'))
-    .slice(0, 5);
-  console.log(`[Registry] ${framework} namespaced components (sample):`, sampleKeys);
 
   const namespacedRegistry = {
     ...registry,
@@ -422,13 +422,6 @@ export function mergeRegistry(
     ...namespacedCore,
     ...mcpRegistry,
   };
-
-  // Log merge statistics
-  const coreCount = Object.keys(baseRegistry.components).length;
-  const mcpCount = Object.keys(mcpRegistry).length;
-  console.log(
-    `[Registry Merge] ${baseRegistry.framework}: ${coreCount} core + ${mcpCount} MCP = ${Object.keys(mergedComponents).length} total components`
-  );
 
   return {
     ...baseRegistry,

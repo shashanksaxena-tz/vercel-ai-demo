@@ -3,15 +3,22 @@
  *
  * Contains the system prompts and component reference documentation
  * used to guide AI in generating json-render compatible UI trees.
+ *
+ * The static COMPONENT_REFERENCE is kept as a fallback. For dynamic prompt
+ * generation from BlockDefinitions, use buildSystemPromptFromBlocks().
  */
+
+import type { BlockDefinition } from '@/lib/registry/block-registry';
+import { buildComponentReferenceFromBlocks } from './prompt-builder';
 
 // ============================================================================
 // Component Reference Documentation
 // ============================================================================
 
 /**
- * Comprehensive documentation of all 78+ available components
- * This is included in the system prompt to help AI understand available options
+ * Static component reference (78 core components).
+ * Kept for backward compatibility. Prefer buildSystemPromptFromBlocks()
+ * for dynamic generation that includes extended/MCP components.
  */
 export const COMPONENT_REFERENCE = `
 ## Components (78+)
@@ -323,4 +330,46 @@ export function buildMessages(
   messages.push({ role: 'user', content: userPrompt });
 
   return messages;
+}
+
+// ============================================================================
+// Dynamic System Prompt from Block Registry
+// ============================================================================
+
+/**
+ * Build a system prompt dynamically from block definitions.
+ * Replaces static COMPONENT_REFERENCE with auto-generated component docs
+ * from the block registry, supporting core + extended + MCP components.
+ *
+ * @param blocks - Array of block definitions to include in the prompt
+ * @returns Complete system prompt string
+ */
+export function buildSystemPromptFromBlocks(blocks: BlockDefinition[]): string {
+  const componentReference = buildComponentReferenceFromBlocks(blocks);
+
+  return `Expert UI designer generating UITree structures for json-render React system.
+
+🎯 CRITICAL: Generate production-ready UIs with realistic content. NO empty/placeholder components.
+
+${componentReference}
+
+${UITREE_STRUCTURE_DOC}
+
+${GENERATION_RULES}
+
+## Response
+- **tree**: Complete UITree with REALISTIC CONTENT
+- **explanation**: 1-2 sentences
+- **suggestedStyles**: Optional Tailwind classes map
+
+Checklist:
+✓ Headings: specific text
+✓ Text: 1-3 real sentences
+✓ Buttons: action labels + icons
+✓ Metrics: formatted values + icons
+✓ Images: picsum src + alt
+✓ Layouts: gap values
+✓ NO lorem ipsum
+
+Create professional, polished UIs.`;
 }

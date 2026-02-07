@@ -22,3 +22,16 @@ export {
   ColorSchemeBadge,
 } from './color-panel';
 export { PreviewWrapper } from './preview-wrapper';
+
+// Phase 2: Visual Builder Components
+export { ComponentPalette } from './component-palette';
+export { PropsEditor } from './props-editor';
+export { TreeOutline } from './tree-outline';
+export { TemplateGallery } from './template-gallery';
+export type { TemplateGalleryProps } from './template-gallery';
+export { ViewportToolbar } from './viewport-toolbar';
+export { NodeContextMenu } from './node-context-menu';
+export type { ContextMenuAction } from './node-context-menu';
+export { UnresolvedBlock } from './unresolved-block';
+export { WelcomeScreen } from './welcome-screen';
+export { BuilderWorkspace } from './builder-workspace';

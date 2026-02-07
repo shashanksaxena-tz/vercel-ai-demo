@@ -6,6 +6,9 @@
  */
 
 import { z } from 'zod';
+import { buildValidComponentTypes } from './prompt-builder';
+import { CORE_BLOCK_DEFINITIONS } from '../registry/core-blocks';
+import { MAGIC_UI_BLOCK_DEFINITIONS, ACETERNITY_BLOCK_DEFINITIONS } from '../registry/extended-blocks';
 
 // ============================================================================
 // UIElement Schema
@@ -255,6 +258,26 @@ export type ValidComponentType = (typeof VALID_COMPONENT_TYPES)[number];
  * Schema for validating component types
  */
 export const ComponentTypeSchema = z.enum(VALID_COMPONENT_TYPES);
+
+/**
+ * Get all valid component types dynamically from block definitions.
+ * Includes core (78), extended (magic-ui, aceternity), and optionally
+ * any additional blocks passed in.
+ *
+ * Returns the same format as VALID_COMPONENT_TYPES (core without namespace,
+ * extended with mcp:: prefix).
+ */
+export function getValidComponentTypesFromBlocks(
+  additionalBlocks: import('../registry/block-registry').BlockDefinition[] = []
+): string[] {
+  const allBlocks = [
+    ...CORE_BLOCK_DEFINITIONS,
+    ...MAGIC_UI_BLOCK_DEFINITIONS,
+    ...ACETERNITY_BLOCK_DEFINITIONS,
+    ...additionalBlocks,
+  ];
+  return buildValidComponentTypes(allBlocks);
+}
 
 // ============================================================================
 // Prop Schemas for Common Patterns
