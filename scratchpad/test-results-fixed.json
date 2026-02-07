@@ -1,0 +1,132 @@
+{
+  "timestamp": "2026-02-03T18:32:16.578Z",
+  "summary": {
+    "totalLogs": 27,
+    "totalErrors": 5,
+    "rendererErrors": 0,
+    "treeUpdates": 1,
+    "messageCount": 1,
+    "hasContent": false,
+    "previewTextLength": 84
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Received `%s` for a non-boolean attribute `%s`.\n\nIf you want to write it to the DOM, pass a string instead: %s=\"%s\" or %s={value.toString()}.\n\nIf you used to conditionally omit it with %s={condition && value}, pass %s={condition ? value : undefined} instead. false wrap wrap false wrap wrap wrap",
+    "You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.",
+    "You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.",
+    "Received `%s` for a non-boolean attribute `%s`.\n\nIf you want to write it to the DOM, pass a string instead: %s=\"%s\" or %s={value.toString()}. true rounded rounded true rounded"
+  ],
+  "treeUpdateLogs": [
+    "[Page] chatTree changed: 12 elements"
+  ],
+  "allLogs": [
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[HMR] connected"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] shadcn namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] mui namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] chakra namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] tailwind namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] flowbite namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] antd namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] magic-ui namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "log",
+      "text": "[Registry] aceternity namespaced components (sample): [core::Container, Container, core::Column, Column]"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "type": "log",
+      "text": "[Page] chatTree changed: null"
+    },
+    {
+      "type": "log",
+      "text": "[Page] activeTree changed: null"
+    },
+    {
+      "type": "log",
+      "text": "[Page] Current tabMode: chat"
+    },
+    {
+      "type": "log",
+      "text": "[Page] ===== CHAT TREE UPDATE ====="
+    },
+    {
+      "type": "log",
+      "text": "[Page] Old chatTree: null"
+    },
+    {
+      "type": "log",
+      "text": "[Page] New chatTree: {root: login_page_container, elements: Object}"
+    },
+    {
+      "type": "log",
+      "text": "[Page] Calling setChatTree..."
+    },
+    {
+      "type": "log",
+      "text": "[Page] setChatTree called"
+    },
+    {
+      "type": "error",
+      "text": "Received `%s` for a non-boolean attribute `%s`.\n\nIf you want to write it to the DOM, pass a string instead: %s=\"%s\" or %s={value.toString()}.\n\nIf you used to conditionally omit it with %s={condition && value}, pass %s={condition ? value : undefined} instead. false wrap wrap false wrap wrap wrap"
+    },
+    {
+      "type": "error",
+      "text": "You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`."
+    },
+    {
+      "type": "error",
+      "text": "You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`."
+    },
+    {
+      "type": "error",
+      "text": "Received `%s` for a non-boolean attribute `%s`.\n\nIf you want to write it to the DOM, pass a string instead: %s=\"%s\" or %s={value.toString()}. true rounded rounded true rounded"
+    },
+    {
+      "type": "log",
+      "text": "[Page] chatTree changed: 12 elements"
+    },
+    {
+      "type": "log",
+      "text": "[Page] activeTree changed: 12 elements"
+    },
+    {
+      "type": "log",
+      "text": "[Page] Current tabMode: chat"
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)"
+    }
+  ]
+}

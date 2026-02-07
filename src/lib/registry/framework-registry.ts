@@ -3,10 +3,16 @@
  *
  * Creates and manages framework-specific registries.
  * Supports all 8 UI frameworks with lazy loading capabilities.
+ *
+ * Namespace Support:
+ * - core::ComponentName - Static framework components (78 components)
+ * - mcp::ComponentName - Dynamically discovered MCP components
+ * - ComponentName (no namespace) - Defaults to core::ComponentName
  */
 
 import type { UIFramework } from '@/types';
 import type { RegistryDefinition, RegistryTheme } from './registry-context';
+import type { ComponentRegistry } from '@json-render/react';
 import { getThemeTokens, type ThemeTokens } from './theme-tokens';
 import { createPlaceholderRegistry } from './placeholder-components';
 
@@ -16,6 +22,22 @@ import { muiRegistry } from '@/components/registries/mui/registry';
 import { chakraRegistry } from '@/components/registries/chakra/registry';
 import { tailwindRegistry } from '@/components/registries/tailwind/registry';
 import { flowbiteRegistry } from '@/components/registries/flowbite/registry';
+
+// MCP component metadata type
+export interface MCPComponentMetadata {
+  name: string;
+  description: string;
+  props?: Record<string, {
+    type: string;
+    description?: string;
+    required?: boolean;
+    default?: any;
+  }>;
+  source: string;
+  examples?: string[];
+  // Component renderer function
+  renderer?: React.ComponentType<any>;
+}
 
 // Framework metadata for display
 export interface FrameworkInfo {
@@ -164,6 +186,8 @@ function createPlaceholderRegistryDefinition(framework: UIFramework): RegistryDe
 }
 
 // Registry cache
+// Note: In development, Next.js Fast Refresh will naturally reload this module
+// and recreate the Map, so no manual cache clearing is needed
 const registryCache = new Map<UIFramework, RegistryDefinition>();
 
 /**
@@ -207,10 +231,25 @@ export function getFrameworkRegistry(framework: UIFramework): RegistryDefinition
       registry = shadcnRegistry;
   }
 
-  // Cache the registry
-  registryCache.set(framework, registry);
+  // Apply core:: namespace to all components
+  // This ensures components work with both "Column" and "core::Column" references
+  const namespacedComponents = namespaceRegistry(registry.components, 'core');
 
-  return registry;
+  // Debug: Log sample component keys to verify namespacing
+  const sampleKeys = Object.keys(namespacedComponents)
+    .filter(k => k.includes('Column') || k.includes('Container'))
+    .slice(0, 5);
+  console.log(`[Registry] ${framework} namespaced components (sample):`, sampleKeys);
+
+  const namespacedRegistry = {
+    ...registry,
+    components: namespacedComponents,
+  };
+
+  // Cache the namespaced registry
+  registryCache.set(framework, namespacedRegistry);
+
+  return namespacedRegistry;
 }
 
 /**
@@ -275,4 +314,148 @@ export function preloadRegistries(): void {
   Object.keys(frameworkInfoRegistry).forEach((framework) => {
     getFrameworkRegistry(framework as UIFramework);
   });
+}
+
+/**
+ * Parse namespaced component type
+ * Examples:
+ * - "Button" -> { namespace: "core", component: "Button" }
+ * - "core::Button" -> { namespace: "core", component: "Button" }
+ * - "mcp::ShimmerButton" -> { namespace: "mcp", component: "ShimmerButton" }
+ */
+export function parseComponentType(type: string): { namespace: string; component: string } {
+  const parts = type.split('::');
+
+  if (parts.length === 1) {
+    // No namespace, default to core
+    return { namespace: 'core', component: parts[0] };
+  }
+
+  if (parts.length === 2) {
+    return { namespace: parts[0], component: parts[1] };
+  }
+
+  // Invalid format, default to core
+  console.warn(`Invalid component type format: ${type}, defaulting to core`);
+  return { namespace: 'core', component: type };
+}
+
+/**
+ * Format component type with namespace
+ * Examples:
+ * - formatComponentType("Button", "core") -> "core::Button"
+ * - formatComponentType("ShimmerButton", "mcp") -> "mcp::ShimmerButton"
+ */
+export function formatComponentType(component: string, namespace: string = 'core'): string {
+  return `${namespace}::${component}`;
+}
+
+/**
+ * Add namespace prefix to all components in a registry
+ * Converts { Button: Component } to { "core::Button": Component }
+ */
+function namespaceRegistry(
+  registry: ComponentRegistry,
+  namespace: string = 'core'
+): ComponentRegistry {
+  const namespacedRegistry: ComponentRegistry = {};
+
+  for (const [key, component] of Object.entries(registry)) {
+    // Add both namespaced and non-namespaced versions for backward compatibility
+    const namespacedKey = formatComponentType(key, namespace);
+    namespacedRegistry[namespacedKey] = component;
+
+    // Only add non-namespaced version for core components
+    if (namespace === 'core') {
+      namespacedRegistry[key] = component;
+    }
+  }
+
+  return namespacedRegistry;
+}
+
+/**
+ * Convert MCP component metadata to ComponentRegistry entries
+ */
+function mcpMetadataToRegistry(components: MCPComponentMetadata[]): ComponentRegistry {
+  const registry: ComponentRegistry = {};
+
+  for (const component of components) {
+    if (component.renderer) {
+      // Use mcp:: namespace for all MCP components
+      const namespacedKey = formatComponentType(component.name, 'mcp');
+      registry[namespacedKey] = component.renderer;
+    }
+  }
+
+  return registry;
+}
+
+/**
+ * Merge MCP components into a framework registry
+ *
+ * @param baseRegistry - The base framework registry
+ * @param mcpComponents - MCP component metadata to merge
+ * @returns Enhanced registry with both core and MCP components
+ *
+ * Example usage:
+ * ```ts
+ * const shadcnWithMCP = mergeRegistry(shadcnRegistry, mcpComponents);
+ * // Result includes:
+ * // - core::Button (static shadcn)
+ * // - mcp::ShimmerButton (dynamic MCP)
+ * // - Button (alias to core::Button for backward compatibility)
+ * ```
+ */
+export function mergeRegistry(
+  baseRegistry: RegistryDefinition,
+  mcpComponents: MCPComponentMetadata[] = []
+): RegistryDefinition {
+  // Namespace the core registry components
+  const namespacedCore = namespaceRegistry(baseRegistry.components, 'core');
+
+  // Convert MCP metadata to registry with mcp:: namespace
+  const mcpRegistry = mcpMetadataToRegistry(mcpComponents);
+
+  // Merge registries - MCP components cannot override core components
+  const mergedComponents: ComponentRegistry = {
+    ...namespacedCore,
+    ...mcpRegistry,
+  };
+
+  // Log merge statistics
+  const coreCount = Object.keys(baseRegistry.components).length;
+  const mcpCount = Object.keys(mcpRegistry).length;
+  console.log(
+    `[Registry Merge] ${baseRegistry.framework}: ${coreCount} core + ${mcpCount} MCP = ${Object.keys(mergedComponents).length} total components`
+  );
+
+  return {
+    ...baseRegistry,
+    components: mergedComponents,
+  };
+}
+
+/**
+ * Get framework registry with optional MCP components merged
+ *
+ * @param framework - The UI framework
+ * @param mcpComponents - Optional MCP components to merge
+ * @returns Registry with core and optionally MCP components
+ */
+export function getFrameworkRegistryWithMCP(
+  framework: UIFramework,
+  mcpComponents: MCPComponentMetadata[] = []
+): RegistryDefinition {
+  const baseRegistry = getFrameworkRegistry(framework);
+
+  if (mcpComponents.length === 0) {
+    // No MCP components, just namespace the core registry
+    return {
+      ...baseRegistry,
+      components: namespaceRegistry(baseRegistry.components, 'core'),
+    };
+  }
+
+  return mergeRegistry(baseRegistry, mcpComponents);
 }

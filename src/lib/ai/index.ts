@@ -56,6 +56,17 @@ export {
   buildMessages,
 } from './prompts';
 
+// Dynamic prompt building with MCP component discovery
+export {
+  buildEnhancedSystemPrompt,
+  buildDynamicUserPrompt,
+  buildDynamicRefinementPrompt,
+  calculateTokenUsage,
+  type MCPComponentMetadata,
+  type DynamicPromptConfig,
+  type TokenUsage,
+} from './dynamic-prompts';
+
 // Chat context types only (components exported from ./chat-context directly for client use)
 export type {
   ChatMessage,

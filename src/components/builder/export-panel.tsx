@@ -166,8 +166,14 @@ export function ExportPanel({
 
   // Get installation instructions
   const installInstructions = React.useMemo(() => {
-    return getInstallationInstructions(framework);
-  }, [framework]);
+    if (!tree) return getInstallationInstructions(framework);
+
+    // Check if tree has animated components
+    const { hasAnimatedComponents } = require('@/lib/export/code-generator');
+    const hasAnimations = hasAnimatedComponents(tree, framework);
+
+    return getInstallationInstructions(framework, hasAnimations);
+  }, [framework, tree]);
 
   // Get content for current view
   const currentContent = React.useMemo(() => {

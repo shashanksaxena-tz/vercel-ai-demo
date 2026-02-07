@@ -50,6 +50,8 @@ export interface GenerationContext {
   framework?: string;
   /** Previous conversation for context-aware generation */
   conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  /** Override system prompt (used for dynamic MCP discovery) */
+  systemPromptOverride?: string;
 }
 
 /**
@@ -75,9 +77,9 @@ export interface GenerationResult {
 const AI_MODEL = 'gemini-2.5-flash';
 
 /**
- * Temperature for generation (0.7 for creative but consistent output)
+ * Temperature for generation (0.4 for faster, more consistent output)
  */
-const GENERATION_TEMPERATURE = 0.7;
+const GENERATION_TEMPERATURE = 0.4;
 
 // ============================================================================
 // Main Generator Function
@@ -125,13 +127,17 @@ export async function generateUIFromPrompt(
   // Build the messages array with history
   const messages = buildMessages(userMessage, context?.conversationHistory);
 
+  // Use enhanced system prompt if provided, otherwise use default
+  const systemPrompt = context?.systemPromptOverride || SYSTEM_PROMPT;
+
   // Generate the UI tree using structured output
   const result = await generateObject({
     model: google(AI_MODEL),
-    system: SYSTEM_PROMPT,
+    system: systemPrompt,
     messages,
     schema: GenerationResultSchema,
     temperature: GENERATION_TEMPERATURE,
+    maxTokens: 4096, // Limit output tokens for faster generation
   });
 
   // Convert array-based elements to record-based for compatibility

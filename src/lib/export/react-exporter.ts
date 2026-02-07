@@ -305,6 +305,9 @@ function formatProps(
     // Skip internal props or props handled by Tailwind classes
     if (key === 'children' || key === 'key') continue;
 
+    // Skip internal metadata props
+    if (key === 'type' || key === 'value') continue;
+
     // For Tailwind, skip props that are converted to classes
     if (framework === 'tailwind' && TAILWIND_CLASSES[key]) continue;
 
@@ -422,11 +425,24 @@ function generateTailwindClasses(
 }
 
 /**
+ * Strip namespace prefix from component type (e.g., "core::Avatar" -> "Avatar")
+ */
+function stripNamespace(type: string): string {
+  if (type.includes('::')) {
+    const parts = type.split('::');
+    return parts[parts.length - 1]; // Return the last part after ::
+  }
+  return type;
+}
+
+/**
  * Get the component name for a specific framework
  */
 function getComponentName(type: string, framework: ExportFramework): string {
+  // Strip namespace prefix first (e.g., "core::Avatar" -> "Avatar")
+  const baseType = stripNamespace(type);
   const mapping = COMPONENT_MAPPINGS[framework];
-  return mapping[type] || type;
+  return mapping[baseType] || baseType;
 }
 
 /**
@@ -491,28 +507,29 @@ function elementToJSX(
   if (!element) return '';
 
   const componentName = getComponentName(element.type, framework);
+  const baseType = stripNamespace(element.type);
   const indentStr = '  '.repeat(indent);
 
   // Handle special Tailwind heading elements
   let actualComponentName = componentName;
-  if (framework === 'tailwind' && element.type === 'Heading') {
+  if (framework === 'tailwind' && baseType === 'Heading') {
     const level = element.props.level || '1';
     actualComponentName = `h${level}`;
   }
 
-  const propsStr = formatProps(element.props, framework, element.type);
+  const propsStr = formatProps(element.props, framework, baseType);
 
   // Handle text content for certain components
   let textContent = '';
-  if (element.type === 'Heading' && element.props.text) {
+  if (baseType === 'Heading' && element.props.text) {
     textContent = String(element.props.text);
-  } else if (element.type === 'Text' && element.props.content) {
+  } else if (baseType === 'Text' && element.props.content) {
     textContent = String(element.props.content);
-  } else if (element.type === 'Button' && element.props.label) {
+  } else if (baseType === 'Button' && element.props.label) {
     textContent = String(element.props.label);
-  } else if (element.type === 'Link' && element.props.text) {
+  } else if (baseType === 'Link' && element.props.text) {
     textContent = String(element.props.text);
-  } else if (element.type === 'Badge' && element.props.text) {
+  } else if (baseType === 'Badge' && element.props.text) {
     textContent = String(element.props.text);
   }
 
@@ -588,9 +605,10 @@ export function exportToHTML(tree: UITree): string {
     const element = tree.elements[elementKey];
     if (!element) return '';
 
+    const baseType = stripNamespace(element.type);
     const indentStr = '  '.repeat(indent);
-    const tagName = COMPONENT_MAPPINGS.tailwind[element.type] || 'div';
-    const classes = generateTailwindClasses(element.props, element.type);
+    const tagName = COMPONENT_MAPPINGS.tailwind[baseType] || 'div';
+    const classes = generateTailwindClasses(element.props, baseType);
 
     // Build attributes
     const attrs: string[] = [];
@@ -622,21 +640,21 @@ export function exportToHTML(tree: UITree): string {
 
     // Get text content
     let textContent = '';
-    if (element.type === 'Heading' && element.props.text) {
+    if (baseType === 'Heading' && element.props.text) {
       textContent = String(element.props.text);
-    } else if (element.type === 'Text' && element.props.content) {
+    } else if (baseType === 'Text' && element.props.content) {
       textContent = String(element.props.content);
-    } else if (element.type === 'Button' && element.props.label) {
+    } else if (baseType === 'Button' && element.props.label) {
       textContent = String(element.props.label);
-    } else if (element.type === 'Link' && element.props.text) {
+    } else if (baseType === 'Link' && element.props.text) {
       textContent = String(element.props.text);
-    } else if (element.type === 'Badge' && element.props.text) {
+    } else if (baseType === 'Badge' && element.props.text) {
       textContent = String(element.props.text);
     }
 
     // Handle heading level
     let actualTagName = tagName;
-    if (element.type === 'Heading') {
+    if (baseType === 'Heading') {
       const level = element.props.level || '1';
       actualTagName = `h${level}`;
     }

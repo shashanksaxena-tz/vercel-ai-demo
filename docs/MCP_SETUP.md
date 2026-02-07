@@ -10,6 +10,7 @@ This guide explains how to set up and configure MCP (Model Context Protocol) ser
 - [Environment Variables](#environment-variables)
 - [Testing & Verification](#testing--verification)
 - [Server Details](#server-details)
+- [Image Server Setup](#image-server-setup)
 
 ## What are MCP Servers?
 
@@ -38,15 +39,15 @@ Each MCP server runs as a separate process and communicates via the stdio transp
 | **Material UI** | Working | 5 | `@mui/mcp` | Google Material Design |
 | **Context7** | ✅ Working | 2 | `@upstash/context7-mcp` | Documentation fetcher (API key optional) |
 
-### Icons & Images (4 servers)
+### Icons & Images (5 servers)
 
 | Server | Status | Tools | Package | Notes |
 |--------|--------|-------|---------|-------|
-| **Lucide Icons** | Working | 3 | `lucide-icons-mcp` | 1,500+ icons |
-| **Heroicons** | Working | 3 | `heroicons-mcp` | Tailwind team icons |
-| **Iconify** | Working | 4 | HTTP API | 200,000+ icons |
-| **Unsplash** | Requires API Key | 3 | `@drumnation/unsplash-smart-mcp-server` | Stock photos |
-| **Pexels** | Requires API Key | 3 | HTTP API | Free stock photos |
+| **Lucide Icons** | ✅ Working | 3 | `lucide-icons-mcp` | 1,500+ icons |
+| **Heroicons** | ✅ Working | 3 | `heroicons-mcp` | Tailwind team icons |
+| **Iconify** | ✅ Working | 4 | `iconify-mcp-server` | 200,000+ icons |
+| **Unsplash** | ⚠️ Requires API Key | 3 | `@jeffkit/unsplash-mcp-server` | Stock photos ([Setup Guide](./MCP_IMAGE_SETUP.md#unsplash-setup)) |
+| **Pexels** | ⚠️ Requires API Key | 3 | HTTP API | Free stock photos ([Setup Guide](./MCP_IMAGE_SETUP.md#pexels-setup)) |
 
 ### Design Tools (1 server)
 
@@ -522,6 +523,24 @@ const images = await searchPexelsImages("nature", 10);
 3. MCP server running on http://127.0.0.1:3845/mcp
 
 **Status**: Disabled by default (set `enabled: true` in config to activate)
+
+## Image Server Setup
+
+For detailed setup instructions for Unsplash and Pexels image servers, see the dedicated guide:
+
+**[MCP Image Server Setup Guide](./MCP_IMAGE_SETUP.md)**
+
+This guide includes:
+- Step-by-step API key setup for Unsplash and Pexels
+- Server status detection and troubleshooting
+- Testing instructions
+- API rate limit information
+- Which servers require API keys vs. which work out of the box
+
+**Quick Summary:**
+
+- **Lucide Icons**, **Heroicons**, and **Iconify**: ✅ Work without API keys
+- **Unsplash** and **Pexels**: ⚠️ Require free API keys (see [setup guide](./MCP_IMAGE_SETUP.md))
 
 ## Troubleshooting
 

@@ -243,6 +243,11 @@ IMPORTANT RULES:
 4. Keep headings concise (2-8 words)
 5. Keep button labels action-oriented (1-3 words)
 6. Make metrics realistic with proper units
+7. **CRITICAL FOR IMAGES**: Image search queries MUST be highly specific to the industry/context
+   - For coffee shop: "coffee beans roasting", "espresso machine", "latte art"
+   - For SaaS product: "laptop workspace", "team collaboration", "dashboard analytics"
+   - For e-commerce: "product photography", "shopping cart", "online payment"
+   - NEVER use generic queries like "business", "professional", or "landscape"
 
 Generate content as JSON in this exact format:
 {
@@ -256,7 +261,7 @@ Generate content as JSON in this exact format:
     { "key": "element-key", "label": "Button Label" }
   ],
   "images": [
-    { "key": "element-key", "query": "search query for stock photo", "alt": "alt text" }
+    { "key": "element-key", "query": "SPECIFIC search query matching industry/context", "alt": "descriptive alt text" }
   ],
   "metrics": [
     { "key": "element-key", "label": "Metric Name", "value": "123", "unit": "%" }
@@ -317,9 +322,19 @@ function parseContentSuggestions(
       }
     }
 
-    // Process images
+    // Process images with validation
     if (parsed.images) {
       for (const item of parsed.images) {
+        // Validate image query is not too generic
+        const query = item.query.toLowerCase();
+        const genericTerms = ['business', 'professional', 'landscape', 'nature', 'mountain', 'office', 'workspace'];
+        const isGeneric = genericTerms.some(term => query === term || query === `${term}s`);
+
+        if (isGeneric) {
+          console.warn(`[Polish] Generic image query detected: "${item.query}" - skipping`);
+          continue; // Skip generic queries
+        }
+
         contentMap[item.key] = {
           imageQuery: item.query,
           text: item.alt,

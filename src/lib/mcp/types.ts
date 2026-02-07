@@ -91,7 +91,7 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     command: 'npx',
     args: ['-y', 'flowbite-mcp'],
     enabled: true,
-    tools: ['list_resources', 'get_resource', 'generate_theme'],
+    tools: ['convert-figma-to-code', 'generate-theme'],
   },
   'chakra-ui': {
     type: 'chakra-ui',
@@ -127,11 +127,11 @@ export const MCP_SERVERS: Record<MCPServerType, MCPServerConfig> = {
     type: 'mui',
     name: 'mui',
     displayName: 'Material UI',
-    description: 'Material UI React components (50+ components)',
+    description: 'Material UI React components documentation (llms.txt-based)',
     command: 'npx',
     args: ['-y', '@mui/mcp@latest'],
     enabled: true,
-    tools: ['list_components', 'search_components', 'get_component_info', 'get_customization_guide', 'get_setup_guide'],
+    tools: ['useMuiDocs', 'fetchDocs'],
   },
   'context7': {
     type: 'context7',
@@ -282,10 +282,17 @@ export interface ComponentMetadata {
   tags: string[];
   source: MCPServerType;
   framework?: 'react' | 'vue' | 'svelte' | 'html';
-  dependencies?: string[];
+  dependencies?: string[] | {
+    npm?: string[];
+    imports?: string[];
+  };
   props?: ComponentPropDef[];
   preview?: string;
   documentation?: string;
+  animations?: {
+    type: 'framer-motion' | 'css' | 'spring' | 'gsap';
+    complexity: 'simple' | 'medium' | 'complex';
+  };
 }
 
 export interface ComponentPropDef {

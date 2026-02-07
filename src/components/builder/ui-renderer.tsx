@@ -2,6 +2,7 @@
 
 /**
  * UI Renderer - Renders json-render trees using the active registry or a custom registry
+ * with Framer Motion animation support for Magic UI and Aceternity UI components
  */
 
 import * as React from 'react';
@@ -9,6 +10,7 @@ import { Renderer, DataProvider, ActionProvider, VisibilityProvider } from '@jso
 import type { UITree } from '@json-render/core';
 import type { ComponentRegistry } from '@json-render/react';
 import { useRegistry } from '@/lib/registry';
+import { LazyMotion, domAnimation, AnimatePresence } from 'framer-motion';
 
 interface UIRendererProps {
   tree: UITree | null;
@@ -54,18 +56,22 @@ export function UIRenderer({ tree, data = {}, onAction, className, customRegistr
   }
 
   return (
-    <DataProvider initialData={data}>
-      <VisibilityProvider>
-        <ActionProvider handlers={actionHandlers}>
-          <div className={className}>
-            <Renderer
-              tree={tree}
-              registry={registry}
-            />
-          </div>
-        </ActionProvider>
-      </VisibilityProvider>
-    </DataProvider>
+    <LazyMotion features={domAnimation} strict>
+      <AnimatePresence mode="wait">
+        <DataProvider initialData={data}>
+          <VisibilityProvider>
+            <ActionProvider handlers={actionHandlers}>
+              <div className={className}>
+                <Renderer
+                  tree={tree}
+                  registry={registry}
+                />
+              </div>
+            </ActionProvider>
+          </VisibilityProvider>
+        </DataProvider>
+      </AnimatePresence>
+    </LazyMotion>
   );
 }
 

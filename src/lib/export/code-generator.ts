@@ -443,15 +443,80 @@ const TAILWIND_CLASSES: Record<string, Record<string, string>> = {
 };
 
 /**
- * Get the component name for a specific framework
+ * Strip namespace prefix from component type (e.g., "core::Avatar" -> "Avatar")
  */
-function getComponentName(type: string, framework: UIFramework): string {
-  const mapping = COMPONENT_MAPPINGS[framework];
-  return mapping?.[type] || type;
+function stripNamespace(type: string): string {
+  if (type.includes('::')) {
+    const parts = type.split('::');
+    return parts[parts.length - 1]; // Return the last part after ::
+  }
+  return type;
 }
 
 /**
- * Collect unique component types used in the tree
+ * Get the component name for a specific framework
+ */
+function getComponentName(type: string, framework: UIFramework): string {
+  // Strip namespace prefix first (e.g., "core::Avatar" -> "Avatar")
+  const baseType = stripNamespace(type);
+  const mapping = COMPONENT_MAPPINGS[framework];
+  return mapping?.[baseType] || baseType;
+}
+
+/**
+ * Animation dependency information for components
+ */
+interface AnimationDependencies {
+  npm: Set<string>;
+  imports: Set<string>;
+}
+
+/**
+ * Component dependencies extracted from tree
+ */
+interface ComponentDependencies {
+  components: Set<string>;
+  animations: AnimationDependencies;
+}
+
+/**
+ * Animation dependencies for Magic UI and Aceternity UI components
+ */
+const ANIMATION_COMPONENT_DEPENDENCIES: Record<string, { npm: string[]; imports: string[] }> = {
+  // Magic UI components
+  'ShimmerButton': { npm: ['framer-motion@^11.0.0'], imports: ['motion', 'AnimatePresence'] },
+  'MagicCard': { npm: ['framer-motion@^11.0.0'], imports: ['motion'] },
+  'AnimatedProgress': { npm: ['framer-motion@^11.0.0'], imports: ['motion'] },
+  'AnimatedHeading': { npm: ['framer-motion@^11.0.0'], imports: ['motion'] },
+  'AnimatedText': { npm: ['framer-motion@^11.0.0'], imports: ['motion'] },
+  'WarpBackground': { npm: ['framer-motion@^11.0.0'], imports: ['motion'] },
+
+  // Aceternity UI components
+  'MovingBorderButton': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion', 'AnimatePresence'] },
+  'HoverCard': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion'] },
+  'FloatingInput': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion'] },
+  'TextReveal': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion'] },
+  'TypewriterEffect': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion'] },
+  'BlurFade': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion'] },
+  'ParallaxScroll': { npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'], imports: ['motion', 'useScroll', 'useTransform'] },
+};
+
+/**
+ * Check if a component type requires animation dependencies
+ */
+function hasAnimationDependencies(componentType: string): boolean {
+  return componentType in ANIMATION_COMPONENT_DEPENDENCIES;
+}
+
+/**
+ * Get animation dependencies for a component type
+ */
+function getAnimationDependencies(componentType: string): { npm: string[]; imports: string[] } | null {
+  return ANIMATION_COMPONENT_DEPENDENCIES[componentType] || null;
+}
+
+/**
+ * Collect unique component types and their dependencies from the tree
  */
 function collectComponentTypes(tree: UITree, framework: UIFramework): Set<string> {
   const types = new Set<string>();
@@ -477,6 +542,61 @@ function collectComponentTypes(tree: UITree, framework: UIFramework): Set<string
 
   traverse(tree.root);
   return types;
+}
+
+/**
+ * Collect all dependencies (components + animations) from the tree
+ */
+function collectDependencies(tree: UITree, framework: UIFramework): ComponentDependencies {
+  const components = new Set<string>();
+  const animations: AnimationDependencies = {
+    npm: new Set<string>(),
+    imports: new Set<string>(),
+  };
+
+  function traverse(elementKey: string) {
+    const element = tree.elements[elementKey];
+    if (!element) return;
+
+    const componentName = getComponentName(element.type, framework);
+
+    // Collect component import
+    if (componentName && framework !== 'tailwind') {
+      const baseName = componentName.split('.')[0];
+      components.add(baseName);
+    }
+
+    // Check for animation dependencies
+    if (hasAnimationDependencies(componentName)) {
+      const deps = getAnimationDependencies(componentName);
+      if (deps) {
+        deps.npm.forEach(dep => animations.npm.add(dep));
+        deps.imports.forEach(imp => animations.imports.add(imp));
+      }
+    }
+
+    // Also check original element type for MCP components (e.g., "mcp::ShimmerButton")
+    const originalType = element.type;
+    if (originalType.includes('::')) {
+      const [, componentPart] = originalType.split('::');
+      if (hasAnimationDependencies(componentPart)) {
+        const deps = getAnimationDependencies(componentPart);
+        if (deps) {
+          deps.npm.forEach(dep => animations.npm.add(dep));
+          deps.imports.forEach(imp => animations.imports.add(imp));
+        }
+      }
+    }
+
+    if (element.children) {
+      for (const childKey of element.children) {
+        traverse(childKey);
+      }
+    }
+  }
+
+  traverse(tree.root);
+  return { components, animations };
 }
 
 /**
@@ -638,6 +758,9 @@ function formatProps(
     'text',
     'content',
     'label',
+    // Internal metadata props
+    'type',      // Internal type identifier (e.g., "core::Avatar")
+    'value',     // Internal value (should be children or specific props)
     // Non-DOM props that AI might generate
     'wrap',
     'maxWidth',
@@ -749,9 +872,13 @@ function elementToJSX(
 }
 
 /**
- * Generate import statements based on framework and components used
+ * Generate import statements based on framework, components, and animation dependencies
  */
-function generateImports(componentTypes: Set<string>, framework: UIFramework): string {
+function generateImports(
+  componentTypes: Set<string>,
+  framework: UIFramework,
+  animationDeps?: AnimationDependencies
+): string {
   const lines: string[] = [];
 
   // React is always needed for TSX
@@ -765,6 +892,12 @@ function generateImports(componentTypes: Set<string>, framework: UIFramework): s
     if (importInfo.isNamedExport && sortedTypes.length > 0) {
       lines.push(`import { ${sortedTypes.join(', ')} } from '${importInfo.path}';`);
     }
+  }
+
+  // Add animation imports (Framer Motion)
+  if (animationDeps && animationDeps.imports.size > 0) {
+    const sortedImports = Array.from(animationDeps.imports).sort();
+    lines.push(`import { ${sortedImports.join(', ')} } from 'framer-motion';`);
   }
 
   return lines.join('\n');
@@ -784,17 +917,17 @@ export function generateReactCode(tree: UITree, options: CodeGenerationOptions):
 
   const lines: string[] = [];
 
-  // Add 'use client' directive if requested
-  if (useClientDirective) {
+  // Add 'use client' directive if requested or if animations are used
+  const deps = collectDependencies(tree, framework);
+  const hasAnimations = deps.animations.npm.size > 0;
+
+  if (useClientDirective || hasAnimations) {
     lines.push("'use client';");
     lines.push('');
   }
 
-  // Collect component types
-  const componentTypes = collectComponentTypes(tree, framework);
-
   // Generate imports
-  const imports = generateImports(componentTypes, framework);
+  const imports = generateImports(deps.components, framework, deps.animations);
   if (imports) {
     lines.push(imports);
     lines.push('');
@@ -850,15 +983,15 @@ export function generateNextJSCode(tree: UITree, options: CodeGenerationOptions)
 
   const lines: string[] = [];
 
-  // 'use client' directive
+  // 'use client' directive (always needed for Next.js pages with animations)
   lines.push("'use client';");
   lines.push('');
 
-  // Collect component types
-  const componentTypes = collectComponentTypes(tree, framework);
+  // Collect dependencies
+  const deps = collectDependencies(tree, framework);
 
   // Generate imports
-  const imports = generateImports(componentTypes, framework);
+  const imports = generateImports(deps.components, framework, deps.animations);
   if (imports) {
     lines.push(imports);
     lines.push('');
@@ -916,8 +1049,14 @@ export function generateCode(tree: UITree, options: CodeGenerationOptions): stri
 
 /**
  * Get installation instructions for a framework
+ * @param framework - The UI framework
+ * @param includeAnimations - Whether to include Framer Motion installation
  */
-export function getInstallationInstructions(framework: UIFramework): string {
+export function getInstallationInstructions(framework: UIFramework, includeAnimations = false): string {
+  const animationInstructions = includeAnimations
+    ? `\n\n# Animation Dependencies (Framer Motion)\nnpm install framer-motion\n# or\nyarn add framer-motion`
+    : '';
+
   const instructions: Record<UIFramework, string> = {
     shadcn: `# Install shadcn/ui components
 npx shadcn-ui@latest init
@@ -964,7 +1103,47 @@ npm install framer-motion clsx tailwind-merge
 # Components are typically copied to @/components/ui/aceternity`,
   };
 
-  return instructions[framework] || '# No installation instructions available';
+  return (instructions[framework] || '# No installation instructions available') + animationInstructions;
+}
+
+/**
+ * Generate package.json dependencies section
+ */
+export function generatePackageJsonDependencies(tree: UITree, framework: UIFramework): Record<string, string> {
+  const deps = collectDependencies(tree, framework);
+  const dependencies: Record<string, string> = {};
+
+  // Add animation dependencies
+  deps.animations.npm.forEach(dep => {
+    const [name, version] = dep.includes('@') && dep.split('@').length > 2
+      ? [dep.substring(0, dep.lastIndexOf('@')), dep.substring(dep.lastIndexOf('@') + 1)]
+      : [dep, 'latest'];
+    dependencies[name] = version;
+  });
+
+  return dependencies;
+}
+
+/**
+ * Get animation dependencies from a tree
+ */
+export function getAnimationDependenciesFromTree(tree: UITree, framework: UIFramework): {
+  npm: string[];
+  imports: string[];
+} {
+  const deps = collectDependencies(tree, framework);
+  return {
+    npm: Array.from(deps.animations.npm),
+    imports: Array.from(deps.animations.imports),
+  };
+}
+
+/**
+ * Check if tree contains animated components
+ */
+export function hasAnimatedComponents(tree: UITree, framework: UIFramework): boolean {
+  const deps = collectDependencies(tree, framework);
+  return deps.animations.npm.size > 0;
 }
 
 /**

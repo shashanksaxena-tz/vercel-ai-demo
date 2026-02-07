@@ -25,9 +25,7 @@ import {
   ExportPanel,
 } from '@/components/builder';
 import { PreviewWrapper } from '@/components/builder/preview-wrapper';
-import { shadcnRegistry } from '@/components/registries/shadcn';
-import { tailwindRegistry } from '@/components/registries/tailwind';
-import { flowbiteRegistry } from '@/components/registries/flowbite';
+// Note: No longer importing raw registries - they're loaded via getFrameworkRegistry with proper namespacing
 import type { TestCase } from '@/lib/tests';
 import type { ComponentMetadata, UIAnalysis, MCPServerType } from '@/lib/mcp/types';
 import { cn } from '@/lib/utils';
@@ -240,10 +238,7 @@ export default function Home() {
 
   return (
     <DesignProvider>
-      <RegistryProvider
-      defaultFramework="shadcn"
-      registries={[shadcnRegistry, tailwindRegistry, flowbiteRegistry]}
-    >
+      <RegistryProvider defaultFramework="shadcn">
       <div className="h-screen flex flex-col bg-background">
         {/* Header */}
         <header className="flex items-center justify-between px-4 py-3 border-b bg-card">

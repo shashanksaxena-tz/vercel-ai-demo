@@ -191,23 +191,79 @@ export async function searchUILayouts(query: string): Promise<ComponentMetadata[
   const result = await callTool({
     server: 'ui-layouts',
     name: 'search_components',
-    arguments: { query },
+    arguments: { q: query }, // Fixed: UI Layouts expects 'q' not 'query'
   });
 
   if (!result.success || !result.content) {
     return [];
   }
 
-  const components = result.content as Array<{
-    key: string;
-    name: string;
-    group?: string;
-    tags?: string[];
-    description?: string;
-  }>;
+  // Parse markdown response format
+  // Format: "# Search Results (N) for \"query\"\n\n- **Name**\n  - key: `key`\n  - group: Group\n  - href: `/path`"
+  if (typeof result.content === 'string') {
+    const components: Array<{
+      key: string;
+      name: string;
+      group?: string;
+      tags?: string[];
+      description?: string;
+    }> = [];
 
-  return components.map((c) => ({
-    id: `ui-layouts:${c.key}`,
+    const lines = result.content.split('\n');
+    let currentComponent: any = null;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      // Component name line: - **Name**
+      if (trimmed.startsWith('- **') && trimmed.endsWith('**')) {
+        if (currentComponent) {
+          components.push(currentComponent);
+        }
+        const name = trimmed.slice(4, -2); // Remove - ** and **
+        currentComponent = { name, key: name.toLowerCase().replace(/\s+/g, '-') };
+      }
+      // Key line: - key: `value`
+      else if (trimmed.startsWith('- key: `') && currentComponent) {
+        currentComponent.key = trimmed.slice(8, -1); // Remove - key: ` and `
+      }
+      // Group line: - group: Value
+      else if (trimmed.startsWith('- group: ') && currentComponent) {
+        currentComponent.group = trimmed.slice(9);
+      }
+      // Href line: - href: `/path`
+      else if (trimmed.startsWith('- href: ') && currentComponent) {
+        currentComponent.description = trimmed.slice(8);
+      }
+    }
+
+    if (currentComponent) {
+      components.push(currentComponent);
+    }
+
+    return components.map((c) => ({
+      id: `ui-layouts:${c.key}`,
+      name: c.name,
+      displayName: c.name,
+      description: c.description || '',
+      category: mapGroupToCategory(c.group),
+      tags: c.tags || [],
+      source: 'ui-layouts' as MCPServerType,
+      framework: 'react' as const,
+    }));
+  }
+
+  // Fallback: Handle JSON array responses
+  const componentsArray = Array.isArray(result.content)
+    ? result.content
+    : (result.content as any).components || (result.content as any).results || [];
+
+  if (!Array.isArray(componentsArray)) {
+    return [];
+  }
+
+  return componentsArray.map((c: any) => ({
+    id: `ui-layouts:${c.key || c.name}`,
     name: c.name,
     displayName: c.name,
     description: c.description || '',
@@ -259,29 +315,30 @@ export async function searchShadcn(query: string): Promise<ComponentMetadata[]> 
     return [];
   }
 
-  const components = result.content as Array<{
-    name: string;
-    description?: string;
-    dependencies?: string[];
-  }>;
+  // Parse response - shadcn-ui returns { components: ["name1", "name2", ...] }
+  const componentsData = (result.content as any).components || result.content;
+  const componentsArray = Array.isArray(componentsData) ? componentsData : [];
 
+  if (componentsArray.length === 0) {
+    return [];
+  }
+
+  // Components are strings (names), not objects
   const queryLower = query.toLowerCase();
-  return components
-    .filter((c) =>
-      c.name.toLowerCase().includes(queryLower) ||
-      c.description?.toLowerCase().includes(queryLower)
-    )
-    .map((c) => ({
-      id: `shadcn:${c.name}`,
-      name: c.name,
-      displayName: c.name,
-      description: c.description || '',
-      category: 'other' as ComponentCategory,
-      tags: [],
-      source: 'shadcn-ui' as MCPServerType,
-      framework: 'react' as const,
-      dependencies: c.dependencies,
-    }));
+  const componentNames = componentsArray.filter((name: string) =>
+    typeof name === 'string' && name.toLowerCase().includes(queryLower)
+  );
+
+  return componentNames.map((name: string) => ({
+    id: `shadcn:${name}`,
+    name,
+    displayName: name,
+    description: `shadcn/ui ${name} component`,
+    category: 'other' as ComponentCategory,
+    tags: [],
+    source: 'shadcn-ui' as MCPServerType,
+    framework: 'react' as const,
+  }));
 }
 
 /**
@@ -291,18 +348,32 @@ export async function searchTailwind(query: string): Promise<ComponentMetadata[]
   const result = await callTool({
     server: 'tailwindcss',
     name: 'generate_component_template',
-    arguments: { component: query },
+    arguments: { componentType: query }, // Fixed: Use componentType instead of component
   });
 
   if (!result.success || !result.content) {
     return [];
   }
 
-  const template = result.content as {
-    name?: string;
+  // Parse JSON response format
+  // Tailwind MCP returns: { html: string, description: string, utilities: string[], customizations: string[] }
+  let template: {
     html?: string;
     description?: string;
+    utilities?: string[];
+    customizations?: string[];
   };
+
+  if (typeof result.content === 'string') {
+    try {
+      template = JSON.parse(result.content);
+    } catch {
+      // If not JSON, assume it's plain text HTML
+      template = { html: result.content };
+    }
+  } else {
+    template = result.content as any;
+  }
 
   if (!template.html) {
     return [];
@@ -311,10 +382,10 @@ export async function searchTailwind(query: string): Promise<ComponentMetadata[]
   return [{
     id: `tailwind:${query}`,
     name: query,
-    displayName: query,
+    displayName: query.charAt(0).toUpperCase() + query.slice(1), // Capitalize first letter
     description: template.description || `Tailwind CSS ${query} template`,
     category: 'other' as ComponentCategory,
-    tags: ['tailwind', 'template'],
+    tags: ['tailwind', 'html', ...(template.utilities?.slice(0, 5) || [])], // Include first 5 utilities as tags
     source: 'tailwindcss' as MCPServerType,
     framework: 'html' as const,
   }];
@@ -324,40 +395,87 @@ export async function searchTailwind(query: string): Promise<ComponentMetadata[]
  * Search for components on Flowbite MCP
  */
 export async function searchFlowbite(query: string): Promise<ComponentMetadata[]> {
-  // Flowbite MCP uses resources for components
-  // We need to list resources and filter
-  const result = await callTool({
-    server: 'flowbite',
-    name: 'list_resources',
-    arguments: {},
-  });
+  // Flowbite MCP uses resources (not tools) for component discovery
+  // Get connection to access resources
+  const connection = connections.get('flowbite');
 
-  if (!result.success || !result.content) {
+  if (!connection?.connected) {
+    console.warn('[searchFlowbite] Not connected to Flowbite server');
     return [];
   }
 
-  const resources = result.content as Array<{
-    uri: string;
-    name: string;
-    description?: string;
-  }>;
+  try {
+    // List all resources from the Flowbite server
+    const resourcesResult = await connection.client.listResources();
 
-  const queryLower = query.toLowerCase();
-  return resources
-    .filter((r) =>
-      r.name.toLowerCase().includes(queryLower) ||
-      r.description?.toLowerCase().includes(queryLower)
-    )
-    .map((r) => ({
-      id: `flowbite:${r.name}`,
-      name: r.name,
-      displayName: r.name,
-      description: r.description || '',
-      category: 'other' as ComponentCategory,
-      tags: ['flowbite', 'tailwind'],
-      source: 'flowbite' as MCPServerType,
-      framework: 'html' as const,
-    }));
+    if (!resourcesResult.resources || resourcesResult.resources.length === 0) {
+      return [];
+    }
+
+    const queryLower = query.toLowerCase();
+
+    // Filter resources by query matching name or description
+    const matchingResources = resourcesResult.resources.filter((resource) => {
+      const name = resource.name?.toLowerCase() || '';
+      const description = resource.description?.toLowerCase() || '';
+      const title = (resource as any).title?.toLowerCase() || '';
+
+      // Skip overview/theme/quickstart resources, focus on components
+      if (name.includes('overview') || name.includes('theme') || name.includes('quickstart')) {
+        return false;
+      }
+
+      return name.includes(queryLower) ||
+             description.includes(queryLower) ||
+             title.includes(queryLower);
+    });
+
+    // Convert resources to ComponentMetadata format
+    return matchingResources.map((resource) => {
+      // Extract component name from resource name (e.g., "flowbite_buttons" -> "buttons")
+      const componentName = resource.name?.replace('flowbite_', '') || resource.name || 'unknown';
+      const displayName = componentName
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      return {
+        id: `flowbite:${componentName}`,
+        name: componentName,
+        displayName,
+        description: resource.description || (resource as any).title || `Flowbite ${displayName} component`,
+        category: mapFlowbiteComponentCategory(componentName),
+        tags: ['flowbite', 'tailwind', 'html'],
+        source: 'flowbite' as MCPServerType,
+        framework: 'html' as const,
+      };
+    });
+  } catch (error) {
+    console.error('[searchFlowbite] Error listing resources:', error);
+    return [];
+  }
+}
+
+/**
+ * Helper to map Flowbite component names to categories
+ */
+function mapFlowbiteComponentCategory(componentName: string): ComponentCategory {
+  const name = componentName.toLowerCase();
+
+  if (name.includes('button')) return 'inputs';
+  if (name.includes('card')) return 'cards';
+  if (name.includes('form') || name.includes('input') || name.includes('checkbox') ||
+      name.includes('radio') || name.includes('select') || name.includes('textarea')) return 'forms';
+  if (name.includes('nav') || name.includes('breadcrumb') || name.includes('sidebar') ||
+      name.includes('menu')) return 'navigation';
+  if (name.includes('modal') || name.includes('drawer') || name.includes('tooltip') ||
+      name.includes('popover')) return 'overlay';
+  if (name.includes('table') || name.includes('list')) return 'data-display';
+  if (name.includes('alert') || name.includes('toast') || name.includes('spinner')) return 'feedback';
+  if (name.includes('footer') || name.includes('header')) return 'layout';
+  if (name.includes('text') || name.includes('heading') || name.includes('paragraph')) return 'typography';
+
+  return 'other';
 }
 
 /**
@@ -374,28 +492,41 @@ export async function searchChakraUI(query: string): Promise<ComponentMetadata[]
     return [];
   }
 
-  const components = result.content as Array<{
-    name: string;
-    description?: string;
-    category?: string;
-  }>;
+  // Chakra UI returns a JSON array of component names as strings
+  // Example: ["button", "card", "alert", ...]
+  let componentNames: string[] = [];
 
+  if (Array.isArray(result.content)) {
+    componentNames = result.content;
+  } else if (typeof result.content === 'string') {
+    try {
+      componentNames = JSON.parse(result.content);
+    } catch {
+      componentNames = [];
+    }
+  }
+
+  if (!Array.isArray(componentNames)) {
+    return [];
+  }
+
+  // Filter component names by query
   const queryLower = query.toLowerCase();
-  return components
-    .filter((c) =>
-      c.name.toLowerCase().includes(queryLower) ||
-      c.description?.toLowerCase().includes(queryLower)
-    )
-    .map((c) => ({
-      id: `chakra:${c.name}`,
-      name: c.name,
-      displayName: c.name,
-      description: c.description || '',
-      category: mapGroupToCategory(c.category),
-      tags: ['chakra-ui', 'react'],
-      source: 'chakra-ui' as MCPServerType,
-      framework: 'react' as const,
-    }));
+  const filteredNames = componentNames.filter((name) =>
+    typeof name === 'string' && name.toLowerCase().includes(queryLower)
+  );
+
+  // Convert to ComponentMetadata format
+  return filteredNames.map((name) => ({
+    id: `chakra:${name}`,
+    name,
+    displayName: name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, ' '),
+    description: `Chakra UI ${name} component`,
+    category: inferCategoryFromComponentName(name),
+    tags: ['chakra-ui', 'react'],
+    source: 'chakra-ui' as MCPServerType,
+    framework: 'react' as const,
+  }));
 }
 
 /**
@@ -412,28 +543,52 @@ export async function searchMagicUI(query: string): Promise<ComponentMetadata[]>
     return [];
   }
 
-  const components = result.content as Array<{
-    name: string;
-    description?: string;
-    category?: string;
-  }>;
+  // callTool already parses JSON, so result.content is the parsed array
+  const components = Array.isArray(result.content) ? result.content : [];
 
+  if (components.length === 0) {
+    return [];
+  }
+
+  // Filter by query
   const queryLower = query.toLowerCase();
   return components
-    .filter((c) =>
-      c.name.toLowerCase().includes(queryLower) ||
+    .filter((c: any) =>
+      c.name?.toLowerCase().includes(queryLower) ||
       c.description?.toLowerCase().includes(queryLower)
     )
-    .map((c) => ({
-      id: `magic-ui:${c.name}`,
-      name: c.name,
-      displayName: c.name,
-      description: c.description || '',
-      category: mapGroupToCategory(c.category),
-      tags: ['magic-ui', 'animated', 'framer-motion'],
-      source: 'magic-ui' as MCPServerType,
-      framework: 'react' as const,
-    }));
+    .map((c: any) => {
+      // Determine animation complexity based on component type
+      const isTextAnimation = c.name.includes('text') || c.name.includes('typing') || c.name.includes('word');
+      const isButtonAnimation = c.name.includes('button');
+      const isBackgroundEffect = c.name.includes('grid') || c.name.includes('pattern') || c.name.includes('particles');
+
+      let complexity: 'simple' | 'medium' | 'complex' = 'medium';
+      if (isBackgroundEffect) {
+        complexity = 'complex';
+      } else if (isTextAnimation) {
+        complexity = 'simple';
+      }
+
+      return {
+        id: `magic-ui:${c.name}`,
+        name: c.name,
+        displayName: c.name,
+        description: c.description || '',
+        category: mapGroupToCategory(c.category),
+        tags: ['magic-ui', 'animated', 'framer-motion'],
+        source: 'magic-ui' as MCPServerType,
+        framework: 'react' as const,
+        dependencies: {
+          npm: ['framer-motion@^11.0.0'],
+          imports: ['motion', 'AnimatePresence'],
+        },
+        animations: {
+          type: 'framer-motion' as const,
+          complexity,
+        },
+      };
+    });
 }
 
 /**
@@ -458,110 +613,166 @@ export async function searchAceternityUI(query: string): Promise<ComponentMetada
       return [];
     }
 
-    const components = allResult.content as Array<{
-      name: string;
-      description?: string;
-      category?: string;
-    }>;
+    // Parse response - aceternity-ui may return JSON string or object
+    let parsedContent: any;
+    if (typeof allResult.content === 'string') {
+      try {
+        parsedContent = JSON.parse(allResult.content);
+      } catch {
+        return [];
+      }
+    } else {
+      parsedContent = allResult.content;
+    }
+
+    const components = parsedContent.components || parsedContent;
+    if (!Array.isArray(components)) {
+      return [];
+    }
 
     const queryLower = query.toLowerCase();
     return components
-      .filter((c) =>
+      .filter((c: any) =>
         c.name.toLowerCase().includes(queryLower) ||
-        c.description?.toLowerCase().includes(queryLower)
+        c.description?.toLowerCase().includes(queryLower) ||
+        c.tags?.some((tag: string) => tag.toLowerCase().includes(queryLower))
       )
-      .map((c) => ({
+      .map((c: any) => ({
         id: `aceternity:${c.name}`,
         name: c.name,
         displayName: c.name,
         description: c.description || '',
         category: mapGroupToCategory(c.category),
-        tags: ['aceternity-ui', 'animated', 'framer-motion'],
+        tags: [...(c.tags || []), 'aceternity-ui', 'animated', 'framer-motion'],
         source: 'aceternity-ui' as MCPServerType,
         framework: 'react' as const,
+        dependencies: {
+          npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'],
+          imports: ['motion', 'AnimatePresence'],
+        },
+        animations: {
+          type: 'framer-motion' as const,
+          complexity: 'complex' as const,
+        },
       }));
   }
 
-  const components = result.content as Array<{
-    name: string;
-    description?: string;
-    category?: string;
-  }>;
+  // Parse response from search_components
+  let parsedContent: any;
+  if (typeof result.content === 'string') {
+    try {
+      parsedContent = JSON.parse(result.content);
+    } catch {
+      return [];
+    }
+  } else {
+    parsedContent = result.content;
+  }
 
-  return components.map((c) => ({
+  const components = parsedContent.components || parsedContent;
+  if (!Array.isArray(components)) {
+    return [];
+  }
+
+  return components.map((c: any) => ({
     id: `aceternity:${c.name}`,
     name: c.name,
     displayName: c.name,
     description: c.description || '',
     category: mapGroupToCategory(c.category),
-    tags: ['aceternity-ui', 'animated', 'framer-motion'],
+    tags: [...(c.tags || []), 'aceternity-ui', 'animated', 'framer-motion'],
     source: 'aceternity-ui' as MCPServerType,
     framework: 'react' as const,
+    dependencies: {
+      npm: ['framer-motion@^11.0.0', 'clsx', 'tailwind-merge'],
+      imports: ['motion', 'AnimatePresence'],
+    },
+    animations: {
+      type: 'framer-motion' as const,
+      complexity: 'complex' as const,
+    },
   }));
 }
 
 /**
  * Search for components on Material UI MCP
  */
+/**
+ * Search for components on Material UI MCP
+ *
+ * Note: MUI MCP is a documentation server, not a component search server.
+ * It provides access to llms.txt files that contain component documentation.
+ * We fetch the documentation index and parse component names from it.
+ */
 export async function searchMUI(query: string): Promise<ComponentMetadata[]> {
-  const result = await callTool({
-    server: 'mui',
-    name: 'search_components',
-    arguments: { query },
-  });
-
-  if (!result.success || !result.content) {
-    // Fallback: list all components
-    const listResult = await callTool({
+  try {
+    // Fetch the Material UI documentation index
+    const result = await callTool({
       server: 'mui',
-      name: 'list_components',
-      arguments: {},
+      name: 'useMuiDocs',
+      arguments: {
+        urlList: ['https://llms.mui.com/material-ui/7.2.0/llms.txt']
+      },
     });
 
-    if (!listResult.success || !listResult.content) {
+    if (!result.success || !result.content) {
+      console.warn('[MUI MCP] Failed to fetch documentation index');
       return [];
     }
 
-    const components = listResult.content as Array<{
-      name: string;
-      description?: string;
-      category?: string;
-    }>;
+    // Parse markdown response to extract component names
+    // Format: "## Components\n\n[ComponentName](url): <classification>text</classification>: description\n"
+    const content = typeof result.content === 'string'
+      ? result.content
+      : (result.content as any).text || '';
 
+    if (!content) {
+      console.warn('[MUI MCP] Empty content received');
+      return [];
+    }
+
+    const components: ComponentMetadata[] = [];
     const queryLower = query.toLowerCase();
-    return components
-      .filter((c) =>
-        c.name.toLowerCase().includes(queryLower) ||
-        c.description?.toLowerCase().includes(queryLower)
-      )
-      .map((c) => ({
-        id: `mui:${c.name}`,
-        name: c.name,
-        displayName: c.name,
-        description: c.description || '',
-        category: mapGroupToCategory(c.category),
-        tags: ['material-ui', 'react', 'mui'],
-        source: 'mui' as MCPServerType,
-        framework: 'react' as const,
-      }));
+
+    // Extract component links from markdown
+    // Pattern: [Component Name](url): <classification>text</classification>
+    // We use a simpler pattern that stops at the next [ or double newline
+    const componentRegex = /\[([^\]]+)\]\(([^)]+)\):\s*<classification>([^<]+)<\/classification>/g;
+    let match;
+
+    while ((match = componentRegex.exec(content)) !== null) {
+      const [, name, url, classification] = match;
+      const description = classification.trim();
+
+      // Filter by query - match component name or description
+      const nameLower = name.toLowerCase();
+      const descLower = description.toLowerCase();
+
+      if (nameLower.includes(queryLower) || descLower.includes(queryLower)) {
+        // Extract component category from URL path if available
+        const urlParts = url.split('/');
+        const category = urlParts.includes('components') ? 'components' :
+                        urlParts.includes('api') ? 'api' : 'other';
+
+        components.push({
+          id: `mui:${name}`,
+          name: name,
+          displayName: name,
+          description: description || `Material UI ${name} component`,
+          category: mapGroupToCategory(category),
+          tags: ['material-ui', 'react', 'mui'],
+          source: 'mui' as MCPServerType,
+          framework: 'react' as const,
+        });
+      }
+    }
+
+    console.log(`[MUI MCP] Found ${components.length} components matching "${query}"`);
+    return components;
+  } catch (error) {
+    console.error('[MUI MCP] Search failed:', error);
+    return [];
   }
-
-  const components = result.content as Array<{
-    name: string;
-    description?: string;
-    category?: string;
-  }>;
-
-  return components.map((c) => ({
-    id: `mui:${c.name}`,
-    name: c.name,
-    displayName: c.name,
-    description: c.description || '',
-    category: mapGroupToCategory(c.category),
-    tags: ['material-ui', 'react', 'mui'],
-    source: 'mui' as MCPServerType,
-    framework: 'react' as const,
-  }));
 }
 
 /**
@@ -1124,17 +1335,30 @@ export async function fetchTailwindTemplate(templateName: string): Promise<Compo
   const result = await callTool({
     server: 'tailwindcss',
     name: 'generate_component_template',
-    arguments: { component: templateName },
+    arguments: { componentType: templateName }, // Fixed: Use componentType instead of component
   });
 
   if (!result.success || !result.content) {
     return null;
   }
 
-  const template = result.content as {
+  // Parse JSON response format
+  let template: {
     html?: string;
-    classes?: string[];
+    description?: string;
+    utilities?: string[];
+    customizations?: string[];
   };
+
+  if (typeof result.content === 'string') {
+    try {
+      template = JSON.parse(result.content);
+    } catch {
+      template = { html: result.content };
+    }
+  } else {
+    template = result.content as any;
+  }
 
   if (!template.html) {
     return null;
@@ -1397,6 +1621,103 @@ function mapGroupToCategory(group?: string): ComponentCategory {
   };
 
   return categoryMap[groupLower] || 'other';
+}
+
+/**
+ * Infer component category from its name
+ * Used for Chakra UI and other libraries that return component names as strings
+ */
+function inferCategoryFromComponentName(name: string): ComponentCategory {
+  const nameLower = name.toLowerCase();
+
+  // Input components
+  if (nameLower.includes('input') || nameLower.includes('textarea') ||
+      nameLower.includes('select') || nameLower.includes('slider') ||
+      nameLower.includes('checkbox') || nameLower.includes('radio') ||
+      nameLower.includes('switch') || nameLower.includes('pin-input') ||
+      nameLower.includes('number-input') || nameLower.includes('editable') ||
+      nameLower.includes('tags-input')) {
+    return 'inputs';
+  }
+
+  // Form components
+  if (nameLower.includes('form') || nameLower.includes('field') ||
+      nameLower.includes('fieldset')) {
+    return 'forms';
+  }
+
+  // Buttons
+  if (nameLower.includes('button')) {
+    return 'inputs';
+  }
+
+  // Navigation
+  if (nameLower.includes('breadcrumb') || nameLower.includes('menu') ||
+      nameLower.includes('tabs') || nameLower.includes('pagination') ||
+      nameLower.includes('link') || nameLower.includes('skip-nav') ||
+      nameLower.includes('steps')) {
+    return 'navigation';
+  }
+
+  // Overlay/Modal
+  if (nameLower.includes('modal') || nameLower.includes('dialog') ||
+      nameLower.includes('drawer') || nameLower.includes('popover') ||
+      nameLower.includes('tooltip') || nameLower.includes('hover-card') ||
+      nameLower.includes('portal')) {
+    return 'overlay';
+  }
+
+  // Feedback
+  if (nameLower.includes('alert') || nameLower.includes('toast') ||
+      nameLower.includes('spinner') || nameLower.includes('progress') ||
+      nameLower.includes('skeleton') || nameLower.includes('loader') ||
+      nameLower.includes('status')) {
+    return 'feedback';
+  }
+
+  // Layout
+  if (nameLower.includes('box') || nameLower.includes('container') ||
+      nameLower.includes('flex') || nameLower.includes('grid') ||
+      nameLower.includes('stack') || nameLower.includes('wrap') ||
+      nameLower.includes('center') || nameLower.includes('spacer') ||
+      nameLower.includes('divider') || nameLower.includes('separator') ||
+      nameLower.includes('aspect-ratio') || nameLower.includes('bleed')) {
+    return 'layout';
+  }
+
+  // Cards
+  if (nameLower.includes('card')) {
+    return 'cards';
+  }
+
+  // Data display
+  if (nameLower.includes('table') || nameLower.includes('list') ||
+      nameLower.includes('stat') || nameLower.includes('data-list') ||
+      nameLower.includes('badge') || nameLower.includes('tag') ||
+      nameLower.includes('code') || nameLower.includes('kbd') ||
+      nameLower.includes('timeline')) {
+    return 'data-display';
+  }
+
+  // Typography
+  if (nameLower.includes('text') || nameLower.includes('heading') ||
+      nameLower.includes('blockquote') || nameLower.includes('highlight') ||
+      nameLower.includes('mark') || nameLower.includes('quote')) {
+    return 'typography';
+  }
+
+  // Media
+  if (nameLower.includes('image') || nameLower.includes('icon') ||
+      nameLower.includes('avatar') || nameLower.includes('qr-code')) {
+    return 'media';
+  }
+
+  // Charts
+  if (nameLower.includes('chart') || nameLower.includes('sparkline')) {
+    return 'charts';
+  }
+
+  return 'other';
 }
 
 // ============================================================================

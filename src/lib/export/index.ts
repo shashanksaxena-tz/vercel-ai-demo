@@ -22,6 +22,9 @@ export {
   getInstallationInstructions,
   getFileExtension,
   getSuggestedFilename,
+  generatePackageJsonDependencies,
+  getAnimationDependenciesFromTree,
+  hasAnimatedComponents,
   type ExportTarget,
   type CodeGenerationOptions,
 } from './code-generator';
@@ -81,3 +84,27 @@ export {
   generateComprehensiveReadme,
   type ReadmeOptions,
 } from './readme-generator';
+
+// Data Extraction
+export {
+  extractDataStructures,
+  generateInterface,
+  generateSampleData,
+  hasExtractableData,
+  getDataSummary,
+  type DataStructure,
+  type DataField,
+} from './data-extractor';
+
+// JSX Transformation
+export {
+  transformToPropsBasedJSX,
+  type TransformResult,
+} from './jsx-transformer';
+
+// Integration README Generator
+export {
+  generateIntegrationReadme,
+  generateMinimalIntegrationGuide,
+  type IntegrationReadmeOptions,
+} from './integration-readme-generator';

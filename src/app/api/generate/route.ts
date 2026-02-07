@@ -5,6 +5,11 @@
  *
  * Generates UITree structures from natural language prompts using
  * Google's Gemini model via the AI SDK.
+ *
+ * With ENABLE_DYNAMIC_DISCOVERY flag:
+ * - Analyzes user intent to determine relevant components
+ * - Discovers components from MCP servers dynamically
+ * - Builds enhanced prompts with discovered components
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,7 +19,11 @@ import {
   GenerateRequestSchema,
   type UITree,
   type GenerationResult,
+  buildEnhancedSystemPrompt,
+  type MCPComponentMetadata,
+  calculateTokenUsage,
 } from '@/lib/ai';
+import { analyzeRequest } from '@/lib/mcp/smart-discovery';
 
 // ============================================================================
 // Types
@@ -31,6 +40,19 @@ interface GenerateSuccessResponse extends GenerationResult {
   timing: number;
   valid: boolean;
   validationErrors?: string[];
+  telemetry?: {
+    discoveryEnabled: boolean;
+    intent?: string;
+    mcpComponentsDiscovered?: number;
+    mcpComponentsUsed?: number;
+    tokenUsage?: {
+      core: number;
+      mcp: number;
+      total: number;
+      withinBudget: boolean;
+    };
+    discoveryTime?: number;
+  };
 }
 
 interface GenerateErrorResponse {
@@ -86,21 +108,133 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateS
       }
     }
 
-    // Generate the UI
+    // Feature flag: Check if dynamic discovery is enabled
+    const dynamicDiscoveryEnabled = process.env.NEXT_PUBLIC_ENABLE_DYNAMIC_DISCOVERY === 'true';
+
+    let mcpComponents: MCPComponentMetadata[] = [];
+    let discoveryIntent: ReturnType<typeof analyzeRequest> | undefined;
+    let discoveryTime = 0;
+    let systemPromptOverride: string | undefined;
+
+    // MCP Discovery Pipeline (only if enabled)
+    if (dynamicDiscoveryEnabled) {
+      const discoveryStartTime = Date.now();
+
+      try {
+        // Step 1: Analyze request to determine intent
+        discoveryIntent = analyzeRequest(prompt);
+
+        console.log('[MCP Discovery] Intent analyzed:', {
+          intent: discoveryIntent.intent,
+          coreComponents: discoveryIntent.coreComponents.length,
+          contextComponents: discoveryIntent.contextComponents.length,
+          mcpSources: discoveryIntent.mcpSources,
+          searchQueries: discoveryIntent.searchQueries,
+          estimatedTokens: discoveryIntent.estimatedTokens,
+        });
+
+        // Step 2: Discover components from MCP servers
+        // Use multiple search queries for better coverage
+        const discoveryPromises = discoveryIntent.searchQueries.map(async (query) => {
+          try {
+            const response = await fetch(`${request.nextUrl.origin}/api/mcp/discover`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query,
+                sources: discoveryIntent!.mcpSources,
+                limit: 10, // Limit per query to manage token budget
+              }),
+            });
+
+            if (!response.ok) {
+              console.warn(`[MCP Discovery] Query "${query}" failed:`, response.statusText);
+              return [];
+            }
+
+            const data = await response.json();
+            return data.components || [];
+          } catch (error) {
+            console.warn(`[MCP Discovery] Query "${query}" error:`, error);
+            return [];
+          }
+        });
+
+        const discoveryResults = await Promise.all(discoveryPromises);
+        const allDiscoveredComponents = discoveryResults.flat();
+
+        // Deduplicate by component name
+        const uniqueComponents = new Map<string, MCPComponentMetadata>();
+        for (const component of allDiscoveredComponents) {
+          if (!uniqueComponents.has(component.name)) {
+            uniqueComponents.set(component.name, {
+              name: component.name,
+              description: component.description || '',
+              props: component.props,
+              source: component.source || 'unknown',
+              examples: component.examples,
+            });
+          }
+        }
+
+        mcpComponents = Array.from(uniqueComponents.values());
+
+        // Step 3: Calculate token usage
+        const tokenUsage = calculateTokenUsage(mcpComponents.length);
+
+        // Step 4: Build enhanced system prompt
+        systemPromptOverride = buildEnhancedSystemPrompt(mcpComponents, {
+          enableDynamicDiscovery: true,
+          useNamespaces: true,
+          maxTokens: 15000,
+        });
+
+        discoveryTime = Date.now() - discoveryStartTime;
+
+        console.log('[MCP Discovery] Discovery complete:', {
+          queriesExecuted: discoveryIntent.searchQueries.length,
+          totalDiscovered: allDiscoveredComponents.length,
+          uniqueComponents: mcpComponents.length,
+          tokenUsage,
+          discoveryTime: `${discoveryTime}ms`,
+        });
+
+      } catch (error) {
+        // Log but don't fail - fall back to standard generation
+        console.error('[MCP Discovery] Discovery failed, falling back to standard generation:', error);
+        systemPromptOverride = undefined;
+      }
+    }
+
+    // Generate the UI (with or without MCP enhancement)
     const result = await generateUIFromPrompt(prompt, {
       currentTree,
       conversationHistory,
       framework,
+      systemPromptOverride, // Pass enhanced prompt if available
     });
 
     // Validate the generated tree
     const validation = validateUITree(result.tree);
+
+    // Build telemetry data
+    const telemetry = dynamicDiscoveryEnabled ? {
+      discoveryEnabled: true,
+      intent: discoveryIntent?.intent,
+      mcpComponentsDiscovered: mcpComponents.length,
+      mcpComponentsUsed: 0, // Could be enhanced to track actual usage
+      tokenUsage: calculateTokenUsage(mcpComponents.length),
+      discoveryTime,
+    } : {
+      discoveryEnabled: false,
+    };
 
     const response: GenerateSuccessResponse = {
       ...result,
       timing: Date.now() - startTime,
       valid: validation.valid,
       validationErrors: validation.errors.length > 0 ? validation.errors : undefined,
+      telemetry,
     };
 
     return NextResponse.json(response);

@@ -14,7 +14,7 @@
  */
 
 import * as React from 'react';
-import type { UITree } from '@json-render/core';
+import type { UITree, UIElement } from '@json-render/core';
 import { cn } from '@/lib/utils';
 import {
   Send,
@@ -534,10 +534,10 @@ export function ChatInterface({
         if (currentTree) {
           Object.entries(tree.elements).forEach(([key, newEl]) => {
             const oldEl = currentTree.elements[key];
-            if (oldEl && JSON.stringify(oldEl.props) !== JSON.stringify(newEl.props)) {
-              console.log(`[Polish UI] Changed ${newEl.type} (${key}):`, {
+            if (oldEl && newEl && typeof newEl === 'object' && 'props' in newEl && 'type' in newEl && JSON.stringify(oldEl.props) !== JSON.stringify(newEl.props)) {
+              console.log(`[Polish UI] Changed ${(newEl as UIElement).type} (${key}):`, {
                 before: oldEl.props,
-                after: newEl.props
+                after: (newEl as UIElement).props
               });
             }
           });
@@ -548,14 +548,17 @@ export function ChatInterface({
         const freshTree = {
           root: tree.root,
           elements: Object.fromEntries(
-            Object.entries(tree.elements).map(([key, element]) => [
-              key,
-              {
-                ...element,
-                props: { ...element.props },
-                children: element.children ? [...element.children] : undefined,
-              }
-            ])
+            Object.entries(tree.elements).map(([key, element]) => {
+              const el = element as UIElement;
+              return [
+                key,
+                {
+                  ...el,
+                  props: { ...el.props },
+                  children: el.children ? [...el.children] : undefined,
+                }
+              ];
+            })
           )
         };
 
